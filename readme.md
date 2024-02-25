@@ -7,4 +7,6 @@ Created for the [Autonomy By Design (ADB)](https://canvas.hu.nl/courses/39869/pa
  
  # Demo video of branch
 
-Watch the demo video [here!](assets/demo_video.mp4)
+Watch the demo video by clicking on the image below:
+
+ [![demo video](assets/dogfight_demo_screenshot.png)](https://www.youtube.com/watch_popup?v=ac95xo9TWpM)
