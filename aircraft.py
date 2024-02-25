@@ -91,8 +91,8 @@ class Aircraft:
         self.engine_power = engine_power
         self.agility = agility  # TODO 1: moment afhankelijk van AoA en v
         self.mass = mass
-        self.c_drag = c_drag  # TODO 2: Cd afhankelijk van AoA
-        self.c_lift = c_lift  # TODO 3: Cl afhankelijk van AoA
+        self.const_drag = c_drag  # TODO 2: Cd afhankelijk van AoA
+        self.const_lift = c_lift  # TODO 3: Cl afhankelijk van AoA
 
         # Variables
         self.throttle = init_throttle
@@ -101,6 +101,7 @@ class Aircraft:
         self.pos = np.array(init_pos)
 
         # Dependant variables (Numpy containers)
+        self.AoA_deg = 0
         self.pitch_uv = np.array([0.0, 0.0])
         self.v_uv = np.array([0.0, 0.0])
         self.f_gravity = np.array([0.0, 9.81*mass])
@@ -124,28 +125,46 @@ class Aircraft:
         """
         self.pitch_uv[0] = math.cos(-math.pi / 180 * self.pitch)
         self.pitch_uv[1] = math.sin(-math.pi / 180 * self.pitch)
+
+        self.AoA_deg = (math.atan2(self.pitch_uv[0], self.pitch_uv[1]) - math.atan2(self.v[0], self.v[1]))*180/math.pi
+
+        # self.c_lift =
+        # CGFloat
+        # atanA = atan2(a, b);
+        # CGFloat
+        # atanB = atan2(c, d);
+        #
+        # return atanA - atanB;
+
+
         
         # f = m * a
         self.f_engine = self.throttle * 0.1 * self.engine_power * \
             self.pitch_uv / self.mass   
 
-        # Schalar projection
-        v_head = np.dot(self.v, self.pitch_uv) / np.linalg.norm(self.pitch_uv)  
+        # Schalar projection velocity on heading (pitch)
+        v_head = np.dot(self.v, self.pitch_uv) / np.linalg.norm(self.pitch_uv)
         # Cl * r * (v^2)/2 * A -> C * (v^2)
-        norm_lift = self.c_lift * np.linalg.norm(v_head)**2
-        self.f_lift[0] = \
-            norm_lift * np.cos(-math.pi/180 * ((self.pitch + 90) % 360))
-        self.f_lift[1] = \
-            norm_lift * np.sin(-math.pi/180 * ((self.pitch + 90) % 360))
+        # norm_lift = self.c_lift * np.linalg.norm(v_head)**2
+        coef_lift = -((self.AoA_deg-1)/22)**10 + (self.AoA_deg-1)/13 + 1/4 # -((x-1)/22)^10 + (x-1)/13 + 1/4
+        norm_lift = self.const_lift * coef_lift * np.linalg.norm(self.v)**2
+        # self.f_lift[0] = \
+        #     norm_lift * np.cos(-math.pi/180 * ((self.pitch + 90) % 360))
+        # self.f_lift[1] = \
+        #     norm_lift * np.sin(-math.pi/180 * ((self.pitch + 90) % 360))
+        self.f_lift[0] = norm_lift * self.v_uv[1]
+        self.f_lift[1] = norm_lift * -self.v_uv[0]
+
 
         ########################### NOTE: dit is nattevingerwerk; comment weg als het niet werkt
         if np.linalg.norm(self.v) != 0:
             self.v_uv = self.v / np.linalg.norm(self.v)
         AoA_rad = np.arccos(np.dot(self.v_uv, self.pitch_uv))
+        # self.AoA_deg = AoA_rad * 180 / math.pi
         AoA_multiplier = 10
         ###########################
 
-        norm_drag = self.c_drag * np.linalg.norm(self.v)**2
+        norm_drag = self.const_drag * np.linalg.norm(self.v) ** 2
         if np.linalg.norm(self.v) != 0:
             self.f_drag = -norm_drag * self.v / np.linalg.norm(self.v) * \
                 (1+AoA_rad**2*AoA_multiplier)
@@ -171,5 +190,24 @@ class Aircraft:
 
 
 # sources:
+# https://github.com/gszabi99/War-Thunder-Datamine/tree/master/aces.vromfs.bin_u/gamedata/flightmodels
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/lifteq.html
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/drageq.html
+
+# from WT datamine:
+#         "NoFlaps": {
+#           "Cl0": 0.16,
+#           "alphaCritHigh": 19.0,
+#           "alphaCritLow": -15.0,
+#           "ClCritHigh": 1.4,
+#           "ClCritLow": -0.95,
+#           "CdMin": 0.0075
+#         }, -> approx -((x-1)/22)^10 + (x-1)/13 + 1/4
+#         "FullFlaps": {
+#           "Cl0": 0.4,
+#           "alphaCritHigh": 17.0,
+#           "alphaCritLow": -12.0,
+#           "ClCritHigh": 1.55,
+#           "ClCritLow": -0.15,
+#           "CdMin": 0.04
+#         }

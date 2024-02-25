@@ -13,8 +13,8 @@ player = aircraft.Aircraft(
     mass=8, 
     engine_power=100, 
     agility=100, 
-    c_drag=0.001, 
-    c_lift=0.001, 
+    c_drag=0.001,
+    c_lift=0.01,
     sprite="assets/sprite_republican_i16.png", 
     init_throttle=100, 
     init_pitch=0, 
@@ -80,6 +80,14 @@ while running:
             "black"
         ), 
         (20, 60)
+    )
+    screen.blit(
+        font.render(
+            "testv: " + str(player.AoA_deg),
+            False,
+            "black"
+        ),
+        (20, 80)
     )
 
     pygame.display.flip()
