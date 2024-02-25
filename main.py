@@ -9,7 +9,18 @@ running = True
 dt = 0
 
 font = pygame.font.SysFont(None, 24)
-player = aircraft.Aircraft(8, 100, 100, 0.001, 0.001, "assets/sprite_republican_i16.png", 100, 0, (100.0, 0.0), (screen.get_width() / 2, screen.get_height() / 2))
+player = aircraft.Aircraft(
+    mass=8, 
+    engine_power=100, 
+    agility=100, 
+    c_drag=0.001, 
+    c_lift=0.001, 
+    sprite="assets/sprite_republican_i16.png", 
+    init_throttle=100, 
+    init_pitch=0, 
+    init_v=(100.0, 0.0), 
+    init_pos=(screen.get_width() / 2, screen.get_height() / 2)
+)
 
 while running:
     for event in pygame.event.get():
@@ -40,15 +51,36 @@ while running:
     screen.blit(player.rot_sprite, player.rot_rect)
 
     center = np.array((screen.get_width() / 2, screen.get_height() / 2))
-    pygame.draw.line(screen, 'black', center, center + player.v)
-    pygame.draw.line(screen, 'red', center, center + player.f_engine)
-    pygame.draw.line(screen, 'green', center, center + player.f_lift)
-    pygame.draw.line(screen, 'blue', center, center + player.f_drag)
-    pygame.draw.line(screen, 'yellow', center, center + player.f_gravity)
+    pygame.draw.line(screen, "black", center, center + player.v)
+    pygame.draw.line(screen, "red", center, center + player.f_engine)
+    pygame.draw.line(screen, "green", center, center + player.f_lift)
+    pygame.draw.line(screen, "blue", center, center + player.f_drag)
+    pygame.draw.line(screen, "yellow", center, center + player.f_gravity)
 
-    screen.blit(font.render('throttle: ' + str(player.throttle), False, 'black'), (20, 20))
-    screen.blit(font.render('pitch:    ' + str(player.pitch), False, 'black'), (20, 40))
-    screen.blit(font.render('velocity: ' + str(np.linalg.norm(player.v)), False, 'black'), (20, 60))
+    screen.blit(
+        font.render(
+            "throttle: " + str(player.throttle), 
+            False, 
+            "black"
+        ), 
+        (20, 20)
+    )
+    screen.blit(
+        font.render(
+            "pitch:    " + str(player.pitch), 
+            False, 
+            "black"
+        ), 
+        (20, 40)
+    )
+    screen.blit(
+        font.render(
+            "velocity: " + str(np.linalg.norm(player.v)), 
+            False, 
+            "black"
+        ), 
+        (20, 60)
+    )
 
     pygame.display.flip()
     dt = clock.tick(60) / 1000
