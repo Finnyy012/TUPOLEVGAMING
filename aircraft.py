@@ -57,7 +57,7 @@ class Aircraft:
     def __init__(
         self,
         mass: float,
-        engine_power: float,
+        engine_force: float,
         agility: float,  
         c_drag: float,
         c_lift: float,
@@ -88,11 +88,11 @@ class Aircraft:
         """
 
         # Constants
-        self.engine_power = engine_power
-        self.agility = agility  # TODO 1: moment afhankelijk van AoA en v
+        self.engine_power = engine_force
+        self.agility = agility  # TODO: moment afhankelijk van AoA en v
         self.mass = mass
-        self.const_drag = c_drag  # TODO 2: Cd afhankelijk van AoA
-        self.const_lift = c_lift  # TODO 3: Cl afhankelijk van AoA
+        self.const_drag = c_drag  # TODO: Cd afhankelijk van AoA
+        self.const_lift = c_lift
 
         # Variables
         self.throttle = init_throttle
@@ -100,7 +100,11 @@ class Aircraft:
         self.v = np.array(init_v)
         self.pos = np.array(init_pos)
 
-        # Dependant variables (Numpy containers)
+        self.AoA_crit_low = (-15.0, -0.95)
+        self.AoA_crit_high = (19.0, 1.4)
+        self.cl0 = 0.16
+
+        # Dependant variables (oa Numpy containers)
         self.AoA_deg = 0
         self.pitch_uv = np.array([0.0, 0.0])
         self.v_uv = np.array([0.0, 0.0])
@@ -111,8 +115,10 @@ class Aircraft:
 
         # Sprite info
         self.sprite = pygame.image.load(sprite)
-        self.rot_sprite = pygame.transform.scale_by(self.sprite, 0.05)
-        self.sprite = pygame.transform.scale_by(self.sprite, 0.05)
+        # self.rot_sprite = pygame.transform.scale_by(self.sprite, 0.05)
+        self.rot_sprite = pygame.transform.scale(self.sprite, (48,25))  # TODO: nog even naar groottes kijken
+        # self.sprite = pygame.transform.scale_by(self.sprite, 0.05
+        self.sprite = pygame.transform.scale(self.sprite, (48,25))
         self.rot_rect = self.sprite.get_rect(center=init_pos)
 
     def tick(self, dt: float)-> None:
@@ -127,17 +133,11 @@ class Aircraft:
         self.pitch_uv[1] = math.sin(-math.pi / 180 * self.pitch)
 
         self.AoA_deg = (math.atan2(self.pitch_uv[0], self.pitch_uv[1]) - math.atan2(self.v[0], self.v[1]))*180/math.pi
+        if self.AoA_deg > 180:
+            self.AoA_deg -= 360
+        elif self.AoA_deg < -180:
+            self.AoA_deg += 360
 
-        # self.c_lift =
-        # CGFloat
-        # atanA = atan2(a, b);
-        # CGFloat
-        # atanB = atan2(c, d);
-        #
-        # return atanA - atanB;
-
-
-        
         # f = m * a
         self.f_engine = self.throttle * 0.1 * self.engine_power * \
             self.pitch_uv / self.mass   
@@ -146,7 +146,7 @@ class Aircraft:
         v_head = np.dot(self.v, self.pitch_uv) / np.linalg.norm(self.pitch_uv)
         # Cl * r * (v^2)/2 * A -> C * (v^2)
         # norm_lift = self.c_lift * np.linalg.norm(v_head)**2
-        coef_lift = -((self.AoA_deg-1)/22)**10 + (self.AoA_deg-1)/13 + 1/4 # -((x-1)/22)^10 + (x-1)/13 + 1/4
+        coef_lift = self.lift_curve(self.AoA_deg) #-((self.AoA_deg-1)/22)**10 + (self.AoA_deg-1)/13 + 1/4 # -((x-1)/22)^10 + (x-1)/13 + 1/4
         norm_lift = self.const_lift * coef_lift * np.linalg.norm(self.v)**2
         # self.f_lift[0] = \
         #     norm_lift * np.cos(-math.pi/180 * ((self.pitch + 90) % 360))
@@ -172,6 +172,14 @@ class Aircraft:
         f_res = self.f_engine + self.f_gravity + self.f_drag + self.f_lift
         self.v += dt * f_res
         self.pos += self.v * dt
+        print(self.AoA_deg) #<- hier
+        print(self.f_engine)
+        print(self.f_drag)
+        print(self.f_lift)
+        print(f_res[0])
+        print(self.v[0])
+        print(self.pos[0])
+        print()
         self.rot_rect.centerx = self.pos[0]
         self.rot_rect.centery = self.pos[1]
 
@@ -187,6 +195,26 @@ class Aircraft:
         self.rot_rect = self.rot_sprite.get_rect(
             center=self.sprite.get_rect(center=self.rot_rect.center).center
         )
+
+    def lift_curve(self, AoA: float):
+        if AoA < self.AoA_crit_low[0]-1:
+            return 0.0
+        elif self.AoA_crit_low[0]-1 <= AoA < self.AoA_crit_low[0]:
+            return self.AoA_crit_low[1] * abs(self.AoA_crit_low[0]-1 - AoA)
+        elif self.AoA_crit_low[0] <= AoA < 0.0:
+            b = self.cl0 - self.AoA_crit_low[1]
+            c = AoA / self.AoA_crit_low[0]
+            return self.cl0 - b * c
+        elif 0.0 <= AoA < self.AoA_crit_high[0]:
+            b = self.AoA_crit_high[1] - self.cl0
+            c = AoA / self.AoA_crit_high[0]
+            return self.cl0 + b * c
+        elif self.AoA_crit_high[0] <= AoA < self.AoA_crit_high[0]+1:
+            return self.AoA_crit_high[1] * abs(self.AoA_crit_high[0]-1 - AoA)
+        else:
+            return 0
+
+
 
 
 # sources:

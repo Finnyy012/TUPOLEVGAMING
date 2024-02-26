@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 import aircraft
+import matplotlib.pyplot as plt
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -10,8 +11,8 @@ dt = 0
 
 font = pygame.font.SysFont(None, 24)
 player = aircraft.Aircraft(
-    mass=8, 
-    engine_power=100, 
+    mass=13,
+    engine_force=100,
     agility=100, 
     c_drag=0.001,
     c_lift=0.01,
@@ -75,7 +76,7 @@ while running:
     )
     screen.blit(
         font.render(
-            "velocity: " + str(np.linalg.norm(player.v)), 
+            "IAS: " + str(np.linalg.norm(player.v)),
             False, 
             "black"
         ), 
@@ -83,12 +84,22 @@ while running:
     )
     screen.blit(
         font.render(
-            "testv: " + str(player.AoA_deg),
+            "altitude: " + str(player.pos[1]),
             False,
             "black"
         ),
         (20, 80)
     )
+    screen.blit(
+        font.render(
+            "AoA: " + str(player.AoA_deg),
+            False,
+            "black"
+        ),
+        (20, 100)
+    )
+
+
 
     pygame.display.flip()
     dt = clock.tick(60) / 1000
