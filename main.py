@@ -11,15 +11,15 @@ dt = 0
 
 font = pygame.font.SysFont(None, 24)
 player = aircraft.Aircraft(
-    mass=13,
-    engine_force=100,
+    mass=12,
+    engine_force=10,
     agility=100, 
-    c_drag=0.001,
+    c_drag=0.002,
     c_lift=0.01,
     sprite="assets/sprite_republican_i16.png", 
-    init_throttle=100, 
+    init_throttle=100,
     init_pitch=0, 
-    init_v=(100.0, 0.0), 
+    init_v=(200.0, 0.0),
     init_pos=(screen.get_width() / 2, screen.get_height() / 2)
 )
 
@@ -33,13 +33,9 @@ while running:
     if keys[pygame.K_w]:
         if player.throttle < 100:
             player.throttle += dt*100
-        # v[0] += a * math.cos((math.pi/180) * alpha) #v0/a = cos(alpha) -> v0 = a*cos(alpha)
-        # v[1] -= a * math.sin((math.pi / 180) * alpha)  # v1/a = sin(alpha) -> v1 = a*sin(alpha)
     if keys[pygame.K_s]:
         if player.throttle > 0:
             player.throttle -= dt*100
-        # v[0] -= a * math.cos((math.pi / 180) * alpha)
-        # v[1] += a * math.sin((math.pi / 180) * alpha)
     if keys[pygame.K_a]:
         player.adjust_pitch(dt)
     if keys[pygame.K_d]:
@@ -98,8 +94,14 @@ while running:
         ),
         (20, 100)
     )
-
-
+    screen.blit(
+        font.render(
+            str(np.linalg.norm(player.f_drag)),
+            False,
+            "black"
+        ),
+        (20, 120)
+    )
 
     pygame.display.flip()
     dt = clock.tick(60) / 1000

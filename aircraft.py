@@ -56,53 +56,59 @@ class Aircraft:
 
     def __init__(
         self,
-        mass: float,
-        engine_force: float,
-        agility: float,  
-        c_drag: float,
-        c_lift: float,
         sprite: string,
-        init_throttle: float,
-        init_pitch: float,
-        init_v: tuple[float, float],
-        init_pos: tuple[int, int]
+        mass: float = 12,
+        engine_force: float = 10,
+        agility: float = 100,
+        c_drag: float = 0.002,
+        c_lift: float = 0.01,
+        AoA_crit_low: tuple[float, float] = (-15.0, -0.95),
+        AoA_crit_high: tuple[float, float] = (19.0, 1.4),
+        cl0: float = 0.16,
+        cd_min: float = 0.25,
+        init_throttle: float = 0,
+        init_pitch: float = 0,
+        init_v: tuple[float, float] = (0, 0),
+        init_pos: tuple[int, int] = (0, 0)
     )-> None:
         """
-        Initalizer for Aircraft
+        Initaliser for Aircraft
 
         @Parameters:
-        - mass (float): Mass of aircaft, in Killograms (Kg).
-        - engine_power (float): Engine power of aircraft, 
-         in Neutons (N).
-        - agility (float): Degree to which the pitch can change, 
-         in degrees per delta.
-        - c_drag (float): ?
-        - c_lift (float): ?
         - sprite (string): Filepath to sprite used for visualisation.
-        - init_throttle (float): Initial throttle of aircraft at spawn.
-        - init_pitch (float): Initial pitch of aircraft at spawn.
-        - init_v (tuple[float, float]): 
-         Initial velocity vector of aircraft at spawn.
-        - init_pos: (tuple[int int]): 
-         Initial spawning location of aircraft (x, y).
+        - mass (float): Mass of aircraft in Kilogram (Kg).
+        - engine_force (float): constant forward force in Newton (N).
+        - agility (float): constant torque applied when pressing A or D in degrees per frame.
+        - c_drag (float): 'constants' when calculating drag, such as air density and wing area
+        - c_lift (float): 'constants' when calculating lift, such as air density and wing area
+        - AoA_crit_low (tuple[float, float]): negative critical angle of attack in degrees and
+         its accompanying lift coefficient
+        - AoA_crit_high (tuple[float, float]): positive critical angle of attack in degrees and
+         its accompanying lift coefficient
+        - cl0 (float): lift coefficient at AoA == 0
+        - cd_min (float): apex of drag curve; drag coefficient at AoA == 0
+        - init_throttle (float): Throttle of aircraft at spawn.
+        - init_pitch (float): Pitch of aircraft at spawn.
+        - init_v (tuple[float, float]): velocity vector of aircraft at spawn.
+        - init_pos: (tuple[int int]): spawning location of aircraft (x, y).
         """
 
         # Constants
-        self.engine_power = engine_force
-        self.agility = agility  # TODO: moment afhankelijk van AoA en v
         self.mass = mass
-        self.const_drag = c_drag  # TODO: Cd afhankelijk van AoA
+        self.engine_force = engine_force
+        self.agility = agility
+        self.const_drag = c_drag
         self.const_lift = c_lift
+        self.AoA_crit_low = AoA_crit_low
+        self.AoA_crit_high = AoA_crit_high
+        self.cl0 = cl0
+        self.cd_min = cd_min
 
-        # Variables
+        # initialisable Variables
         self.throttle = init_throttle
         self.pitch = init_pitch
         self.v = np.array(init_v)
         self.pos = np.array(init_pos)
-
-        self.AoA_crit_low = (-15.0, -0.95)
-        self.AoA_crit_high = (19.0, 1.4)
-        self.cl0 = 0.16
 
         # Dependant variables (oa Numpy containers)
         self.AoA_deg = 0
@@ -129,59 +135,47 @@ class Aircraft:
         - dt (float): 
          Delta time over which changes need to be calculated.
         """
+        # pitch unit vector
         self.pitch_uv[0] = math.cos(-math.pi / 180 * self.pitch)
         self.pitch_uv[1] = math.sin(-math.pi / 180 * self.pitch)
 
+        # velocity unit vector
+        if np.linalg.norm(self.v) != 0:
+            self.v_uv = self.v / np.linalg.norm(self.v)
+
+        # angle of attack
         self.AoA_deg = (math.atan2(self.pitch_uv[0], self.pitch_uv[1]) - math.atan2(self.v[0], self.v[1]))*180/math.pi
         if self.AoA_deg > 180:
             self.AoA_deg -= 360
         elif self.AoA_deg < -180:
             self.AoA_deg += 360
 
-        # f = m * a
-        self.f_engine = self.throttle * 0.1 * self.engine_power * \
-            self.pitch_uv / self.mass   
+        # engine force vector
+        self.f_engine = self.throttle * 0.1 * self.engine_force * self.pitch_uv
 
-        # Schalar projection velocity on heading (pitch)
-        v_head = np.dot(self.v, self.pitch_uv) / np.linalg.norm(self.pitch_uv)
-        # Cl * r * (v^2)/2 * A -> C * (v^2)
-        # norm_lift = self.c_lift * np.linalg.norm(v_head)**2
-        coef_lift = self.lift_curve(self.AoA_deg) #-((self.AoA_deg-1)/22)**10 + (self.AoA_deg-1)/13 + 1/4 # -((x-1)/22)^10 + (x-1)/13 + 1/4
+        # lift force vector
+        coef_lift = self.lift_curve(self.AoA_deg)
         norm_lift = self.const_lift * coef_lift * np.linalg.norm(self.v)**2
-        # self.f_lift[0] = \
-        #     norm_lift * np.cos(-math.pi/180 * ((self.pitch + 90) % 360))
-        # self.f_lift[1] = \
-        #     norm_lift * np.sin(-math.pi/180 * ((self.pitch + 90) % 360))
         self.f_lift[0] = norm_lift * self.v_uv[1]
         self.f_lift[1] = norm_lift * -self.v_uv[0]
 
+        # drag force vector
+        coef_drag = (self.AoA_deg / (math.sqrt(40)))**2 + self.cd_min
+        norm_drag = self.const_drag * coef_drag * np.linalg.norm(self.v) ** 2
+        self.f_drag = -norm_drag * self.v_uv
 
-        ########################### NOTE: dit is nattevingerwerk; comment weg als het niet werkt
-        if np.linalg.norm(self.v) != 0:
-            self.v_uv = self.v / np.linalg.norm(self.v)
-        AoA_rad = np.arccos(np.dot(self.v_uv, self.pitch_uv))
-        # self.AoA_deg = AoA_rad * 180 / math.pi
-        AoA_multiplier = 10
-        ###########################
-
-        norm_drag = self.const_drag * np.linalg.norm(self.v) ** 2
-        if np.linalg.norm(self.v) != 0:
-            self.f_drag = -norm_drag * self.v / np.linalg.norm(self.v) * \
-                (1+AoA_rad**2*AoA_multiplier)
-
+        # resulting force vector, update velocity & position
         f_res = self.f_engine + self.f_gravity + self.f_drag + self.f_lift
-        self.v += dt * f_res
+        self.v += dt * f_res  # / self.mass # wat??? f = m * a -> f = m * v/s -> v = f*s/m
         self.pos += self.v * dt
-        print(self.AoA_deg) #<- hier
-        print(self.f_engine)
-        print(self.f_drag)
-        print(self.f_lift)
-        print(f_res[0])
-        print(self.v[0])
-        print(self.pos[0])
-        print()
         self.rot_rect.centerx = self.pos[0]
         self.rot_rect.centery = self.pos[1]
+
+        # induced torque (close enough)
+        if self.AoA_deg < self.AoA_crit_low[0]:
+            self.adjust_pitch(norm_drag*0.01*dt)
+        if self.AoA_deg > self.AoA_crit_high[0]:
+            self.adjust_pitch(-norm_drag*0.01*dt)
 
     def adjust_pitch(self, dt: float):
         """
@@ -197,6 +191,12 @@ class Aircraft:
         )
 
     def lift_curve(self, AoA: float):
+        '''
+        Lift curve function based on critical angles and cl0
+
+        :param AoA: angle of attack
+        :return: lift coefficient at AoA
+        '''
         if AoA < self.AoA_crit_low[0]-1:
             return 0.0
         elif self.AoA_crit_low[0]-1 <= AoA < self.AoA_crit_low[0]:
@@ -216,26 +216,9 @@ class Aircraft:
 
 
 
-
 # sources:
 # https://github.com/gszabi99/War-Thunder-Datamine/tree/master/aces.vromfs.bin_u/gamedata/flightmodels
+# https://en.wikipedia.org/wiki/Drag_curve
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/lifteq.html
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/drageq.html
 
-# from WT datamine:
-#         "NoFlaps": {
-#           "Cl0": 0.16,
-#           "alphaCritHigh": 19.0,
-#           "alphaCritLow": -15.0,
-#           "ClCritHigh": 1.4,
-#           "ClCritLow": -0.95,
-#           "CdMin": 0.0075
-#         }, -> approx -((x-1)/22)^10 + (x-1)/13 + 1/4
-#         "FullFlaps": {
-#           "Cl0": 0.4,
-#           "alphaCritHigh": 17.0,
-#           "alphaCritLow": -12.0,
-#           "ClCritHigh": 1.55,
-#           "ClCritLow": -0.15,
-#           "CdMin": 0.04
-#         }
