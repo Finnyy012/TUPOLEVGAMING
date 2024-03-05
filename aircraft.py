@@ -13,8 +13,12 @@ class Aircraft:
     - agility (float): Degree to which the pitch can change, 
      in degrees per delta.
     - mass (float): Mass of aircaft, in Killograms (Kg).
-    - c_drag (float): ?
-    - c_lift (float): ?
+    - c_drag (float): 
+     'constants' when calculating drag, 
+      such as air density and wing area
+    - c_lift (float): 
+     'constants' when calculating lift, 
+      such as air density and wing area
     - throttle (float): Throttle of aircraft.
     - pitch (float): Pitch of aircraft.
     - v (tuple[float, float]): Velocity of aircraft.
@@ -78,19 +82,30 @@ class Aircraft:
         - sprite (string): Filepath to sprite used for visualisation.
         - mass (float): Mass of aircraft in Kilogram (Kg).
         - engine_force (float): constant forward force in Newton (N).
-        - agility (float): constant torque applied when pressing A or D in degrees per frame.
-        - c_drag (float): 'constants' when calculating drag, such as air density and wing area
-        - c_lift (float): 'constants' when calculating lift, such as air density and wing area
-        - AoA_crit_low (tuple[float, float]): negative critical angle of attack in degrees and
+        - agility (float): 
+         constant torque applied 
+         when pressing A or D in degrees per frame.
+        - c_drag (float): 
+         'constants' when calculating drag, 
+          such as air density and wing area
+        - c_lift (float): 
+         'constants' when calculating lift, 
+          such as air density and wing area
+        - AoA_crit_low (tuple[float, float]): 
+         negative critical angle of attack in degrees and
          its accompanying lift coefficient
-        - AoA_crit_high (tuple[float, float]): positive critical angle of attack in degrees and
+        - AoA_crit_high (tuple[float, float]): 
+         positive critical angle of attack in degrees and
          its accompanying lift coefficient
         - cl0 (float): lift coefficient at AoA == 0
-        - cd_min (float): apex of drag curve; drag coefficient at AoA == 0
+        - cd_min (float): 
+         apex of drag curve; drag coefficient at AoA == 0
         - init_throttle (float): Throttle of aircraft at spawn.
         - init_pitch (float): Pitch of aircraft at spawn.
-        - init_v (tuple[float, float]): velocity vector of aircraft at spawn.
-        - init_pos: (tuple[int int]): spawning location of aircraft (x, y).
+        - init_v (tuple[float, float]): 
+         velocity vector of aircraft at spawn.
+        - init_pos: (tuple[int int]): 
+         spawning location of aircraft (x, y).
         """
 
         # Constants
@@ -182,7 +197,8 @@ class Aircraft:
         Update pitch of aircraft over given time interval.
         
         @Parameters:
-        - dt (float): Delta time over which changes need to be calculated.
+        - dt (float): 
+         Delta time over which changes need to be calculated.
         """
         self.pitch = (self.pitch + self.agility * dt) % 360
         self.rot_sprite = pygame.transform.rotate(self.sprite, self.pitch)
