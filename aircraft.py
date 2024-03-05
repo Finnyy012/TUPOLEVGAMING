@@ -13,8 +13,8 @@ class Aircraft:
     - agility (float): Degree to which the pitch can change, 
      in degrees per delta.
     - mass (float): Mass of aircaft, in Killograms (Kg).
-    - c_drag (float): ?
-    - c_lift (float): ?
+    - c_drag (float): drag constants
+    - c_lift (float): lift constants
     - throttle (float): Throttle of aircraft.
     - pitch (float): Pitch of aircraft.
     - v (tuple[float, float]): Velocity of aircraft.
@@ -27,8 +27,8 @@ class Aircraft:
      and contain exactly 2 values. 
     The first is the force on the x-axis 
      and the second the force on the y-axis.
-    - pitch_uv (np.ndarray): ?
-    - v_uv (np.ndarray): ?
+    - pitch_uv (np.ndarray): unitvector in the direction of pitch
+    - v_uv (np.ndarray): unitvecor in the direction of the velocity vector
     - f_gravity (np.ndarray): Force of gravity.
     - f_engine (np.ndarray): Force of engine.
     - f_drag (np.ndarray): Force of drag.
@@ -56,6 +56,7 @@ class Aircraft:
 
     def __init__(
         self,
+        a,
         sprite: string,
         mass: float = 12,
         engine_force: float = 10,
@@ -92,6 +93,7 @@ class Aircraft:
         - init_v (tuple[float, float]): velocity vector of aircraft at spawn.
         - init_pos: (tuple[int int]): spawning location of aircraft (x, y).
         """
+        self.a = a
 
         # Constants
         self.mass = mass
@@ -166,16 +168,16 @@ class Aircraft:
 
         # resulting force vector, update velocity & position
         f_res = self.f_engine + self.f_gravity + self.f_drag + self.f_lift
-        self.v += dt * f_res  # / self.mass # wat??? f = m * a -> f = m * v/s -> v = f*s/m
+        self.v += dt * f_res / self.mass # wat??? f = m * a -> f = m * v/s -> v = f*s/m
         self.pos += self.v * dt
-        self.rot_rect.centerx = self.pos[0]
-        self.rot_rect.centery = self.pos[1]
+        self.rot_rect.centerx = (self.pos[0]*8)%self.a[0]
+        self.rot_rect.centery = (self.pos[1]*8)%self.a[1]
 
         # induced torque (close enough)
         if self.AoA_deg < self.AoA_crit_low[0]:
-            self.adjust_pitch(norm_drag*0.01*dt)
+            self.adjust_pitch(norm_drag*0.0001*dt)
         if self.AoA_deg > self.AoA_crit_high[0]:
-            self.adjust_pitch(-norm_drag*0.01*dt)
+            self.adjust_pitch(-norm_drag*0.0001*dt)
 
     def adjust_pitch(self, dt: float):
         """
@@ -221,4 +223,5 @@ class Aircraft:
 # https://en.wikipedia.org/wiki/Drag_curve
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/lifteq.html
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/drageq.html
+# https://www.aerodynamics4students.com/aircraft-performance/drag-and-drag-coefficient.php
 

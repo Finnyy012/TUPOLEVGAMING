@@ -11,15 +11,20 @@ dt = 0
 
 font = pygame.font.SysFont(None, 24)
 player = aircraft.Aircraft(
-    mass=12,
-    engine_force=10,
+    (screen.get_width(),screen.get_height()),
+    mass=1200,
+    engine_force=300,
     agility=100, 
-    c_drag=0.002,
-    c_lift=0.01,
+    c_drag=0.5,
+    c_lift=15,
+    AoA_crit_low=(-15.0, -0.95),
+    AoA_crit_high=(19.0, 1.4),
+    cl0=0.32,
+    cd_min=0.5,
     sprite="assets/sprite_republican_i16.png", 
     init_throttle=100,
     init_pitch=0, 
-    init_v=(200.0, 0.0),
+    init_v=(100.0, 0.0),
     init_pos=(screen.get_width() / 2, screen.get_height() / 2)
 )
 
@@ -43,16 +48,16 @@ while running:
 
     player.tick(dt)
 
-    player.pos[0] = player.pos[0] % screen.get_width()
-    player.pos[1] = player.pos[1] % screen.get_height()
+    player.pos[0] = player.pos[0]
+    player.pos[1] = player.pos[1]
     screen.blit(player.rot_sprite, player.rot_rect)
 
     center = np.array((screen.get_width() / 2, screen.get_height() / 2))
     pygame.draw.line(screen, "black", center, center + player.v)
-    pygame.draw.line(screen, "red", center, center + player.f_engine)
-    pygame.draw.line(screen, "green", center, center + player.f_lift)
-    pygame.draw.line(screen, "blue", center, center + player.f_drag)
-    pygame.draw.line(screen, "yellow", center, center + player.f_gravity)
+    pygame.draw.line(screen, "red", center, center + (player.f_engine)/100)
+    pygame.draw.line(screen, "green", center, center + (player.f_lift)/100)
+    pygame.draw.line(screen, "blue", center, center + (player.f_drag)/100)
+    pygame.draw.line(screen, "yellow", center, center + (player.f_gravity)/100)
 
     screen.blit(
         font.render(
@@ -72,7 +77,7 @@ while running:
     )
     screen.blit(
         font.render(
-            "IAS: " + str(np.linalg.norm(player.v)),
+            "IAS M/S: " + str(np.linalg.norm(player.v)),
             False, 
             "black"
         ), 
@@ -80,7 +85,7 @@ while running:
     )
     screen.blit(
         font.render(
-            "altitude: " + str(player.pos[1]),
+            "IAS KPH: " + str(np.linalg.norm(player.v)*3.6),
             False,
             "black"
         ),
@@ -88,7 +93,7 @@ while running:
     )
     screen.blit(
         font.render(
-            "AoA: " + str(player.AoA_deg),
+            "altitude: " + str(player.pos[1]),
             False,
             "black"
         ),
@@ -96,7 +101,7 @@ while running:
     )
     screen.blit(
         font.render(
-            str(np.linalg.norm(player.f_drag)),
+            "AoA: " + str(player.AoA_deg),
             False,
             "black"
         ),
@@ -105,7 +110,6 @@ while running:
 
     pygame.display.flip()
     dt = clock.tick(60) / 1000
-
 pygame.quit()
 
 # # pygame setup
