@@ -9,6 +9,7 @@ class Aircraft:
     Aircraft class.
 
     @Attributes:
+    - window_dimensions (tuple[float, float]): Dimensions of window.
     - engine_power (float): Engine power of aircraft, in Neutons (N).
     - agility (float): Degree to which the pitch can change, 
      in degrees per delta.
@@ -60,7 +61,7 @@ class Aircraft:
 
     def __init__(
         self,
-        a,
+        window_dimensions: tuple[float, float],
         sprite: string,
         mass: float = 12,
         engine_force: float = 10,
@@ -80,6 +81,7 @@ class Aircraft:
         Initaliser for Aircraft
 
         @Parameters:
+        - window_dimensions (tuple[float, float]): Dimensions of window.
         - sprite (string): Filepath to sprite used for visualisation.
         - mass (float): Mass of aircraft in Kilogram (Kg).
         - engine_force (float): constant forward force in Newton (N).
@@ -108,7 +110,7 @@ class Aircraft:
         - init_pos: (tuple[int int]): 
          spawning location of aircraft (x, y).
         """
-        self.a = a
+        self.window_dimensions = window_dimensions
 
         # Constants
         self.mass = mass
@@ -139,9 +141,9 @@ class Aircraft:
         # Sprite info
         self.sprite = pygame.image.load(sprite)
         # self.rot_sprite = pygame.transform.scale_by(self.sprite, 0.05)
-        self.rot_sprite = pygame.transform.scale(self.sprite, (48,25))  # TODO: nog even naar groottes kijken
+        self.rot_sprite = pygame.transform.scale(self.sprite, (24,13))  # TODO: nog even naar groottes kijken
         # self.sprite = pygame.transform.scale_by(self.sprite, 0.05
-        self.sprite = pygame.transform.scale(self.sprite, (48,25))
+        self.sprite = pygame.transform.scale(self.sprite, (24,13))
         self.rot_rect = self.sprite.get_rect(center=init_pos)
 
     def tick(self, dt: float)-> None:
@@ -183,10 +185,10 @@ class Aircraft:
 
         # resulting force vector, update velocity & position
         f_res = self.f_engine + self.f_gravity + self.f_drag + self.f_lift
-        self.v += dt * f_res / self.mass # wat??? f = m * a -> f = m * v/s -> v = f*s/m
+        self.v += dt * f_res / self.mass 
         self.pos += self.v * dt
-        self.rot_rect.centerx = (self.pos[0]*8)%self.a[0]
-        self.rot_rect.centery = (self.pos[1]*8)%self.a[1]
+        self.rot_rect.centerx = (self.pos[0]*4) % self.window_dimensions[0]
+        self.rot_rect.centery = (self.pos[1]*4) % self.window_dimensions[1]
 
         # induced torque (close enough)
         if self.AoA_deg < self.AoA_crit_low[0]:
