@@ -2,6 +2,9 @@ import numpy as np
 import pygame
 import aircraft
 import matplotlib.pyplot as plt
+import balloon
+import random
+import time 
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -27,6 +30,8 @@ player = aircraft.Aircraft(
     init_v=(100.0, 0.0),
     init_pos=(screen.get_width() / 2, screen.get_height() / 2)
 )
+balloons = [balloon.Balloon("assets/uwu.png") for _ in range(10)]
+
 
 while running:
     for event in pygame.event.get():
@@ -45,12 +50,11 @@ while running:
         player.adjust_pitch(dt)
     if keys[pygame.K_d]:
         player.adjust_pitch(-dt)
-
+    
+    screen.blit(player.rot_sprite, player.rot_rect)
     player.tick(dt)
-
     player.pos[0] = player.pos[0]
     player.pos[1] = player.pos[1]
-    screen.blit(player.rot_sprite, player.rot_rect)
 
     center = np.array((screen.get_width() / 2, screen.get_height() / 2))
     pygame.draw.line(screen, "black", center, center + player.v)
@@ -58,6 +62,11 @@ while running:
     pygame.draw.line(screen, "green", center, center + (player.f_lift)/100)
     pygame.draw.line(screen, "blue", center, center + (player.f_drag)/100)
     pygame.draw.line(screen, "yellow", center, center + (player.f_gravity)/100)
+
+    for plastic_orb in balloons:
+        screen.blit(
+            plastic_orb.sprite, plastic_orb.coords
+        )
 
     screen.blit(
         font.render(
@@ -108,8 +117,16 @@ while running:
         (20, 120)
     )
 
+    removed_balloon = random.choice(balloons) 
+    # balloons.remove(removed_balloon)
+
+    if len(balloons) < 10: 
+        new_balloons = [balloon.Balloon("assets/uwu.png") for _ in range(10 - len(balloons))]
+        balloons.extend(new_balloons)
+
     pygame.display.flip()
     dt = clock.tick(60) / 1000
+   
 pygame.quit()
 
 # # pygame setup
@@ -183,7 +200,7 @@ pygame.quit()
 #     if keys[pygame.K_e]:
 #         # player_pos.y += 300 * dt
 #         # v[1] += a * dt
-#         v[0] -= a * math.cos((math.pi / 180) * (alpha + 90))
+#         v[0] -= a * math.cos((math.pi / 180) * (alpha + 90))x
 #         v[1] += a * math.sin((math.pi / 180) * (alpha + 90))
 #     if keys[pygame.K_a]:
 #         # player_pos.x -= 300 * dt
