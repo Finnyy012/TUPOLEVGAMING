@@ -9,6 +9,7 @@ class Aircraft:
     Aircraft class.
 
     @Attributes:
+    - window_dimensions (tuple[float, float]): Dimensions of window.
     - engine_power (float): Engine power of aircraft, in Neutons (N).
     - agility (float): Degree to which the pitch can change, 
      in degrees per delta.
@@ -31,8 +32,8 @@ class Aircraft:
      and contain exactly 2 values. 
     The first is the force on the x-axis 
      and the second the force on the y-axis.
-    - pitch_uv (np.ndarray): ?
-    - v_uv (np.ndarray): ?
+    - pitch_uv (np.ndarray): unitvector in the direction of pitch
+    - v_uv (np.ndarray): unitvecor in the direction of the velocity vector
     - f_gravity (np.ndarray): Force of gravity.
     - f_engine (np.ndarray): Force of engine.
     - f_drag (np.ndarray): Force of drag.
@@ -60,6 +61,7 @@ class Aircraft:
 
     def __init__(
         self,
+        window_dimensions: tuple[float, float],
         sprite: string,
         mass: float = 12,
         engine_force: float = 10,
@@ -79,6 +81,7 @@ class Aircraft:
         Initaliser for Aircraft
 
         @Parameters:
+        - window_dimensions (tuple[float, float]): Dimensions of window.
         - sprite (string): Filepath to sprite used for visualisation.
         - mass (float): Mass of aircraft in Kilogram (Kg).
         - engine_force (float): constant forward force in Newton (N).
@@ -107,6 +110,7 @@ class Aircraft:
         - init_pos: (tuple[int int]): 
          spawning location of aircraft (x, y).
         """
+        self.window_dimensions = window_dimensions
 
         # Constants
         self.mass = mass
@@ -137,9 +141,9 @@ class Aircraft:
         # Sprite info
         self.sprite = pygame.image.load(sprite)
         # self.rot_sprite = pygame.transform.scale_by(self.sprite, 0.05)
-        self.rot_sprite = pygame.transform.scale(self.sprite, (48,25))  # TODO: nog even naar groottes kijken
+        self.rot_sprite = pygame.transform.scale(self.sprite, (24,13))  # TODO: nog even naar groottes kijken
         # self.sprite = pygame.transform.scale_by(self.sprite, 0.05
-        self.sprite = pygame.transform.scale(self.sprite, (48,25))
+        self.sprite = pygame.transform.scale(self.sprite, (24,13))
         self.rot_rect = self.sprite.get_rect(center=init_pos)
 
     def tick(self, dt: float)-> None:
@@ -181,16 +185,16 @@ class Aircraft:
 
         # resulting force vector, update velocity & position
         f_res = self.f_engine + self.f_gravity + self.f_drag + self.f_lift
-        self.v += dt * f_res  # / self.mass # wat??? f = m * a -> f = m * v/s -> v = f*s/m
+        self.v += dt * f_res / self.mass 
         self.pos += self.v * dt
-        self.rot_rect.centerx = self.pos[0]
-        self.rot_rect.centery = self.pos[1]
+        self.rot_rect.centerx = (self.pos[0]*4) % self.window_dimensions[0]
+        self.rot_rect.centery = (self.pos[1]*4) % self.window_dimensions[1]
 
         # induced torque (close enough)
         if self.AoA_deg < self.AoA_crit_low[0]:
-            self.adjust_pitch(norm_drag*0.01*dt)
+            self.adjust_pitch(norm_drag*0.0001*dt)
         if self.AoA_deg > self.AoA_crit_high[0]:
-            self.adjust_pitch(-norm_drag*0.01*dt)
+            self.adjust_pitch(-norm_drag*0.0001*dt)
 
     def adjust_pitch(self, dt: float):
         """
@@ -237,4 +241,5 @@ class Aircraft:
 # https://en.wikipedia.org/wiki/Drag_curve
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/lifteq.html
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/drageq.html
+# https://www.aerodynamics4students.com/aircraft-performance/drag-and-drag-coefficient.php
 
