@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import pygame
 import aircraft
@@ -34,7 +36,8 @@ player = aircraft.Aircraft(
     plane_1_data["INIT_V"],
     plane_1_data["INIT_POS"],
 )
-environment = environment.Environment("assets/environment.png", (screen.get_width(), screen.get_height()), 100, 200, 200)
+
+environment = environment.Environment("assets/environment.png", (screen.get_width(), screen.get_height()), 50, 600, 635)
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
     if settings.USE_GUI:
@@ -60,6 +63,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
 
     if settings.USE_GUI:
         screen.blit(player.rot_sprite, player.rot_rect)
+        screen.blit(source=environment.sprite, dest=[0,environment.elevation])
 
         center = np.array((screen.get_width() / 2, screen.get_height() / 2))
         pygame.draw.line(screen, "black", center, center + player.v)
@@ -67,6 +71,8 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         pygame.draw.line(screen, "green", center, center + (player.f_lift)/100)
         pygame.draw.line(screen, "blue", center, center + (player.f_drag)/100)
         pygame.draw.line(screen, "yellow", center, center + (player.f_gravity)/100)
+
+        # pygame.draw.line(screen, "red", (0,635), (screen.get_width(), 635))
 
         screen.blit(
             font.render(
@@ -119,8 +125,35 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
 
         pygame.display.flip()
 
+    if player.rot_rect.bottom >= environment.coll_elevation:
+        running = False
+
     # No GUI needed for clock
     dt = clock.tick(settings.FPS) / 1000
     total_time += dt
+
+screen.fill((255,255,255))
+gameover = pygame.image.load("assets/gameover.png")
+r = gameover.get_rect()
+r.centerx = screen.get_width() / 2
+r.centery = screen.get_height() / 2
+screen.blit(gameover, r)
+
+explosion = pygame.transform.scale(pygame.image.load("assets/explosion2.png"), (64,64))
+explosion_rect = explosion.get_rect()
+explosion_rect.centerx = player.rot_rect.centerx
+explosion_rect.bottom = player.rot_rect.bottom
+screen.blit(explosion, explosion_rect)
+screen.blit(source=environment.sprite, dest=[0,environment.elevation])
+
+pygame.display.flip()
+
+a = True
+while a:
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_RETURN]:
+        a = False
+        print("aaaa")
+
 
 pygame.quit()
