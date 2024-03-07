@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 import aircraft
-import matplotlib.pyplot as plt
+import environment
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -28,6 +28,8 @@ player = aircraft.Aircraft(
     init_pos=(screen.get_width() / 2, screen.get_height() / 2)
 )
 
+environment = environment.Environment("assets/environment.png", (screen.get_width(), screen.get_height()), 100, 200, 200)
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -51,6 +53,7 @@ while running:
     player.pos[0] = player.pos[0]
     player.pos[1] = player.pos[1]
     screen.blit(player.rot_sprite, player.rot_rect)
+    screen.blit()
 
     center = np.array((screen.get_width() / 2, screen.get_height() / 2))
     pygame.draw.line(screen, "black", center, center + player.v)
