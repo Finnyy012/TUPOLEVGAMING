@@ -1,8 +1,8 @@
 import pygame
 import random
-import settings
 from typing import List
 
+import settings
 class Balloon:
     def __init__(self, sprite: str) -> None:
         """
