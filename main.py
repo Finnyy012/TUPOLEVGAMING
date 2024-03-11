@@ -57,6 +57,9 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             player.adjust_pitch(dt)
         if keys[pygame.K_d]:
             player.adjust_pitch(-dt)
+        if keys[pygame.K_q]:
+            print("q")
+            player.flipdebeer()
 
     # No GUI needed for tick
     player.tick(dt)
@@ -125,8 +128,8 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
 
         pygame.display.flip()
 
-    if player.rot_rect.bottom >= environment.coll_elevation:
-        running = False
+    # if player.rot_rect.bottom >= environment.coll_elevation:
+    #     running = False
 
     # No GUI needed for clock
     dt = clock.tick(settings.FPS) / 1000
