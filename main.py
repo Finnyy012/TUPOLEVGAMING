@@ -1,10 +1,11 @@
 import numpy as np
 import pygame
-import aircraft
 import matplotlib.pyplot as plt
-import settings
-import balloon
 import random
+
+import aircraft
+import balloon
+import settings
 
 screen, font = None, None
 if settings.USE_GUI:
@@ -36,14 +37,9 @@ player = aircraft.Aircraft(
     plane_1_data["INIT_V"],
     plane_1_data["INIT_POS"],
 )
-# balloons = [balloon.Balloon(settings.BALLOON["SPRITE"]) for _ in range(10)]
-balloons = [
-    balloon.Balloon(
-        random.choice(
-            settings.BALLOON["SPRITES"]
-        )
-    ) for _ in range(10)
-]
+
+
+balloons = balloon.load_single_type_balloons()
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
     if settings.USE_GUI:
@@ -145,15 +141,14 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 for x in balloons:
                     if x.is_hit(event.pos):
                         balloons.remove(x)
-        # removed_balloon = random.choice(balloons) 
-    if len(balloons) < 10: 
+    
+    if len(balloons) < settings.BALLOON["BALLOON_COUNT"]: 
         new_balloons = [balloon.Balloon(
                             random.choice(
                                 settings.BALLOON["SPRITES"]
                             )               
-    ) for _ in range(10 - len(balloons))]
+    ) for _ in range(settings.BALLOON["BALLOON_COUNT"] - len(balloons))]
         balloons.extend(new_balloons)
-
 
     # No GUI needed for clock
     dt = clock.tick(settings.FPS) / 1000
