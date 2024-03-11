@@ -16,7 +16,7 @@ class Balloon:
         size = settings.BALLOON["SIZE"]
         self.coords = (
             random.randint(
-                0 + size ,1280 - size
+                0 + size, 1280 - size
             ), random.randint(
                 0 + size, 720 - size
             )
