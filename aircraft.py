@@ -3,6 +3,7 @@ import string
 import pygame
 import numpy as np
 
+import settings
 
 class Aircraft:
     """
@@ -144,8 +145,15 @@ class Aircraft:
             self.use_gui = False
         if self.use_gui:
             self.sprite = pygame.image.load(sprite)
-            self.rot_sprite = pygame.transform.scale(self.sprite, (24,13))  # TODO: nog even naar groottes kijken
-            self.sprite = pygame.transform.scale(self.sprite, (24,13))
+            self.rot_sprite = pygame.transform.scale(
+                self.sprite, 
+                settings.PLANE_POLIKARPOV_I_16["SIZE"]
+            )  
+            # TODO: nog even naar groottes kijken
+            self.sprite = pygame.transform.scale(
+                self.sprite, 
+                settings.PLANE_POLIKARPOV_I_16["SIZE"]
+            )
             self.rot_rect = self.sprite.get_rect(center=init_pos)
 
     def tick(self, dt: float)-> None:

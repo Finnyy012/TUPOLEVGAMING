@@ -1,7 +1,10 @@
 import numpy as np
 import pygame
-import aircraft
 import matplotlib.pyplot as plt
+import random
+
+import aircraft
+import balloon
 import settings
 
 screen, font = None, None
@@ -35,6 +38,9 @@ player = aircraft.Aircraft(
     plane_1_data["INIT_POS"],
 )
 
+
+balloons = balloon.load_single_type_balloons()
+
 while running and total_time <= settings.SIMULATION_RUNTIME:
     if settings.USE_GUI:
         for event in pygame.event.get():
@@ -58,6 +64,12 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
     player.tick(dt)
 
     if settings.USE_GUI:
+        background = pygame.image.load("assets/background.png")
+        background = pygame.transform.scale(
+            background, 
+            (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
+        )    
+        screen.blit(background, (0,0))
         screen.blit(player.rot_sprite, player.rot_rect)
 
         center = np.array((screen.get_width() / 2, screen.get_height() / 2))
@@ -66,6 +78,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         pygame.draw.line(screen, "green", center, center + (player.f_lift)/100)
         pygame.draw.line(screen, "blue", center, center + (player.f_drag)/100)
         pygame.draw.line(screen, "yellow", center, center + (player.f_gravity)/100)
+
+        for plastic_orb in balloons:
+            screen.blit(
+                plastic_orb.sprite, plastic_orb.coords
+            )
 
         screen.blit(
             font.render(
@@ -115,11 +132,31 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             ),
             (20, 120)
         )
-
         pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print("click")
+                #@TODO: 
+                #change mouse click to plane sprite hit detection
+                for x in balloons:
+                    if x.is_hit(event.pos):
+                        balloons.remove(x)
+    
+    if len(balloons) < settings.BALLOON["BALLOON_COUNT"]: 
+        new_balloons = [
+            balloon.Balloon(
+                random.choice(
+                    settings.BALLOON["SPRITES"]
+                )               
+            ) for _ in range (
+                settings.BALLOON["BALLOON_COUNT"] - len(balloons)
+            )
+        ]
+        balloons.extend(new_balloons)
 
     # No GUI needed for clock
     dt = clock.tick(settings.FPS) / 1000
+    
     total_time += dt
 
 pygame.quit()
