@@ -143,11 +143,15 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                         balloons.remove(x)
     
     if len(balloons) < settings.BALLOON["BALLOON_COUNT"]: 
-        new_balloons = [balloon.Balloon(
-                            random.choice(
-                                settings.BALLOON["SPRITES"]
-                            )               
-    ) for _ in range(settings.BALLOON["BALLOON_COUNT"] - len(balloons))]
+        new_balloons = [
+            balloon.Balloon(
+                random.choice(
+                    settings.BALLOON["SPRITES"]
+                )               
+            ) for _ in range (
+                settings.BALLOON["BALLOON_COUNT"] - len(balloons)
+            )
+        ]
         balloons.extend(new_balloons)
 
     # No GUI needed for clock
