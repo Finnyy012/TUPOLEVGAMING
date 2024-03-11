@@ -20,5 +20,24 @@ PLANE_POLIKARPOV_I_16 = {
     "INIT_THROTTLE" : 100,
     "INIT_PITCH" : 0, 
     "INIT_V" : (100.0, 0.0),
-    "INIT_POS" : (SCREEN_WIDTH / 2, 200)
+    "INIT_POS" : (SCREEN_WIDTH / 2, 200),
+    "SIZE" : (24,13)
+}
+
+BALLOON = {
+    "SPRITE" : "assets/apple.gif",
+    "SPRITES" : [
+        "assets/finn_zoom.png",
+        "assets/5g_joris.png",
+        "assets/5g_nick.png",
+        "assets/5g_max.png",
+        "assets/hu_bas.png",
+        "assets/joris_zoom.png",
+        "assets/joris.png",
+        "assets/cool_joost.png",
+        "assets/max.png",
+        "assets/igor.png"
+    ],
+    "SIZE" : 20,
+    "BALLOON_COUNT" : 10
 }
