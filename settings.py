@@ -26,16 +26,18 @@ PLANE_POLIKARPOV_I_16 = {
 
 BALLOON = {
     "SPRITE" : "assets/apple.gif",
-    "SPRITES" : ["assets/finn_zoom.png", 
-                 "assets/5g_joris.png", 
-                 "assets/5g_nick.png", 
-                 "assets/5g_max.png", 
-                 "assets/hu_bas.png", 
-                 "assets/joris_zoom.png", 
-                 "assets/joris.png", 
-                 "assets/cool_joost.png", 
-                 "assets/max.png", 
-                 "assets/igor.png"],
+    "SPRITES" : [
+        "assets/finn_zoom.png", 
+        "assets/5g_joris.png", 
+        "assets/5g_nick.png", 
+        "assets/5g_max.png", 
+        "assets/hu_bas.png", 
+        "assets/joris_zoom.png", 
+        "assets/joris.png", 
+        "assets/cool_joost.png", 
+        "assets/max.png", 
+        "assets/igor.png"
+    ],
     "SIZE" : 20,
     "BALLOON_COUNT" : 10
 }
