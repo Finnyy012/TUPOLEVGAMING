@@ -9,7 +9,7 @@ USE_GUI = True
 PLANE_POLIKARPOV_I_16 = {
     "SPRITE" : "assets/sprite_republican_i16.png", 
     "MASS" : 1200,
-    "ENGINE_FORCE" : 300,   
+    "ENGINE_FORCE" : 300,
     "AGILITY" : 100, 
     "C_DRAG" : 0.5,
     "C_LIFT" : 15,
