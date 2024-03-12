@@ -223,11 +223,7 @@ if settings.USE_GUI:
     # Update display with current information
     pygame.display.flip()
 
-# Let the user enjoy the gameover screen until they press a key
-user_waiting = True
-while user_waiting:
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_RETURN]:
-        user_waiting = False
+# Let the user enjoy the gameover screen for a second
+pygame.time.wait(2000)
 
 pygame.quit()
