@@ -1,11 +1,11 @@
-import time
-import numpy as np
 import pygame
 import random
 import aircraft
 import balloon
 import aircraft
 import ground
+import numpy as np
+
 import settings
 
 screen, font = None, None
@@ -212,7 +212,10 @@ if settings.USE_GUI:
     r.centery = screen.get_height() / 2
     screen.blit(gameover, r)
 
-    explosion = pygame.transform.scale(pygame.image.load("assets/explosion2.png"), (64,64))
+    explosion = pygame.transform.scale(
+        pygame.image.load("assets/explosion2.png"), 
+        (64,64)
+    )
     explosion_rect = explosion.get_rect()
     explosion_rect.centerx = player.rot_rect.centerx
     explosion_rect.bottom = player.rot_rect.bottom

@@ -1,9 +1,10 @@
+import pygame
 import math
 import string
-import pygame
-import numpy as np
-import settings
 import time
+import numpy as np
+
+import settings
 
 class Aircraft:
     """
