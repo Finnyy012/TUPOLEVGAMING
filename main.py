@@ -1,6 +1,7 @@
 import pygame
 import random
 import aircraft
+import agent
 import balloon
 import aircraft
 import ground
@@ -21,7 +22,7 @@ fov_radius = 150
 
 
 plane_1_data = settings.PLANE_POLIKARPOV_I_16
-player = aircraft.Aircraft(
+player = agent.Agent(
     settings.SCREEN_RESOLUTION,
     plane_1_data["SPRITE"],
     plane_1_data["MASS"],
@@ -62,6 +63,8 @@ balloons = balloon.load_single_type_balloons()
 for b in balloons:
     print(b.coords)
 
+pygame.mixer.music.load("assets/Flip de beer intro-[AudioTrimmer.com].mp3")
+
 while running and total_time <= settings.SIMULATION_RUNTIME:
     if settings.USE_GUI:
         for event in pygame.event.get():
@@ -82,10 +85,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             player.adjust_pitch(-dt)
         if keys[pygame.K_q]:
             player.flipdebeer()
+            pygame.mixer.music.play()
 
     fov = []
     for b in balloons:
-        if(np.linalg.norm(b.coords - (player.pos * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))<fov_radius):
+        if(np.linalg.norm(b.coords - (player.pos_real * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))<fov_radius):
             fov.append([b.coords[0], b.coords[1], 1])
     # No GUI needed for tick
     player.tick(dt, np.array(fov))
@@ -101,11 +105,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 plastic_orb.sprite, plastic_orb.coords
             )
             colour="black"
-            if(np.linalg.norm(plastic_orb.coords - (player.pos * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))<fov_radius):
+            if(np.linalg.norm(plastic_orb.coords - (player.pos_real * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))<fov_radius):
                 colour = "green"
             screen.blit(
                 font.render(
-                    str(np.linalg.norm(plastic_orb.coords - (player.pos * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))),
+                    str(np.linalg.norm(plastic_orb.coords - (player.pos_real * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))),
                     False,
                     colour
                 ),
@@ -177,7 +181,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "altitude: " + str(player.pos[1]),
+                "altitude: " + str(player.pos_real[1]),
                 False,
                 "black"
             ),
@@ -191,6 +195,23 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             ),
             (20, 120)
         )
+        screen.blit(
+            font.render(
+                "test: " + str(player.d_low),
+                False,
+                "black"
+            ),
+            (20, 140)
+        )
+        screen.blit(
+            font.render(
+                "test: " + str(player.d2),
+                False,
+                "black"
+            ),
+            (20, 160)
+        )
+
         
         # Update display with current information
         pygame.display.flip()
@@ -221,7 +242,6 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         running = False
 
     dt = clock.tick(settings.FPS) / 1000
-
     total_time += dt
 
 if settings.USE_GUI:
@@ -245,7 +265,9 @@ if settings.USE_GUI:
     # Update display with current information
     pygame.display.flip()
 
-# Let the user enjoy the gameover screen for a second
-pygame.time.wait(5000)
+    # Let the user enjoy the gameover screen for a second
+    pygame.time.wait(5000)
+
+
 
 pygame.quit()

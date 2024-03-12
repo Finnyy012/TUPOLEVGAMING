@@ -89,7 +89,7 @@ class Aircraft:
         - mass (float): Mass of aircraft in Kilogram (Kg).
         - engine_force (float): constant forward force in Newton (N).
         - agility (float): 
-         constant torque applied 
+         constant torque applied
          when pressing A or D in degrees per frame.
         - c_drag (float): 
          'constants' when calculating drag, 
@@ -131,12 +131,13 @@ class Aircraft:
         self.throttle = init_throttle
         self.pitch = init_pitch
         self.v = np.array(init_v)
-        self.pos = np.array(init_pos)
+        self.pos_real = np.array(init_pos)
 
         self.orientation = 1
         self.flipstart = 0.0
 
         # Dependant variables (oa Numpy containers)
+        self.pos_virtual = self.pos_real * settings.PLANE_POS_SCALE % self.window_dimensions
         self.AoA_deg = 0
         self.pitch_uv = np.array([0.0, 0.0])
         self.v_uv = np.array([0.0, 0.0])
@@ -174,7 +175,6 @@ class Aircraft:
         - dt (float): 
          Delta time over which changes need to be calculated.
         """
-        self.flipupdatesprite()
 
         # pitch unit vector
         self.pitch_uv[0] = math.cos(-math.pi / 180 * self.pitch)
@@ -212,10 +212,10 @@ class Aircraft:
         # resulting force vector, update velocity & position
         f_res = self.f_engine + self.f_gravity + self.f_drag + self.f_lift
         self.v += dt * f_res / self.mass 
-        self.pos += self.v * dt
+        self.pos_real += self.v * dt
         if self.use_gui:
-            self.rot_rect.centerx = (self.pos[0]*settings.PLANE_POS_SCALE) % self.window_dimensions[0]
-            self.rot_rect.centery = (self.pos[1]*settings.PLANE_POS_SCALE) % self.window_dimensions[1]
+            self.rot_rect.centerx = self.pos_virtual[0]
+            self.rot_rect.centery = self.pos_virtual[1]
 
         # induced torque (close enough)
         if self.AoA_deg < self.AoA_crit_low[0]:
@@ -223,6 +223,9 @@ class Aircraft:
         if self.AoA_deg > self.AoA_crit_high[0]:
             self.adjust_pitch(-norm_drag*0.0001*dt)
 
+        if self.use_gui:
+            self.flipupdatesprite()
+        self.pos_virtual = self.pos_real * settings.PLANE_POS_SCALE % self.window_dimensions
         self.update_history(fov)
         if(time.time()%3<0.01):
             print(np.where(self.history[1]==1))
