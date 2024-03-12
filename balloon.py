@@ -1,16 +1,16 @@
 import pygame
 import random
-from typing import List
 
 import settings
 class Balloon:
-    def __init__(self, sprite: str) -> None:
+    def __init__(self, sprite: str=None)-> None:
         """
         Initaliser of the balloon class
 
         @Parameters:
         - sprite (string): 
-        path of the image used for the sprite of the balloon
+         path of the image used for the sprite of the balloon 
+         (Default = False)
         
         """
         size = settings.BALLOON["SIZE"]
@@ -28,7 +28,7 @@ class Balloon:
             self.sprite = pygame.transform.scale(self.sprite, (size, size))    
 
 
-    def is_hit(self, point) -> bool:
+    def is_hit(self, point)-> bool:
         """
         This function checks if the balloon is hit.
         
@@ -42,12 +42,12 @@ class Balloon:
         return self.rect.collidepoint(point)
 
 
-def load_single_type_balloons() -> List[Balloon]:
+def load_single_type_balloons()-> list[Balloon]:
     """
     This function loads a list of balloons with the same sprite.
 
     @Returns:
-    - list: list of balloons
+    - list(list[Balloon]): list of balloons
     """
     return [
         Balloon(
@@ -58,12 +58,12 @@ def load_single_type_balloons() -> List[Balloon]:
     ]
 
 
-def load_multiple_types_balloons() -> List[Balloon]:
+def load_multiple_types_balloons()-> list[Balloon]:
     """
     This function loads a list of balloons with different sprites.
 
     @Returns:
-    - list: list of balloons
+    - list (list[Balloon]): list of balloons
     """
     #@NOTE:
     #This function can be expanded further once multiple 

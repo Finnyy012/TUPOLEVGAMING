@@ -4,7 +4,7 @@ SCREEN_RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 FPS = 60
 SIMULATION_RUNTIME = 10000 # in seconds
-USE_GUI = True
+USE_GUI = False
 
 PLANE_POLIKARPOV_I_16 = {
     "SPRITE" : "assets/sprite_republican_i16.png", 

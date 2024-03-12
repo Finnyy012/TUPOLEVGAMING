@@ -5,7 +5,7 @@ import random
 import aircraft
 import balloon
 import aircraft
-import environment
+import ground
 import settings
 
 screen, font = None, None
@@ -39,7 +39,24 @@ player = aircraft.Aircraft(
     plane_1_data["INIT_POS"],
 )
 
-environment = environment.Environment("assets/environment.png", (screen.get_width(), screen.get_height()), 50, 600, 635)
+floor = ground.Ground(
+    height=50, 
+    elevation=600, 
+    coll_elevation=635,
+)
+if settings.USE_GUI:
+    floor = ground.Ground(
+        height=50, 
+        elevation=600, 
+        coll_elevation=635,
+        sprite="assets/environment.png",
+        resolution=settings.SCREEN_RESOLUTION
+    )
+    background = pygame.image.load("assets/background.png")
+    background = pygame.transform.scale(
+        background,
+        settings.SCREEN_RESOLUTION
+    )
 balloons = balloon.load_single_type_balloons()
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
@@ -68,27 +85,43 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
     player.tick(dt)
 
     if settings.USE_GUI:
-        background = pygame.image.load("assets/background.png")
-        background = pygame.transform.scale(
-            background,
-            (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
-        )
-        screen.blit(background, (0,0))
+        # Draw (blit) background, player, ground, 
+        #  baloons, lines, and tekst
+        screen.blit(background, (0, 0))
         screen.blit(player.rot_sprite, player.rot_rect)
-        screen.blit(environment.sprite, [0,environment.elevation])
-
-        center = np.array((screen.get_width() / 2, screen.get_height() / 2))
-        pygame.draw.line(screen, "black", center, center + player.v)
-        pygame.draw.line(screen, "red", center, center + (player.f_engine)/100)
-        pygame.draw.line(screen, "green", center, center + (player.f_lift)/100)
-        pygame.draw.line(screen, "blue", center, center + (player.f_drag)/100)
-        pygame.draw.line(screen, "yellow", center, center + (player.f_gravity)/100)
-
+        screen.blit(floor.sprite, [0, floor.elevation])
         for plastic_orb in balloons:
             screen.blit(
                 plastic_orb.sprite, plastic_orb.coords
             )
-
+        center = np.array(
+            (screen.get_width() / 2, screen.get_height() / 2)
+        )
+        pygame.draw.line(screen, "black", center, center + player.v)
+        pygame.draw.line(
+            screen, 
+            "red", 
+            center, 
+            center + (player.f_engine) / 100
+        )
+        pygame.draw.line(
+            screen, 
+            "green", 
+            center, 
+            center + (player.f_lift) / 100
+        )
+        pygame.draw.line(
+            screen, 
+            "blue", 
+            center, 
+            center + (player.f_drag) / 100
+        )
+        pygame.draw.line(
+            screen, 
+            "yellow", 
+            center, 
+            center + (player.f_gravity) / 100
+        )
         screen.blit(
             font.render(
                 "throttle: " + str(player.throttle),
@@ -137,7 +170,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             ),
             (20, 120)
         )
+        
+        # Update display with current information
         pygame.display.flip()
+
+        # Handle player input
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print("click")
@@ -159,36 +196,37 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         ]
         balloons.extend(new_balloons)
 
-    # if player.rot_rect.bottom >= environment.coll_elevation:
-    #     running = False
+    # Check if player has crashed onto the ground
+    if player.rot_rect.bottom >= floor.coll_elevation:
+        running = False
 
-    # No GUI needed for clock
     dt = clock.tick(settings.FPS) / 1000
 
     total_time += dt
 
-screen.fill((255,255,255))
-gameover = pygame.image.load("assets/gameover.png")
-r = gameover.get_rect()
-r.centerx = screen.get_width() / 2
-r.centery = screen.get_height() / 2
-screen.blit(gameover, r)
+if settings.USE_GUI:
+    screen.fill((255,255,255))
+    gameover = pygame.image.load("assets/gameover.png")
+    r = gameover.get_rect()
+    r.centerx = screen.get_width() / 2
+    r.centery = screen.get_height() / 2
+    screen.blit(gameover, r)
 
-explosion = pygame.transform.scale(pygame.image.load("assets/explosion2.png"), (64,64))
-explosion_rect = explosion.get_rect()
-explosion_rect.centerx = player.rot_rect.centerx
-explosion_rect.bottom = player.rot_rect.bottom
-screen.blit(explosion, explosion_rect)
-screen.blit(source=environment.sprite, dest=[0,environment.elevation])
+    explosion = pygame.transform.scale(pygame.image.load("assets/explosion2.png"), (64,64))
+    explosion_rect = explosion.get_rect()
+    explosion_rect.centerx = player.rot_rect.centerx
+    explosion_rect.bottom = player.rot_rect.bottom
+    screen.blit(explosion, explosion_rect)
+    screen.blit(source=floor.sprite, dest=[0,floor.elevation])
+    
+    # Update display with current information
+    pygame.display.flip()
 
-pygame.display.flip()
-
-a = True
-while a:
+# Let the user enjoy the gameover screen until they press a key
+user_waiting = True
+while user_waiting:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_RETURN]:
-        a = False
-        print("aaaa")
-
+        user_waiting = False
 
 pygame.quit()

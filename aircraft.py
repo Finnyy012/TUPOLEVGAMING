@@ -34,7 +34,8 @@ class Aircraft:
     The first is the force on the x-axis 
      and the second the force on the y-axis.
     - pitch_uv (np.ndarray): unitvector in the direction of pitch
-    - v_uv (np.ndarray): unitvecor in the direction of the velocity vector
+    - v_uv (np.ndarray): 
+     unitvecor in the direction of the velocity vector
     - f_gravity (np.ndarray): Force of gravity.
     - f_engine (np.ndarray): Force of engine.
     - f_drag (np.ndarray): Force of drag.
@@ -196,7 +197,8 @@ class Aircraft:
 
         # lift force vector
         coef_lift = self.lift_curve(self.orientation * self.AoA_deg)
-        norm_lift = self.const_lift * coef_lift * np.linalg.norm(self.v)**2 * self.orientation
+        norm_lift = self.const_lift * coef_lift * \
+            np.linalg.norm(self.v)**2 * self.orientation
         self.f_lift[0] = norm_lift * self.v_uv[1]
         self.f_lift[1] = norm_lift * -self.v_uv[0]
 
@@ -258,7 +260,11 @@ class Aircraft:
                 if self.orientation == 1:
                     self.sprite = self.spritecontainer
                 else:
-                    self.sprite = pygame.transform.flip(self.spritecontainer, 0, 1)
+                    self.sprite = pygame.transform.flip(
+                        self.spritecontainer, 
+                        0, 
+                        1
+                    )
                 self.flipstart = 0.0
 
         self.rot_sprite = pygame.transform.rotate(self.sprite, self.pitch)
