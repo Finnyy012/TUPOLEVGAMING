@@ -89,10 +89,12 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         screen.blit(background, (0, 0))
         screen.blit(player.rot_sprite, player.rot_rect)
         screen.blit(floor.sprite, [0, floor.elevation])
+
         for plastic_orb in balloons:
             screen.blit(
                 plastic_orb.sprite, plastic_orb.coords
             )
+
         center = np.array(
             (screen.get_width() / 2, screen.get_height() / 2)
         )
@@ -181,8 +183,13 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 for x in balloons:
                     if x.is_hit(event.pos):
                         balloons.remove(x)
+    for orb in balloons:
+        if player.rot_rect.colliderect(orb.rect):
+            running = False
 
     if len(balloons) < settings.BALLOON["BALLOON_COUNT"]:
+        #@TODO:
+        #rewrite so it uses create_balloons function in the balloon class.
         new_balloons = [
             balloon.Balloon(
                 random.choice(
