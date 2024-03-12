@@ -242,8 +242,8 @@ class Aircraft:
         if self.use_gui:
             self.rot_sprite = pygame.transform.rotate(self.sprite, self.pitch)
         self.rot_rect = self.rot_sprite.get_rect(
-                center=self.sprite.get_rect(center=self.rot_rect.center).center
-            )
+            center=self.sprite.get_rect(center=self.rot_rect.center).center
+        )
 
     def flipdebeer(self):
         if self.flipstart<0.0000001:
