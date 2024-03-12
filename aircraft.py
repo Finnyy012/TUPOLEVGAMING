@@ -144,6 +144,8 @@ class Aircraft:
         self.f_drag = np.array([0.0, 0.0])
         self.f_lift = np.array([0.0, 0.0])
 
+        self.plane_size = settings.PLANE_POLIKARPOV_I_16["SIZE"]
+        
         # Sprite info
         self.use_gui = True
         if sprite == None:
@@ -159,8 +161,14 @@ class Aircraft:
                 self.sprite,
                 settings.PLANE_POLIKARPOV_I_16["SIZE"]
             )
-            self.rot_rect = self.sprite.get_rect(center=init_pos)
-
+        
+        self.rot_rect =  pygame.Rect(
+            self.pos[0], 
+            self.pos[1], 
+            self.plane_size[0], 
+            self.plane_size[1], 
+            center=init_pos
+        )
         self.flipsprite = pygame.image.load("assets/asterisk.png")
         self.flipsprite = pygame.transform.scale(self.flipsprite, (48,25))
         self.spritecontainer = self.sprite
@@ -212,9 +220,9 @@ class Aircraft:
         f_res = self.f_engine + self.f_gravity + self.f_drag + self.f_lift
         self.v += dt * f_res / self.mass 
         self.pos += self.v * dt
-        if self.use_gui:
-            self.rot_rect.centerx = (self.pos[0]*4) % self.window_dimensions[0]
-            self.rot_rect.centery = (self.pos[1]*4) % self.window_dimensions[1]
+        # if self.use_gui:
+        self.rot_rect.centerx = (self.pos[0]*4) % self.window_dimensions[0]
+        self.rot_rect.centery = (self.pos[1]*4) % self.window_dimensions[1]
 
         # induced torque (close enough)
         if self.AoA_deg < self.AoA_crit_low[0]:
@@ -233,7 +241,7 @@ class Aircraft:
         self.pitch = (self.pitch + self.agility * dt) % 360
         if self.use_gui:
             self.rot_sprite = pygame.transform.rotate(self.sprite, self.pitch)
-            self.rot_rect = self.rot_sprite.get_rect(
+        self.rot_rect = self.rot_sprite.get_rect(
                 center=self.sprite.get_rect(center=self.rot_rect.center).center
             )
 
