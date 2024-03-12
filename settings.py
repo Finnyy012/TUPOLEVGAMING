@@ -3,7 +3,7 @@ SCREEN_WIDTH      = 1280
 SCREEN_RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 FPS = 60
-SIMULATION_RUNTIME = 60 # in seconds
+SIMULATION_RUNTIME = 10000 # in seconds
 USE_GUI = True
 
 PLANE_POLIKARPOV_I_16 = {
@@ -20,22 +20,22 @@ PLANE_POLIKARPOV_I_16 = {
     "INIT_THROTTLE" : 100,
     "INIT_PITCH" : 0, 
     "INIT_V" : (100.0, 0.0),
-    "INIT_POS" : (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
+    "INIT_POS" : (SCREEN_WIDTH / 2, 200),
     "SIZE" : (24,13)
 }
 
 BALLOON = {
     "SPRITE" : "assets/apple.gif",
     "SPRITES" : [
-        "assets/finn_zoom.png", 
-        "assets/5g_joris.png", 
-        "assets/5g_nick.png", 
-        "assets/5g_max.png", 
-        "assets/hu_bas.png", 
-        "assets/joris_zoom.png", 
-        "assets/joris.png", 
-        "assets/cool_joost.png", 
-        "assets/max.png", 
+        "assets/finn_zoom.png",
+        "assets/5g_joris.png",
+        "assets/5g_nick.png",
+        "assets/5g_max.png",
+        "assets/hu_bas.png",
+        "assets/joris_zoom.png",
+        "assets/joris.png",
+        "assets/cool_joost.png",
+        "assets/max.png",
         "assets/igor.png"
     ],
     "SIZE" : 20,

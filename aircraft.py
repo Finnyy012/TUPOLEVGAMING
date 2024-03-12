@@ -1,6 +1,7 @@
+import pygame
 import math
 import string
-import pygame
+import time
 import numpy as np
 
 import settings
@@ -14,7 +15,7 @@ class Aircraft:
     - engine_power (float): Engine power of aircraft, in Neutons (N).
     - agility (float): Degree to which the pitch can change, 
      in degrees per delta.
-    - mass (float): Mass of aircaft, in Killograms (Kg).
+    - mass (float): Mass of aircraft, in Kilogram (Kg).
     - c_drag (float): 
      'constants' when calculating drag, 
       such as air density and wing area
@@ -34,7 +35,8 @@ class Aircraft:
     The first is the force on the x-axis 
      and the second the force on the y-axis.
     - pitch_uv (np.ndarray): unitvector in the direction of pitch
-    - v_uv (np.ndarray): unitvecor in the direction of the velocity vector
+    - v_uv (np.ndarray): 
+     unitvecor in the direction of the velocity vector
     - f_gravity (np.ndarray): Force of gravity.
     - f_engine (np.ndarray): Force of engine.
     - f_drag (np.ndarray): Force of drag.
@@ -130,6 +132,9 @@ class Aircraft:
         self.v = np.array(init_v)
         self.pos = np.array(init_pos)
 
+        self.orientation = 1
+        self.flipstart = 0.0
+
         # Dependant variables (oa Numpy containers)
         self.AoA_deg = 0
         self.pitch_uv = np.array([0.0, 0.0])
@@ -146,15 +151,19 @@ class Aircraft:
         if self.use_gui:
             self.sprite = pygame.image.load(sprite)
             self.rot_sprite = pygame.transform.scale(
-                self.sprite, 
+                self.sprite,
                 settings.PLANE_POLIKARPOV_I_16["SIZE"]
-            )  
+            )
             # TODO: nog even naar groottes kijken
             self.sprite = pygame.transform.scale(
-                self.sprite, 
+                self.sprite,
                 settings.PLANE_POLIKARPOV_I_16["SIZE"]
             )
             self.rot_rect = self.sprite.get_rect(center=init_pos)
+
+        self.flipsprite = pygame.image.load("assets/asterisk.png")
+        self.flipsprite = pygame.transform.scale(self.flipsprite, (48,25))
+        self.spritecontainer = self.sprite
 
     def tick(self, dt: float)-> None:
         """
@@ -164,6 +173,8 @@ class Aircraft:
         - dt (float): 
          Delta time over which changes need to be calculated.
         """
+        self.flipupdatesprite()
+
         # pitch unit vector
         self.pitch_uv[0] = math.cos(-math.pi / 180 * self.pitch)
         self.pitch_uv[1] = math.sin(-math.pi / 180 * self.pitch)
@@ -174,7 +185,7 @@ class Aircraft:
 
         # angle of attack
         self.AoA_deg = (
-            math.atan2(self.pitch_uv[0], self.pitch_uv[1]) - \
+            math.atan2(self.pitch_uv[0], self.pitch_uv[1]) -
             math.atan2(self.v[0], self.v[1])
         ) * 180 / math.pi
         if self.AoA_deg > 180:
@@ -186,8 +197,9 @@ class Aircraft:
         self.f_engine = self.throttle * 0.1 * self.engine_force * self.pitch_uv
 
         # lift force vector
-        coef_lift = self.lift_curve(self.AoA_deg)
-        norm_lift = self.const_lift * coef_lift * np.linalg.norm(self.v)**2
+        coef_lift = self.lift_curve(self.orientation * self.AoA_deg)
+        norm_lift = self.const_lift * coef_lift * \
+            np.linalg.norm(self.v)**2 * self.orientation
         self.f_lift[0] = norm_lift * self.v_uv[1]
         self.f_lift[1] = norm_lift * -self.v_uv[0]
 
@@ -224,6 +236,33 @@ class Aircraft:
             self.rot_rect = self.rot_sprite.get_rect(
                 center=self.sprite.get_rect(center=self.rot_rect.center).center
             )
+
+    def flipdebeer(self):
+        if self.flipstart<0.0000001:
+            self.orientation = -self.orientation
+        self.flipstart = time.time()
+
+    def flipupdatesprite(self):
+        if self.flipstart>0.0000001:
+            if .5 < (time.time() - self.flipstart) < 1:
+                self.sprite = self.flipsprite
+
+            elif 1 <= (time.time() - self.flipstart):
+                if self.orientation == 1:
+                    self.sprite = self.spritecontainer
+                else:
+                    self.sprite = pygame.transform.flip(
+                        self.spritecontainer, 
+                        0, 
+                        1
+                    )
+                self.flipstart = 0.0
+
+        self.rot_sprite = pygame.transform.rotate(self.sprite, self.pitch)
+        self.rot_rect = self.rot_sprite.get_rect(
+            center=self.sprite.get_rect(center=self.rot_rect.center).center
+        )
+
 
     def lift_curve(self, AoA: float):
         '''
