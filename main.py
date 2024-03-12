@@ -5,19 +5,19 @@ import balloon
 import aircraft
 import ground
 import numpy as np
-
 import settings
 
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
-    screen = pygame.display.set_mode(settings.SCREEN_RESOLUTION)
+    screen = pygame.display.set_mode(size=settings.SCREEN_RESOLUTION, flags=pygame.SRCALPHA)
     font = pygame.font.SysFont(None, 24)
 
 clock = pygame.time.Clock()
 running = True
 dt = 0 
 total_time = 0 # in seconds
+fov_radius = 150
 
 
 plane_1_data = settings.PLANE_POLIKARPOV_I_16
@@ -59,6 +59,9 @@ if settings.USE_GUI:
     )
 balloons = balloon.load_single_type_balloons()
 
+for b in balloons:
+    print(b.coords)
+
 while running and total_time <= settings.SIMULATION_RUNTIME:
     if settings.USE_GUI:
         for event in pygame.event.get():
@@ -80,8 +83,12 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         if keys[pygame.K_q]:
             player.flipdebeer()
 
+    fov = []
+    for b in balloons:
+        if(np.linalg.norm(b.coords - (player.pos * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))<fov_radius):
+            fov.append([b.coords[0], b.coords[1], 1])
     # No GUI needed for tick
-    player.tick(dt)
+    player.tick(dt, np.array(fov))
 
     if settings.USE_GUI:
         # Draw (blit) background, player, ground, 
@@ -93,9 +100,24 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             screen.blit(
                 plastic_orb.sprite, plastic_orb.coords
             )
+            colour="black"
+            if(np.linalg.norm(plastic_orb.coords - (player.pos * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))<fov_radius):
+                colour = "green"
+            screen.blit(
+                font.render(
+                    str(np.linalg.norm(plastic_orb.coords - (player.pos * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))),
+                    False,
+                    colour
+                ),
+                plastic_orb.coords
+            )
+
         center = np.array(
             (screen.get_width() / 2, screen.get_height() / 2)
         )
+
+        pygame.draw.circle(surface=screen,color=0,center=player.rot_rect.center,radius=fov_radius,width=2)
+
         pygame.draw.line(screen, "black", center, center + player.v)
         pygame.draw.line(
             screen, 
@@ -224,6 +246,6 @@ if settings.USE_GUI:
     pygame.display.flip()
 
 # Let the user enjoy the gameover screen for a second
-pygame.time.wait(2000)
+pygame.time.wait(5000)
 
 pygame.quit()

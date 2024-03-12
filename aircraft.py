@@ -3,8 +3,8 @@ import math
 import string
 import time
 import numpy as np
-
 import settings
+
 
 class Aircraft:
     """
@@ -114,6 +114,7 @@ class Aircraft:
          spawning location of aircraft (x, y).
         """
         self.window_dimensions = window_dimensions
+        self.history = np.zeros((2, window_dimensions[0], window_dimensions[1]))
 
         # Constants
         self.mass = mass
@@ -161,11 +162,11 @@ class Aircraft:
             )
             self.rot_rect = self.sprite.get_rect(center=init_pos)
 
-        self.flipsprite = pygame.image.load("assets/asterisk.png")
-        self.flipsprite = pygame.transform.scale(self.flipsprite, (48,25))
+        self.flipsprite = pygame.image.load("assets/top_view.png")
+        self.flipsprite = pygame.transform.scale(self.flipsprite, (24,13))
         self.spritecontainer = self.sprite
 
-    def tick(self, dt: float)-> None:
+    def tick(self, dt: float, fov: np.ndarray)-> None:
         """
         Update internal state of aircraft over given time interval.
         
@@ -213,14 +214,20 @@ class Aircraft:
         self.v += dt * f_res / self.mass 
         self.pos += self.v * dt
         if self.use_gui:
-            self.rot_rect.centerx = (self.pos[0]*4) % self.window_dimensions[0]
-            self.rot_rect.centery = (self.pos[1]*4) % self.window_dimensions[1]
+            self.rot_rect.centerx = (self.pos[0]*settings.PLANE_POS_SCALE) % self.window_dimensions[0]
+            self.rot_rect.centery = (self.pos[1]*settings.PLANE_POS_SCALE) % self.window_dimensions[1]
 
         # induced torque (close enough)
         if self.AoA_deg < self.AoA_crit_low[0]:
             self.adjust_pitch(norm_drag*0.0001*dt)
         if self.AoA_deg > self.AoA_crit_high[0]:
             self.adjust_pitch(-norm_drag*0.0001*dt)
+
+        self.update_history(fov)
+        if(time.time()%3<0.01):
+            print(np.where(self.history[1]==1))
+            print(np.where(self.history[0]!=0))
+
 
     def adjust_pitch(self, dt: float):
         """
@@ -244,10 +251,10 @@ class Aircraft:
 
     def flipupdatesprite(self):
         if self.flipstart>0.0000001:
-            if .5 < (time.time() - self.flipstart) < 1:
+            if .25 < (time.time() - self.flipstart) < .5:
                 self.sprite = self.flipsprite
 
-            elif 1 <= (time.time() - self.flipstart):
+            elif .5 <= (time.time() - self.flipstart):
                 if self.orientation == 1:
                     self.sprite = self.spritecontainer
                 else:
@@ -263,6 +270,10 @@ class Aircraft:
             center=self.sprite.get_rect(center=self.rot_rect.center).center
         )
 
+    def update_history(self, fov):
+        self.history[0][self.rot_rect.centerx-1][self.rot_rect.centery-1] = self.pitch
+        for x in fov:
+            self.history[1][x[0]][x[1]] = x[2]
 
     def lift_curve(self, AoA: float):
         '''

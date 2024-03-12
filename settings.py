@@ -5,14 +5,15 @@ SCREEN_RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 FPS = 60
 SIMULATION_RUNTIME = 10000 # in seconds
 USE_GUI = True
+PLANE_POS_SCALE = 4
 
 PLANE_POLIKARPOV_I_16 = {
-    "SPRITE" : "assets/sprite_republican_i16.png", 
+    "SPRITE" : "assets/facing_right.png",
     "MASS" : 1200,
     "ENGINE_FORCE" : 300,
     "AGILITY" : 100, 
-    "C_DRAG" : 0.5,
-    "C_LIFT" : 15,
+    "C_DRAG" : 0.6,
+    "C_LIFT" : 20,
     "AOA_CRIT_LOW" : (-15.0, -0.95),
     "AOA_CRIT_HIGH" : (19.0, 1.4),
     "CL0" : 0.32,

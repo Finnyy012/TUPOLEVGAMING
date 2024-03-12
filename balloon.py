@@ -1,7 +1,10 @@
+import numpy as np
 import pygame
 import random
 
 import settings
+
+
 class Balloon:
     def __init__(self, sprite: str=None)-> None:
         """
@@ -14,13 +17,13 @@ class Balloon:
         
         """
         size = settings.BALLOON["SIZE"]
-        self.coords = (
+        self.coords = np.array((
             random.randint(
                 0 + size, 1280 - size
             ), random.randint(
                 0 + size, 720 - size
             )
-        )
+        ))
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)
 
         if sprite:
