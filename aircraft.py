@@ -238,26 +238,16 @@ class Aircraft:
             )
 
     def flipdebeer(self):
-        print("q2")
-        print(self.orientation)
         if self.flipstart<0.0000001:
             self.orientation = -self.orientation
         self.flipstart = time.time()
-        print(self.orientation)
-        print()
 
     def flipupdatesprite(self):
-        print((time.time() - self.flipstart))
-        print(time.time())
-        print(self.flipstart)
-
         if self.flipstart>0.0000001:
             if .5 < (time.time() - self.flipstart) < 1:
-                print("q3")
                 self.sprite = self.flipsprite
 
             elif 1 <= (time.time() - self.flipstart):
-                print("q4")
                 if self.orientation == 1:
                     self.sprite = self.spritecontainer
                 else:

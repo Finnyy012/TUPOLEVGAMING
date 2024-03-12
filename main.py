@@ -78,7 +78,6 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         if keys[pygame.K_d]:
             player.adjust_pitch(-dt)
         if keys[pygame.K_q]:
-            print("q")
             player.flipdebeer()
 
     # No GUI needed for tick
@@ -177,7 +176,6 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         # Handle player input
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print("click")
                 #@TODO:
                 #change mouse click to plane sprite hit detection
                 for x in balloons:
