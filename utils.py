@@ -10,10 +10,9 @@ def hit_detection_and_move_bullets(
         bullets: bullet.Bullet, 
         balloons: balloon.Balloon, 
         dt: float
-    ):
+    ) -> None:
     """
-    This function checks if a bullet hits a balloon and if the player 
-     hits a balloon.
+    This function checks if a bullet hits a balloon.
     
     @Parameters:
     - bullets (list): list of bullets
@@ -22,7 +21,7 @@ def hit_detection_and_move_bullets(
     - dt (float): time step
 
     @Returns:
-    - bool: False if the player hits a balloon, True otherwise
+    - None
     """
     for bt in bullets:
         if bt.move_bullet(dt):
@@ -37,7 +36,7 @@ def hit_detection_and_move_bullets(
 def hit_collision_player(
         balloons: list[balloon.Balloon], 
         player : aircraft.Aircraft
-    ):
+    ) -> bool:
     """
     This function checks if the player hits a balloon.
 
@@ -53,7 +52,10 @@ def hit_collision_player(
             return True
     return False
 
-def hit_collision_environment(floor: ground.Ground, player: aircraft.Aircraft):
+def hit_collision_environment(
+        floor: ground.Ground, 
+        player: aircraft.Aircraft
+    ) -> bool:
     """
     This function checks if the player hits the ground.
 
@@ -69,7 +71,10 @@ def hit_collision_environment(floor: ground.Ground, player: aircraft.Aircraft):
     return False
     
     
-def create_balloons(balloons: list[balloon.Balloon], ground_height: int):
+def create_balloons(
+        balloons: list[balloon.Balloon], 
+        ground_height: int
+    ) -> list[balloon.Balloon]:
     """
     This function generates new balloons if the number of balloons is 
      less than the defined amount in settings.py.
@@ -97,13 +102,16 @@ def create_balloons(balloons: list[balloon.Balloon], ground_height: int):
 def display_balloons(
         balloons: list[balloon.Balloon], 
         screen: pygame.Surface
-    ):
+    ) -> None:
     """
     This function displays the balloons on the screen.
 
     @Parameters:
     - balloons (list): list of balloons
     - screen (pygame.Surface): screen
+
+    @Returns:
+    - None
     """
     for plastic_orb in balloons:
         screen.blit(
@@ -113,7 +121,17 @@ def display_balloons(
 def display_bullets(
         bullets: list[bullet.Bullet], 
         screen: pygame.Surface
-    ):
+    ) -> None:
+    """
+    This function displays the bullets on the screen.
+
+    @Parameters:
+    - bullets (list): list of bullets
+    - screen (pygame.Surface): screen
+
+    @Returns:
+    - None
+    """
     for bt in bullets:
         screen.blit(
             pygame.transform.flip(
