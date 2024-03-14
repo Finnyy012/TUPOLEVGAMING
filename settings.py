@@ -36,7 +36,8 @@ BALLOON = {
         "assets/joris.png",
         "assets/cool_joost.png",
         "assets/max.png",
-        "assets/igor.png"
+        "assets/igor.png",
+        "assets/apple.gif"
     ],
     "SIZE" : 20,
     "BALLOON_COUNT" : 10
