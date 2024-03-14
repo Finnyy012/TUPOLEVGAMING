@@ -3,8 +3,10 @@ import random
 import aircraft
 import balloon
 import aircraft
+import bullet
 import ground
 import numpy as np
+import utils 
 
 import settings
 
@@ -57,9 +59,11 @@ if settings.USE_GUI:
         background,
         settings.SCREEN_RESOLUTION
     )
-balloons = balloon.load_single_type_balloons()
+balloons = []
+bullets = []
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
+    balloons = utils.create_balloons(balloons, floor.coll_elevation)
     if settings.USE_GUI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -79,6 +83,14 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             player.adjust_pitch(-dt)
         if keys[pygame.K_q]:
             player.flipdebeer()
+        
+        if keys[pygame.K_SPACE]:
+            bullets.append(bullet.Bullet(
+                player.pos, 
+                player.pitch, 
+                floor.coll_elevation,
+                settings.BULLET["SPRITE"])
+            )
 
     # No GUI needed for tick
     player.tick(dt)
@@ -89,15 +101,13 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         screen.blit(background, (0, 0))
         screen.blit(player.rot_sprite, player.rot_rect)
         screen.blit(floor.sprite, [0, floor.elevation])
-
-        for plastic_orb in balloons:
-            screen.blit(
-                plastic_orb.sprite, plastic_orb.coords
-            )
-
         center = np.array(
             (screen.get_width() / 2, screen.get_height() / 2)
         )
+
+        utils.display_balloons(balloons, screen)
+        utils.display_bullets(bullets, screen)
+
         pygame.draw.line(screen, "black", center, center + player.v)
         pygame.draw.line(
             screen, 
@@ -175,39 +185,15 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         # Update display with current information
         pygame.display.flip()
 
-        # Handle player input
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                #@TODO:
-                #change mouse click to plane sprite hit detection
-                for x in balloons:
-                    if x.is_hit(event.pos):
-                        balloons.remove(x)
-    for orb in balloons:
-        if player.rot_rect.colliderect(orb.rect):
-            running = False
-
-    if len(balloons) < settings.BALLOON["BALLOON_COUNT"]:
-        #@TODO:
-        #rewrite so it uses create_balloons function in the balloon class.
-        new_balloons = [
-            balloon.Balloon(
-                random.choice(
-                    settings.BALLOON["SPRITES"]
-                )
-            ) for _ in range (
-                settings.BALLOON["BALLOON_COUNT"] - len(balloons)
-            )
-        ]
-        balloons.extend(new_balloons)
-
-    # Check if player has crashed onto the ground
-    if player.rot_rect.bottom >= floor.coll_elevation:
-        running = False
-
     dt = clock.tick(settings.FPS) / 1000
-
     total_time += dt
+
+    if utils.hit_collision_player(balloons, player) or \
+       utils.hit_collision_environment(floor, player):
+        running = False
+        
+    utils.hit_collision_player(balloons, player)
+    utils.hit_detection_and_move_bullets(bullets, balloons, dt)
 
 if settings.USE_GUI:
     screen.fill((255,255,255))
@@ -221,6 +207,7 @@ if settings.USE_GUI:
         pygame.image.load("assets/explosion2.png"), 
         (64,64)
     )
+    
     explosion_rect = explosion.get_rect()
     explosion_rect.centerx = player.rot_rect.centerx
     explosion_rect.bottom = player.rot_rect.bottom
