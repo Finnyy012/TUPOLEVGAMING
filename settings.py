@@ -46,6 +46,7 @@ BALLOON = {
 BULLET = {
     "SPRITE" : "assets/bullet.png",
     "LIFETIME" : .66,
-    "SIZE" : 5
+    "SIZE" : 5,
+    "SPEED": 10
 }
 

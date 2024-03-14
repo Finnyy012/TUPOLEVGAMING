@@ -29,7 +29,7 @@ class Bullet:
         self.size = settings.BULLET["SIZE"]
         self.current_time = 0
         self.pitch = pitch
-        self.speed = 10
+        self.speed = settings.BULLET["SPEED"]
         self.ground_height = ground_height
         
         self.coords = (
