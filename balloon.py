@@ -19,7 +19,7 @@ class Balloon:
             random.randint(
                 size, settings.SCREEN_WIDTH - size
             ), random.randint(
-                0, ground_height
+                0, ground_height - size
             )
         )
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)

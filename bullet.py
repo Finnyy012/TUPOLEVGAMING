@@ -71,7 +71,7 @@ class Bullet:
         if self.current_time >= settings.BULLET["LIFETIME"]:
             return True
         
-        if self.coords[1] < self.ground_height:
+        if self.coords[1] >= self.ground_height:
             return True
 
 
