@@ -79,6 +79,7 @@ class Aircraft:
         init_pitch: float = 0,
         init_v: tuple[float, float] = (0, 0),
         init_pos: tuple[int, int] = (0, 0)
+        
     )-> None:
         """
         Initaliser for Aircraft

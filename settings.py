@@ -3,7 +3,7 @@ SCREEN_WIDTH      = 1280
 SCREEN_RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 FPS = 60
-SIMULATION_RUNTIME = 10000 # in seconds
+SIMULATION_RUNTIME = 1000000 # in seconds
 USE_GUI = True
 
 PLANE_POLIKARPOV_I_16 = {
@@ -12,7 +12,7 @@ PLANE_POLIKARPOV_I_16 = {
     "ENGINE_FORCE" : 300,
     "AGILITY" : 100, 
     "C_DRAG" : 0.5,
-    "C_LIFT" : 15,
+    "C_LIFT" : 30,
     "AOA_CRIT_LOW" : (-15.0, -0.95),
     "AOA_CRIT_HIGH" : (19.0, 1.4),
     "CL0" : 0.32,
@@ -40,4 +40,11 @@ BALLOON = {
     ],
     "SIZE" : 20,
     "BALLOON_COUNT" : 10
+}
+
+BULLET = {
+    "SPRITE" : "assets/bullet.png",
+    "LIFETIME" : .66,
+    "SIZE" : 5
+
 }

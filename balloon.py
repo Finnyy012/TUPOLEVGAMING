@@ -2,8 +2,9 @@ import pygame
 import random
 
 import settings
+
 class Balloon:
-    def __init__(self, sprite: str=None)-> None:
+    def __init__(self, sprite, ground_height: str=None)-> None:
         """
         Initaliser of the balloon class
 
@@ -16,13 +17,15 @@ class Balloon:
         size = settings.BALLOON["SIZE"]
         self.coords = (
             random.randint(
-                0 + size, 1280 - size
+                size, settings.SCREEN_WIDTH - size
             ), random.randint(
-                0 + size, 720 - size
+                0, ground_height
             )
         )
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)
-
+        pygame.draw.rect(
+            surface=pygame.display.get_surface(), 
+            color="black", rect=self.rect)
         if sprite:
             self.sprite = pygame.image.load(sprite)        
             self.sprite = pygame.transform.scale(self.sprite, (size, size))    
@@ -40,40 +43,3 @@ class Balloon:
         - bool: True if the point is within the balloon, False otherwise
         """
         return self.rect.collidepoint(point)
-
-
-def load_single_type_balloons()-> list[Balloon]:
-    """
-    This function loads a list of balloons with the same sprite.
-
-    @Returns:
-    - list(list[Balloon]): list of balloons
-    """
-    return [
-        Balloon(
-            settings.BALLOON["SPRITE"]
-        ) for _ in range(
-            settings.BALLOON["BALLOON_COUNT"]
-        )
-    ]
-
-
-def load_multiple_types_balloons()-> list[Balloon]:
-    """
-    This function loads a list of balloons with different sprites.
-
-    @Returns:
-    - list (list[Balloon]): list of balloons
-    """
-    #@NOTE:
-    #This function can be expanded further once multiple 
-    # types of balloons are implemented.
-    return [
-        Balloon(
-            random.choice(
-                settings.BALLOON["SPRITES"]
-            )
-        ) for _ in range(
-            settings.BALLOON["BALLOON_COUNT"]
-        )
-    ]
