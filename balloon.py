@@ -25,7 +25,8 @@ class Balloon:
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)
         pygame.draw.rect(
             surface=pygame.display.get_surface(), 
-            color="black", rect=self.rect
+            color="black", 
+            rect=self.rect
         )
         
         if sprite:
