@@ -47,5 +47,5 @@ BULLET = {
     "SPRITE" : "assets/bullet.png",
     "LIFETIME" : .66,
     "SIZE" : 5
-
 }
+

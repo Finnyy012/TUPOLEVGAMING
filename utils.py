@@ -17,7 +17,6 @@ def hit_detection_and_move_bullets(
     @Parameters:
     - bullets (list): list of bullets
     - balloons (list): list of balloons
-    - player (Player): player object
     - dt (float): time step
 
     @Returns:
@@ -77,10 +76,12 @@ def create_balloons(
     ) -> list[balloon.Balloon]:
     """
     This function generates new balloons if the number of balloons is 
-     less than the defined amount in settings.py.
+     less than the defined amount in settings.py. Ground height is used
+     to spawn balloons above the ground.
     
     @Parameters:
     - balloons (list): list of balloons
+    - ground_height (int): height of the ground
 
     @Returns:
     - list: list of balloons
@@ -140,3 +141,5 @@ def display_bullets(
                 False
                 ), 
             bt.coords)
+        
+        
