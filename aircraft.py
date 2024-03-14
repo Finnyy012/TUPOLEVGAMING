@@ -64,7 +64,7 @@ class Aircraft:
 
     def __init__(
         self,
-        window_dimensions: tuple[float, float],
+        window_dimensions: tuple[int, int],
         sprite: string = None,
         mass: float = 12,
         engine_force: float = 10,
@@ -114,7 +114,6 @@ class Aircraft:
          spawning location of aircraft (x, y).
         """
         self.window_dimensions = window_dimensions
-        self.history = np.zeros((2, window_dimensions[0], window_dimensions[1]))
 
         # Constants
         self.mass = mass
@@ -126,17 +125,17 @@ class Aircraft:
         self.AoA_crit_high = AoA_crit_high
         self.cl0 = cl0
         self.cd_min = cd_min
+        self.r_fov = 100
 
-        # initialisable Variables
+        # Independent Variables
         self.throttle = init_throttle
         self.pitch = init_pitch
         self.v = np.array(init_v)
         self.pos_real = np.array(init_pos)
-
         self.orientation = 1
         self.flipstart = 0.0
 
-        # Dependant variables (oa Numpy containers)
+        # Dependent variables (oa Numpy containers)
         self.pos_virtual = self.pos_real * settings.PLANE_POS_SCALE % self.window_dimensions
         self.AoA_deg = 0
         self.pitch_uv = np.array([0.0, 0.0])
@@ -226,11 +225,6 @@ class Aircraft:
         if self.use_gui:
             self.flipupdatesprite()
         self.pos_virtual = self.pos_real * settings.PLANE_POS_SCALE % self.window_dimensions
-        self.update_history(fov)
-        if(time.time()%3<0.01):
-            print(np.where(self.history[1]==1))
-            print(np.where(self.history[0]!=0))
-
 
     def adjust_pitch(self, dt: float):
         """
@@ -273,11 +267,6 @@ class Aircraft:
             center=self.sprite.get_rect(center=self.rot_rect.center).center
         )
 
-    def update_history(self, fov):
-        self.history[0][self.rot_rect.centerx-1][self.rot_rect.centery-1] = self.pitch
-        for x in fov:
-            self.history[1][x[0]][x[1]] = x[2]
-
     def lift_curve(self, AoA: float):
         '''
         Lift curve function based on critical angles and cl0
@@ -301,8 +290,6 @@ class Aircraft:
             return self.AoA_crit_high[1] * abs(self.AoA_crit_high[0]-1 - AoA)
         else:
             return 0
-
-
 
 # sources:
 # https://github.com/gszabi99/War-Thunder-Datamine/tree/master/aces.vromfs.bin_u/gamedata/flightmodels

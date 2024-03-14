@@ -3,10 +3,11 @@ import random
 import aircraft
 import agent
 import balloon
-import aircraft
 import ground
 import numpy as np
 import settings
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 screen, font = None, None
 if settings.USE_GUI:
@@ -53,6 +54,10 @@ if settings.USE_GUI:
         sprite="assets/environment.png",
         resolution=settings.SCREEN_RESOLUTION
     )
+
+    pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
+    pygame.mixer.music.play(-1)
+    flip = pygame.mixer.Sound("assets/Flip de beer intro-[AudioTrimmer.com].mp3")
     background = pygame.image.load("assets/background.png")
     background = pygame.transform.scale(
         background,
@@ -62,8 +67,6 @@ balloons = balloon.load_single_type_balloons()
 
 for b in balloons:
     print(b.coords)
-
-pygame.mixer.music.load("assets/Flip de beer intro-[AudioTrimmer.com].mp3")
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
     if settings.USE_GUI:
@@ -85,7 +88,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             player.adjust_pitch(-dt)
         if keys[pygame.K_q]:
             player.flipdebeer()
-            pygame.mixer.music.play()
+            flip.play()
 
     fov = []
     for b in balloons:
@@ -197,7 +200,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "test: " + str(player.d_low),
+                "test: " + str(player.rot_rect.centerx),
                 False,
                 "black"
             ),
@@ -205,7 +208,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "test: " + str(player.d2),
+                "test: " + str(player.pos_virtual[0]),
                 False,
                 "black"
             ),
@@ -266,8 +269,23 @@ if settings.USE_GUI:
     pygame.display.flip()
 
     # Let the user enjoy the gameover screen for a second
-    pygame.time.wait(5000)
-
+    pygame.time.wait(2000)
 
 
 pygame.quit()
+
+plt.imshow(player.history[0].astype(bool), cmap=cm.gist_rainbow)
+plt.show()
+
+appels = (np.where(player.history[1]==1))
+for i in range(len(appels[0])):
+    for x in range(10):
+        for y in range(10):
+            player.history[1][appels[0][i]-5+x][appels[1][i]-5+y] = 1
+
+
+plt.imshow(player.history[1].astype(bool), cmap=cm.gist_rainbow)
+plt.show()
+
+
+
