@@ -1,3 +1,4 @@
+import math
 import string
 import time
 import numpy as np
@@ -38,13 +39,22 @@ class Agent(aircraft.Aircraft):
         # dangerzone
         self.highwaytothedangerzoneeeeee = np.array((50,20))
         self.d_low = 0
-        self.d2    = 0
+        self.d2 = 0
 
         # internal state
-        self.history = np.zeros((2, window_dimensions[0], window_dimensions[1]))
+        self.history_scale = 10
+        self.history = np.zeros((2, int(window_dimensions[0]/self.history_scale), int(window_dimensions[1]/self.history_scale)))
 
         # np wizardry
-        self.do_x, self.do_y = np.indices(window_dimensions)
+        self.r_fov = 150
+        self.do_x, self.do_y = np.indices((int(window_dimensions[0]/self.history_scale),int(window_dimensions[1]/self.history_scale)))
+        circle_coords = np.array(
+            [[9, 0], [9, 1], [9, 2], [8, 3], [8, 4], [7, 5], [7, 6], [6, 7], [5, 7], [4, 8], [3, 8], [2, 9], [1, 9],
+             [0, 9]])
+        c2 = circle_coords.copy()
+        c2[:, 0] = -c2[:, 0]
+        circle_coords = np.concatenate([c2, circle_coords], 0)
+        self.circle_coords = np.concatenate([-circle_coords, circle_coords], 0)
 
     def tick(self, dt: float, fov: np.ndarray) -> None:
         super().tick(dt, fov)
@@ -58,30 +68,48 @@ class Agent(aircraft.Aircraft):
             if (d < self.highwaytothedangerzoneeeeee[1]) & (0 < d2[0] < self.highwaytothedangerzoneeeeee[0]):
                 self.d_low = d
                 self.d2 = d2[0]
+        self.explore(dt)
 
-    def explore(self):
-        pass
+    def explore(self, dt):
+        best = 0
+        bestc = None
+        for c in self.circle_coords:
+            n = np.sum(self.kirkel(c))
+            if n>=best:
+                best = n
+                bestc = c
+        diff_head = (
+                               math.atan2(bestc[0], bestc[1]) -
+                               math.atan2(self.v[0], self.v[1])
+                       ) * 180 / math.pi
+        if diff_head > 180:
+            diff_head -= 360
+        elif diff_head < -180:
+            diff_head += 360
+        if diff_head<0:
+            self.adjust_pitch(dt)
+        if diff_head>0:
+            self.adjust_pitch(-dt)
 
     def update_history(self, fov):
-        self.history[0][self.rot_rect.centerx-1][self.rot_rect.centery-1] = self.pitch
+        self.history[0][int((self.rot_rect.centerx-1)/self.history_scale)][int((self.rot_rect.centery-1)/self.history_scale)] = self.pitch
         for x in fov:
-            self.history[1][x[0]][x[1]] = x[2]
-        self.kirkel()
+            self.history[1][int(x[0]/self.history_scale)][int(x[1]/self.history_scale)] = x[2]
+        self.history[0] += self.kirkel()
 
-    def kirkel(self):
-        d_agent_x = self.do_x - self.pos_virtual[0]
-        d_agent_y = self.do_y - self.pos_virtual[1]
-        in_fov = (np.sqrt(d_agent_x ** 2 + d_agent_y ** 2) < self.r_fov)
-        self.history[0] += np.logical_and(in_fov, ~(self.history[0].astype(bool))).astype(int)
+    def kirkel(self, offset:tuple[int,int]=(0,0)):
+        d_agent_x = (self.do_x - self.pos_virtual[0]/self.history_scale + offset[0]/self.history_scale)
+        d_agent_y = (self.do_y - self.pos_virtual[1]/self.history_scale + offset[1]/self.history_scale)
+        in_fov = (np.sqrt(d_agent_x ** 2 + d_agent_y ** 2) < (self.r_fov/self.history_scale))
+        return np.logical_and(in_fov, ~(self.history[0].astype(bool))).astype(int)
 
         # print(np.logical_and(in_fov, ~(self.history[0].astype(bool))).astype(int))
         # print(self.history[0].astype(int)[0])
 
-        #in_fov = (np.sqrt(d_agent_x ** 2 + d_agent_y ** 2) < r_fov).astype(int)
+        # in_fov = (np.sqrt(d_agent_x ** 2 + d_agent_y ** 2) < r_fov).astype(int)
 
-        #note 1: Joris dreigt met huiselijk geweld als ik dit niet implementeer, dit kan echter effifienter dus vandaar gaat dit in een losse functie zodat het er later uit gesloopt kan worden
-        #note 2: misschien is eerst een cirkel maken en dan de overlap checken beter maar for now doe ik het even zo
-        #note 3:
+        # note 2: misschien is eerst een cirkel maken en dan de overlap checken beter maar for now doe ik het even zo
+        # note 3:
         # >> > H, W = 4, 5
         # >> > x, y = np.indices([H, W])
         # >> > m
@@ -99,5 +127,6 @@ class Agent(aircraft.Aircraft):
         #        [0, 1, 2, 3, 4],
         #        [0, 1, 2, 3, 4],
         #        [0, 1, 2, 3, 4]])
+        # Note 4: the missile knows where it is because it knows where it isnt
 
 

@@ -125,7 +125,6 @@ class Aircraft:
         self.AoA_crit_high = AoA_crit_high
         self.cl0 = cl0
         self.cd_min = cd_min
-        self.r_fov = 100
 
         # Independent Variables
         self.throttle = init_throttle

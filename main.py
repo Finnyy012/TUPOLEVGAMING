@@ -55,8 +55,8 @@ if settings.USE_GUI:
         resolution=settings.SCREEN_RESOLUTION
     )
 
-    pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
-    pygame.mixer.music.play(-1)
+    # pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
+    # pygame.mixer.music.play(-1)
     flip = pygame.mixer.Sound("assets/Flip de beer intro-[AudioTrimmer.com].mp3")
     background = pygame.image.load("assets/background.png")
     background = pygame.transform.scale(
@@ -92,7 +92,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
 
     fov = []
     for b in balloons:
-        if(np.linalg.norm(b.coords - (player.pos_real * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))<fov_radius):
+        if(np.linalg.norm(b.coords - player.pos_virtual)<fov_radius):
             fov.append([b.coords[0], b.coords[1], 1])
     # No GUI needed for tick
     player.tick(dt, np.array(fov))
@@ -108,11 +108,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 plastic_orb.sprite, plastic_orb.coords
             )
             colour="black"
-            if(np.linalg.norm(plastic_orb.coords - (player.pos_real * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))<fov_radius):
+            if(np.linalg.norm(plastic_orb.coords - player.pos_virtual)<fov_radius):
                 colour = "green"
             screen.blit(
                 font.render(
-                    str(np.linalg.norm(plastic_orb.coords - (player.pos_real * settings.PLANE_POS_SCALE % (screen.get_width(), screen.get_height())))),
+                    str(np.linalg.norm(plastic_orb.coords - player.pos_virtual)),
                     False,
                     colour
                 ),
@@ -123,7 +123,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        pygame.draw.circle(surface=screen,color=0,center=player.rot_rect.center,radius=fov_radius,width=2)
+        pygame.draw.circle(surface=screen,color=0,center=player.pos_virtual,radius=fov_radius,width=2)
 
         pygame.draw.line(screen, "black", center, center + player.v)
         pygame.draw.line(
@@ -274,7 +274,7 @@ if settings.USE_GUI:
 
 pygame.quit()
 
-plt.imshow(player.history[0].astype(bool), cmap=cm.gist_rainbow)
+plt.imshow(player.history[0].astype(bool))
 plt.show()
 
 appels = (np.where(player.history[1]==1))
@@ -284,7 +284,7 @@ for i in range(len(appels[0])):
             player.history[1][appels[0][i]-5+x][appels[1][i]-5+y] = 1
 
 
-plt.imshow(player.history[1].astype(bool), cmap=cm.gist_rainbow)
+plt.imshow(player.history[1].astype(bool))
 plt.show()
 
 
