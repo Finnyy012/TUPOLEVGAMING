@@ -13,7 +13,7 @@ PLANE_POLIKARPOV_I_16 = {
     "ENGINE_FORCE" : 300,
     "AGILITY" : 100, 
     "C_DRAG" : 0.6,
-    "C_LIFT" : 20,
+    "C_LIFT" : 100,
     "AOA_CRIT_LOW" : (-15.0, -0.95),
     "AOA_CRIT_HIGH" : (19.0, 1.4),
     "CL0" : 0.32,
