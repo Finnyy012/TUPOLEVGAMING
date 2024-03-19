@@ -6,7 +6,7 @@ import settings
 
 
 class Balloon:
-    def __init__(self, sprite: str=None)-> None:
+    def __init__(self, sprite: str=None) -> None:
         """
         Initaliser of the balloon class
 
@@ -31,8 +31,7 @@ class Balloon:
             self.sprite = pygame.image.load(sprite)        
             self.sprite = pygame.transform.scale(self.sprite, (size, size))    
 
-
-    def is_hit(self, point)-> bool:
+    def is_hit(self, point) -> bool:
         """
         This function checks if the balloon is hit.
         
@@ -46,7 +45,7 @@ class Balloon:
         return self.rect.collidepoint(point)
 
 
-def load_single_type_balloons()-> list[Balloon]:
+def load_single_type_balloons() -> list[Balloon]:
     """
     This function loads a list of balloons with the same sprite.
 
@@ -62,7 +61,7 @@ def load_single_type_balloons()-> list[Balloon]:
     ]
 
 
-def load_multiple_types_balloons()-> list[Balloon]:
+def load_multiple_types_balloons() -> list[Balloon]:
     """
     This function loads a list of balloons with different sprites.
 

@@ -154,7 +154,6 @@ class Aircraft:
                 self.sprite,
                 settings.PLANE_POLIKARPOV_I_16["SIZE"]
             )
-            # TODO: nog even naar groottes kijken
             self.sprite = pygame.transform.scale(
                 self.sprite,
                 settings.PLANE_POLIKARPOV_I_16["SIZE"]
@@ -240,12 +239,22 @@ class Aircraft:
                 center=self.sprite.get_rect(center=self.rot_rect.center).center
             )
 
-    def flipdebeer(self):
+    def flip(self):
+        """
+        Flips orientation of the aircraft and starts timer for `flipupdatesprite()`
+
+        :return: None
+        """
         if self.flipstart<0.0000001:
             self.orientation = -self.orientation
         self.flipstart = time.time()
 
     def flipupdatesprite(self):
+        """
+        Updates aircraft sprite during orientation flip
+
+        :return: None
+        """
         if self.flipstart>0.0000001:
             if .25 < (time.time() - self.flipstart) < .5:
                 self.sprite = self.flipsprite
