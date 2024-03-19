@@ -29,7 +29,7 @@ class Balloon:
         if sprite:
             self.sprite = pygame.image.load(sprite)        
             self.sprite = pygame.transform.scale(self.sprite, (size, size))    
-
+        
 
     def is_hit(self, point)-> bool:
         """

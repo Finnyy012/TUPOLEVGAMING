@@ -65,9 +65,6 @@ if settings.USE_GUI:
     )
 balloons = balloon.load_single_type_balloons()
 
-for b in balloons:
-    print(b.coords)
-
 while running and total_time <= settings.SIMULATION_RUNTIME:
     if settings.USE_GUI:
         for event in pygame.event.get():
@@ -103,6 +100,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         screen.blit(background, (0, 0))
         screen.blit(player.rot_sprite, player.rot_rect)
         screen.blit(floor.sprite, [0, floor.elevation])
+        
         for plastic_orb in balloons:
             screen.blit(
                 plastic_orb.sprite, plastic_orb.coords
@@ -144,12 +142,14 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             center, 
             center + (player.f_drag) / 100
         )
+        
         pygame.draw.line(
             screen, 
             "yellow", 
             center, 
             center + (player.f_gravity) / 100
-        )
+        )      
+        
         screen.blit(
             font.render(
                 "throttle: " + str(player.throttle),
@@ -214,8 +214,41 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             ),
             (20, 160)
         )
+        screen.blit(
+            font.render(
+                "d2: " + str(player.d2),
+                False,
+                "black"
+            ),
+            (20, 180)
+        )
+        screen.blit(
+            font.render(
+                "d_low: " + str(player.d_low),
+                False,
+                "black"
+            ),
+            (20, 200)
+        )
+        screen.blit(
+            font.render(
+                "d: " + str(player.d),
+                False,
+                "black"
+            ),
+            (20, 220)
+        )
+        screen.blit(
+            font.render(
+                "perpendicular distance: " + str(
+                    player.perpendicular_distance
+                ),
+                False,
+                "black"
+            ),
+            (20, 240)
+        )
 
-        
         # Update display with current information
         pygame.display.flip()
 
@@ -274,8 +307,8 @@ if settings.USE_GUI:
 
 pygame.quit()
 
-plt.imshow(player.history[0].astype(bool))
-plt.show()
+# plt.imshow(player.history[0].astype(bool))
+# plt.show()
 
 # appels = (np.where(player.history[1]==1))
 # for i in range(len(appels[0])):
@@ -284,8 +317,8 @@ plt.show()
 #             player.history[1][appels[0][i]-5+x][appels[1][i]-5+y] = 1
 
 
-plt.imshow(player.history[1].astype(bool))
-plt.show()
+# plt.imshow(player.history[1].astype(bool))
+# plt.show()
 
 
 

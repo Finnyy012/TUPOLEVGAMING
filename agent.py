@@ -5,6 +5,7 @@ import numpy as np
 
 import aircraft
 
+import pygame
 
 class Agent(aircraft.Aircraft):
     def __init__(self,
@@ -21,6 +22,7 @@ class Agent(aircraft.Aircraft):
                  init_throttle: float = 0, init_pitch: float = 0,
                  init_v: tuple[float, float] = (0, 0),
                  init_pos: tuple[int, int] = (0, 0)) -> None:
+        
         super().__init__(window_dimensions,
                          sprite,
                          mass,
@@ -37,10 +39,12 @@ class Agent(aircraft.Aircraft):
                          init_v,
                          init_pos)
         # dangerzone
-        self.highwaytothedangerzoneeeeee = np.array((50,20))
+        self.highwaytothedangerzoneeeeee = np.array((200,40))
+
         self.d_low = 0
         self.d2 = 0
-
+        self.d = 0
+        self.perpendicular_distance = 0
         # internal state
         self.history_scale = 10
         self.history = np.zeros((2, int(window_dimensions[0]/self.history_scale), int(window_dimensions[1]/self.history_scale)))
@@ -62,15 +66,35 @@ class Agent(aircraft.Aircraft):
 
         self.d_low = 9999999999
         self.d2 = 9999999999
+        
         for ballon in fov:
-            d = np.linalg.norm(np.cross(self.pitch_uv, self.pos_virtual - ballon[:2]))
-            d2 = np.dot(ballon[:2] - self.pos_virtual, np.linalg.norm(self.pitch_uv))
+            d = np.linalg.norm(
+                    np.cross(
+                        self.pitch_uv, 
+                        self.pos_virtual - ballon[:2]
+                    )
+                )
+            d2 = np.dot(
+                ballon[:2] - self.pos_virtual, 
+                np.linalg.norm(self.pitch_uv)
+            )
+            self.d = d
             if (d < self.highwaytothedangerzoneeeeee[1]) & (0 < d2[0] < self.highwaytothedangerzoneeeeee[0]):
                 self.d_low = d
                 self.d2 = d2[0]
-        self.explore(dt)
+        self.explore(dt, fov)
 
-    def explore(self, dt):
+    def explore(self, dt, fov):
+        for x in fov:
+            self.perpendicular_distance = self.calculate_perpendicular(
+                self.pos_virtual, 
+                self.pos_virtual +  self.pitch_uv * 50, x
+            )
+            if self.perpendicular_distance <= 40 and \
+               self.perpendicular_distance >= 0 and \
+               self.is_in_front(x):
+                self.adjust_pitch(-dt)
+
         if self.orientation==1 and (170 < self.pitch < 190):
             self.flipdebeer()
         elif self.orientation==-1 and ((0 <= self.pitch < 10) or ((350 < self.pitch <= 360))):
@@ -107,7 +131,9 @@ class Agent(aircraft.Aircraft):
                 self.adjust_pitch(dt)
             elif diff_head>0:
                 self.adjust_pitch(-dt)
+        
 
+    
     def update_history(self, fov):
         self.history[0][int((self.rot_rect.centerx-1)/self.history_scale)][int((self.rot_rect.centery-1)/self.history_scale)] = self.pitch
         for x in fov:
@@ -119,6 +145,37 @@ class Agent(aircraft.Aircraft):
         d_agent_y = (self.do_y - self.pos_virtual[1]/self.history_scale + offset[1]/self.history_scale)
         in_fov = (np.sqrt(d_agent_x ** 2 + d_agent_y ** 2) < (self.r_fov/self.history_scale))
         return np.logical_and(in_fov, ~(self.history[0].astype(bool))).astype(int)
+
+
+       
+    def calculate_perpendicular(
+            self, 
+            line_start, 
+            line_end, 
+            balloon
+        ):
+        """
+        This function calculates the perpendicular of the given balloon
+        """
+        dx = line_end[0] - line_start[0]
+        dy = line_end[1] - line_start[1]
+
+        px = balloon[0] - line_start[0]
+        py = balloon[1] - line_start[1]
+
+        t = (px * dx + py * dy) / (dx * dx + dy * dy)
+
+        proj_x = line_start[0] + t * dx
+        proj_y = line_start[1] + t * dy
+        return math.sqrt((proj_x - balloon[0])**2 + (proj_y - balloon[1])**2)
+
+    def is_in_front(self, balloon):
+        dx = balloon[0] - self.pos_virtual[0]
+        dy = balloon[1] - self.pos_virtual[1]
+
+        dot_product = self.v_uv[0] * dx + self.v_uv[1] * dy
+
+        return dot_product > 0
 
         # print(np.logical_and(in_fov, ~(self.history[0].astype(bool))).astype(int))
         # print(self.history[0].astype(int)[0])
