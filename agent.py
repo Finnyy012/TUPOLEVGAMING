@@ -71,24 +71,9 @@ class Agent(aircraft.Aircraft):
         self.explore(dt)
 
     def explore(self, dt):
-        best = 0
-        bestc = None
-        for c in self.circle_coords:
-            n = np.sum(self.kirkel(c))
-            if n>=best:
-                best = n
-                bestc = c
-        diff_head = (
-                       math.atan2(bestc[0], bestc[1]) -
-                       math.atan2(self.v[0], self.v[1])
-                      ) * 180 / math.pi
-        if diff_head > 180:
-            diff_head -= 360
-        elif diff_head < -180:
-            diff_head += 360
         if self.orientation==1 and (170 < self.pitch < 190):
             self.flipdebeer()
-        elif self.orientation==0 and ((0 <= self.pitch < 10) or ((350 < self.pitch <= 360))):
+        elif self.orientation==-1 and ((0 <= self.pitch < 10) or ((350 < self.pitch <= 360))):
             self.flipdebeer()
         if self.pos_virtual[1] > 500 and ((175 < self.pitch < 360) or self.pitch < 5):
             if self.pitch > 270:
@@ -101,11 +86,27 @@ class Agent(aircraft.Aircraft):
             else:
                 self.adjust_pitch(-dt)
         else:
+            best = 0
+            bestc = None
+            for c in self.circle_coords:
+                n = np.sum(self.kirkel(c))
+                if n >= best:
+                    best = n
+                    bestc = c
+            if best==0:
+                pass  # TODO: naar dichtstbijzijnde unexplored tile
+            diff_head = (
+                                math.atan2(bestc[0], bestc[1]) -
+                                math.atan2(self.v[0], self.v[1])
+                        ) * 180 / math.pi
+            if diff_head > 180:
+                diff_head -= 360
+            elif diff_head < -180:
+                diff_head += 360
             if diff_head<0:
                 self.adjust_pitch(dt)
             elif diff_head>0:
                 self.adjust_pitch(-dt)
-
 
     def update_history(self, fov):
         self.history[0][int((self.rot_rect.centerx-1)/self.history_scale)][int((self.rot_rect.centery-1)/self.history_scale)] = self.pitch

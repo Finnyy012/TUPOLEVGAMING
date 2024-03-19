@@ -277,11 +277,11 @@ pygame.quit()
 plt.imshow(player.history[0].astype(bool))
 plt.show()
 
-appels = (np.where(player.history[1]==1))
-for i in range(len(appels[0])):
-    for x in range(10):
-        for y in range(10):
-            player.history[1][appels[0][i]-5+x][appels[1][i]-5+y] = 1
+# appels = (np.where(player.history[1]==1))
+# for i in range(len(appels[0])):
+#     for x in range(10):
+#         for y in range(10):
+#             player.history[1][appels[0][i]-5+x][appels[1][i]-5+y] = 1
 
 
 plt.imshow(player.history[1].astype(bool))
