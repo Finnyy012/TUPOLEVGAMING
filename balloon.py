@@ -25,6 +25,7 @@ class Balloon:
             )
         ))
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)
+        self.rect.center = self.coords
 
         if sprite:
             self.sprite = pygame.image.load(sprite)        

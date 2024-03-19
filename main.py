@@ -100,7 +100,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         screen.blit(background, (0, 0))
         screen.blit(player.rot_sprite, player.rot_rect)
         screen.blit(floor.sprite, [0, floor.elevation])
-        
+
         for plastic_orb in balloons:
             screen.blit(
                 plastic_orb.sprite, plastic_orb.coords
@@ -142,14 +142,12 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             center, 
             center + (player.f_drag) / 100
         )
-        
         pygame.draw.line(
             screen, 
             "yellow", 
             center, 
             center + (player.f_gravity) / 100
-        )      
-        
+        )
         screen.blit(
             font.render(
                 "throttle: " + str(player.throttle),
@@ -200,7 +198,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "test: " + str(player.rot_rect.centerx),
+                "test: " + str(player.testv3),
                 False,
                 "black"
             ),
@@ -208,7 +206,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "test: " + str(player.pos_virtual[0]),
+                "test: " + str(player.testv2),
                 False,
                 "black"
             ),
@@ -307,18 +305,21 @@ if settings.USE_GUI:
 
 pygame.quit()
 
-# plt.imshow(player.history[0].astype(bool))
-# plt.show()
+plt.imshow(player.history[0].T)
+plt.show()
 
-# appels = (np.where(player.history[1]==1))
-# for i in range(len(appels[0])):
-#     for x in range(10):
-#         for y in range(10):
-#             player.history[1][appels[0][i]-5+x][appels[1][i]-5+y] = 1
+appels = (np.where(player.history[1]==1))
+for i in range(len(appels[0])):
+    for x in range(3):
+        for y in range(3):
+            player.history[1][appels[0][i]-1+x][appels[1][i]-1+y] = 1
 
 
-# plt.imshow(player.history[1].astype(bool))
-# plt.show()
+plt.imshow(player.history[1].astype(bool))
+plt.show()
+
+plt.imshow(player.history[0].T + (player.history[1].T * 60))
+plt.show()
 
 
 

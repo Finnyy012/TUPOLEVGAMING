@@ -22,7 +22,7 @@ class Agent(aircraft.Aircraft):
                  init_throttle: float = 0, init_pitch: float = 0,
                  init_v: tuple[float, float] = (0, 0),
                  init_pos: tuple[int, int] = (0, 0)) -> None:
-        
+
         super().__init__(window_dimensions,
                          sprite,
                          mass,
@@ -40,14 +40,21 @@ class Agent(aircraft.Aircraft):
                          init_pos)
         # dangerzone
         self.highwaytothedangerzoneeeeee = np.array((200,40))
-
         self.d_low = 0
         self.d2 = 0
         self.d = 0
         self.perpendicular_distance = 0
+
+        # debug
+        self.testv  = [0,0]
+        self.testv2 = [0,0]
+        self.testv3 = []
+        self.timestart = time.time()
+
         # internal state
         self.history_scale = 10
         self.history = np.zeros((2, int(window_dimensions[0]/self.history_scale), int(window_dimensions[1]/self.history_scale)))
+        self.action = 'none'
 
         # np wizardry
         self.r_fov = 150
@@ -66,16 +73,16 @@ class Agent(aircraft.Aircraft):
 
         self.d_low = 9999999999
         self.d2 = 9999999999
-        
+
         for ballon in fov:
             d = np.linalg.norm(
                     np.cross(
-                        self.pitch_uv, 
+                        self.pitch_uv,
                         self.pos_virtual - ballon[:2]
                     )
                 )
             d2 = np.dot(
-                ballon[:2] - self.pos_virtual, 
+                ballon[:2] - self.pos_virtual,
                 np.linalg.norm(self.pitch_uv)
             )
             self.d = d
@@ -87,7 +94,7 @@ class Agent(aircraft.Aircraft):
     def explore(self, dt, fov):
         for x in fov:
             self.perpendicular_distance = self.calculate_perpendicular(
-                self.pos_virtual, 
+                self.pos_virtual,
                 self.pos_virtual +  self.pitch_uv * 50, x
             )
             if self.perpendicular_distance <= 40 and \
@@ -95,30 +102,61 @@ class Agent(aircraft.Aircraft):
                self.is_in_front(x):
                 self.adjust_pitch(-dt)
 
-        if self.orientation==1 and (170 < self.pitch < 190):
+        if self.orientation == 1 and (-0.9 > self.v_uv[0]):
             self.flipdebeer()
-        elif self.orientation==-1 and ((0 <= self.pitch < 10) or ((350 < self.pitch <= 360))):
+        elif self.orientation==-1 and (0.9 < self.v_uv[0]):
             self.flipdebeer()
-        if self.pos_virtual[1] > 500 and ((175 < self.pitch < 360) or self.pitch < 5):
-            if self.pitch > 270:
+            # self.pos_virtual[1] + v_uv[1] * 150 > 635
+            # self.pos_virtual[1] > 500
+        if self.pos_virtual[1] + self.v_uv[1] * 150 > 625 and (self.v_uv[1] >= -0.2):
+            self.action = 'floor'
+            print('floor')
+            if self.v_uv[0] > 0:
                 self.adjust_pitch(dt)
             else:
                 self.adjust_pitch(-dt)
-        elif self.pos_virtual[1] < 100 and ((170 > self.pitch > 0) or self.pitch > 350):
-            if self.pitch > 90:
-                self.adjust_pitch(dt)
-            else:
+            # self.pos_virtual[1] + v_uv[1] * 150 < 0
+            # self.pos_virtual[1] < 100
+        elif self.pos_virtual[1] + self.v_uv[1] * 150 < 10 and (self.v_uv[1] <= 0.2):
+            self.action = 'ceiling'
+            print('ceiling')
+            if self.v_uv[0] > 0:
                 self.adjust_pitch(-dt)
+            else:
+                self.adjust_pitch(dt)
         else:
+            self.action = 'kirkel'
             best = 0
-            bestc = None
+            bestc = []
             for c in self.circle_coords:
                 n = np.sum(self.kirkel(c))
-                if n >= best:
+                if n == best:
                     best = n
-                    bestc = c
-            if best==0:
-                pass  # TODO: naar dichtstbijzijnde unexplored tile
+                    bestc.append(c)
+                elif n > best:
+                    best = n
+                    bestc = [c]
+            if len(bestc)==1:
+                bestc = bestc[0]
+            elif best == 0:
+                bestc = np.average(np.where(self.history[0][:,:64] == 0), axis=1)*self.history_scale
+                self.testv2 = bestc + 0
+                print(self.testv2)
+                # print('bababooey')
+                # print(self.history[0])
+                # print('bababooeyaaa')
+                # print(self.history[0][:,:64])
+                bestc -= self.pos_virtual
+                self.action = 'kirkel tie'
+                bestc[1] = -bestc[1]
+                self.testv = bestc
+
+                print(self.testv)
+                self.testv3 = bestc/np.linalg.norm(bestc)
+            else:
+                bestc = bestc[0]
+                pass  # TODO: gelijk aantal vakkies in de buut
+
             diff_head = (
                                 math.atan2(bestc[0], bestc[1]) -
                                 math.atan2(self.v[0], self.v[1])
@@ -131,11 +169,9 @@ class Agent(aircraft.Aircraft):
                 self.adjust_pitch(dt)
             elif diff_head>0:
                 self.adjust_pitch(-dt)
-        
 
-    
     def update_history(self, fov):
-        self.history[0][int((self.rot_rect.centerx-1)/self.history_scale)][int((self.rot_rect.centery-1)/self.history_scale)] = self.pitch
+        self.history[0][int((self.rot_rect.centerx-1)/self.history_scale)][int((self.rot_rect.centery-1)/self.history_scale)] = time.time()-self.timestart + 10
         for x in fov:
             self.history[1][int(x[0]/self.history_scale)][int(x[1]/self.history_scale)] = x[2]
         self.history[0] += self.kirkel()
@@ -147,11 +183,11 @@ class Agent(aircraft.Aircraft):
         return np.logical_and(in_fov, ~(self.history[0].astype(bool))).astype(int)
 
 
-       
+
     def calculate_perpendicular(
-            self, 
-            line_start, 
-            line_end, 
+            self,
+            line_start,
+            line_end,
             balloon
         ):
         """
