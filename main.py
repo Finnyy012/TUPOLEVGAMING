@@ -1,13 +1,11 @@
 import pygame
 import random
-import aircraft
 import agent
 import balloon
 import ground
 import numpy as np
 import settings
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 
 screen, font = None, None
 if settings.USE_GUI:
@@ -18,9 +16,8 @@ if settings.USE_GUI:
 clock = pygame.time.Clock()
 running = True
 dt = 0 
-total_time = 0 # in seconds
+total_time = 0
 fov_radius = 150
-
 
 plane_1_data = settings.PLANE_POLIKARPOV_I_16
 player = agent.Agent(
@@ -84,8 +81,17 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         if keys[pygame.K_d]:
             player.adjust_pitch(-dt)
         if keys[pygame.K_q]:
-            player.flipdebeer()
+            player.flip()
             flip.play()
+
+        if keys[pygame.K_j]:
+            player.pos_real[0] -= 200*dt
+        if keys[pygame.K_l]:
+            player.pos_real[0] += 200*dt
+        if keys[pygame.K_i]:
+            player.pos_real[1] -= 200*dt
+        if keys[pygame.K_k]:
+            player.pos_real[1] += 200*dt
 
     fov = []
     for b in balloons:
@@ -214,37 +220,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "d2: " + str(player.d2),
+                "d: " + str(player.nearest_target_pos_abs),
                 False,
                 "black"
             ),
             (20, 180)
-        )
-        screen.blit(
-            font.render(
-                "d_low: " + str(player.d_low),
-                False,
-                "black"
-            ),
-            (20, 200)
-        )
-        screen.blit(
-            font.render(
-                "d: " + str(player.d),
-                False,
-                "black"
-            ),
-            (20, 220)
-        )
-        screen.blit(
-            font.render(
-                "perpendicular distance: " + str(
-                    player.perpendicular_distance
-                ),
-                False,
-                "black"
-            ),
-            (20, 240)
         )
 
         # Update display with current information
@@ -272,8 +252,8 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         balloons.extend(new_balloons)
 
     # Check if player has crashed onto the ground
-    if player.rot_rect.bottom >= floor.coll_elevation:
-        running = False
+    # if player.rot_rect.bottom >= floor.coll_elevation:
+    #     running = False
 
     dt = clock.tick(settings.FPS) / 1000
     total_time += dt
