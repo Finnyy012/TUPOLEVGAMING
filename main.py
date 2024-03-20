@@ -91,7 +91,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             flip.play()
         if keys[pygame.K_SPACE]:
             bullets.append(bullet.Bullet(
-                player.pos,
+                player.pos_virtual,
                 player.pitch,
                 floor.coll_elevation,
                 settings.BULLET["SPRITE"])
@@ -140,7 +140,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        pygame.draw.circle(surface=screen,color=0,center=player.rect.center,radius=fov_radius,width=2)
+        pygame.draw.circle(surface=screen,color=0,center=player.rot_rect.center,radius=fov_radius,width=2)
 
         utils.display_balloons(balloons, screen)
         utils.display_bullets(bullets, screen)

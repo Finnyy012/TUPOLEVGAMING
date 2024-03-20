@@ -20,7 +20,35 @@ class Agent(aircraft.Aircraft):
                  cl0: float = 0.16, cd_min: float = 0.25,
                  init_throttle: float = 0, init_pitch: float = 0,
                  init_v: tuple[float, float] = (0, 0),
-                 init_pos: tuple[int, int] = (0, 0)) -> None:
+                 init_pos: tuple[int, int] = (0, 0),
+                 plane_size: tuple[int, int] = (24,13)) -> None:
+        """
+        Initaliser for Aircraft
+
+        :param window_dimensions: dimensions of pygame window
+         (tuple[float, float])
+        :param sprite: filepath to sprite (str)
+        :param mass: mass of aircraft in Kilogram (Kg) (float)
+        :param engine_force: constant force applied in direction of
+         heading (pitch) in Newton (N) (float)
+        :param agility: constant torque applied when changing pitch in
+         degrees per second (°/s) (float)
+        :param c_drag: 'constants' used in calculating drag, such as air
+         density and wing area (float)
+        :param c_lift: 'constants' used in calculating lift, such as air
+         density and wing area (float)
+        :param AoA_crit_low: negative critical angle of attack in degrees and
+         its corresponding lift coefficient (tuple[float, float])
+        :param AoA_crit_high: positive critical angle of attack in degrees and
+         its corresponding lift coefficient (tuple[float, float])
+        :param cl0: lift coefficient at AoA == 0 (float)
+        :param cd_min: apex of drag curve; drag coefficient at AoA == 0 (float)
+        :param init_throttle: throttle at spawn (%) (float)
+        :param init_pitch: pitch at spawn (°) (float)
+        :param init_v: velocity vector at spawn (tuple[float, float])
+        :param init_pos: real spawn location of aircraft (tuple[float, float])
+        :param plane_size: aircraft sprite dimensions (tuple[int, int])
+        """
 
         super().__init__(window_dimensions,
                          sprite,
@@ -36,7 +64,8 @@ class Agent(aircraft.Aircraft):
                          init_throttle,
                          init_pitch,
                          init_v,
-                         init_pos)
+                         init_pos,
+                         plane_size)
         # dangerzone
         self.perception_front_dims = np.array((150, 30))
         self.nearest_target_pos_abs = []
@@ -57,8 +86,10 @@ class Agent(aircraft.Aircraft):
 
         # np wizardry
         self.r_fov = 150
-        self.do_x, self.do_y = np.indices((int(window_dimensions[0]/self.history_scale),
-                                           int(window_dimensions[1]/self.history_scale))
+        self.do_x, self.do_y = np.indices((int(window_dimensions[0] /
+                                               self.history_scale),
+                                           int(window_dimensions[1] /
+                                               self.history_scale))
                                           )
         circle_coords = np.array([[9, 0],
                                   [9, 1],
@@ -93,7 +124,8 @@ class Agent(aircraft.Aircraft):
 
     def explore(self, dt, fov):
         """
-        'explore' function; steers the aircraft such that (in order of priority):
+        'explore' function; steers the aircraft,
+        such that (in order of priority):
          - balloons are avoided
          - ground/ceiling are avoided
          - as much area as possible is discovered
@@ -106,13 +138,16 @@ class Agent(aircraft.Aircraft):
         rotation_matrix = np.array([[ math.cos((-self.pitch) * math.pi / 180),
                                      -math.sin((-self.pitch) * math.pi / 180)],
                                     [ math.sin((-self.pitch) * math.pi / 180),
-                                      math.cos((-self.pitch) * math.pi / 180)]])
+                                      math.cos((-self.pitch) * math.pi / 180)]
+                                    ]
+                                   )
         evade_direction = 0
 
         for target in fov:
             d = np.matmul((target[:2]-self.rot_rect.center), rotation_matrix)
             self.nearest_target_pos_abs = d
-            if (0 < d[0] < self.perception_front_dims[0]) and d[0] < d_nearest_target:
+            if (0 < d[0] < self.perception_front_dims[0]) and \
+                    d[0] < d_nearest_target:
                 if 0 < d[1] < self.perception_front_dims[1]:
                     evade_direction = 1
                 elif 0 < -d[1] < self.perception_front_dims[1]:
@@ -125,13 +160,15 @@ class Agent(aircraft.Aircraft):
                 self.flip()
             elif self.orientation==-1 and (0.9 < self.v_uv[0]):
                 self.flip()
-            if self.pos_virtual[1] + self.v_uv[1] * 150 > 625 and (self.v_uv[1] >= -0.2):
+            if self.pos_virtual[1] + self.v_uv[1] * 150 > 625 and \
+                    (self.v_uv[1] >= -0.2):
                 self.action = 'floor'
                 if self.v_uv[0] > 0:
                     self.adjust_pitch(dt)
                 else:
                     self.adjust_pitch(-dt)
-            elif self.pos_virtual[1] + self.v_uv[1] * 150 < 10 and (self.v_uv[1] <= 0.2):
+            elif self.pos_virtual[1] + self.v_uv[1] * 150 < 10 and \
+                    (self.v_uv[1] <= 0.2):
                 self.action = 'ceiling'
                 if self.v_uv[0] > 0:
                     self.adjust_pitch(-dt)
@@ -152,7 +189,9 @@ class Agent(aircraft.Aircraft):
                 if len(best_circle)==1:
                     best_circle = best_circle[0]
                 elif best == 0:
-                    best_circle = np.average(np.where(self.history[0][:,:64] == 0), axis=1)*self.history_scale
+                    best_circle = np.average(
+                        np.where(self.history[0][:,:64] == 0), axis=1
+                    ) * self.history_scale
                     best_circle -= self.pos_virtual
                     self.action = 'explore tiebreak'
                     best_circle[1] = -best_circle[1]
@@ -197,14 +236,19 @@ class Agent(aircraft.Aircraft):
 
     def diff_overlap_circle(self, offset:tuple[int, int]=(0, 0)):
         """
-        Returns the logical and of the circle with radius `r_fov` and centre `offset`,
-         and the unexplored area. Effectively returns the area that would be discovered
-         if the agent were to move to `offset`
+        Returns the logical and of the circle with radius `r_fov` and
+        centre `offset`, and the unexplored area. Effectively returns the area
+        that would be discovered if the agent were to move to `offset`.
 
         :param offset: centre of circle
         :return: new area
         """
-        d_agent_x = (self.do_x - self.pos_virtual[0]/self.history_scale + offset[0]/self.history_scale)
-        d_agent_y = (self.do_y - self.pos_virtual[1]/self.history_scale + offset[1]/self.history_scale)
-        in_fov = (np.sqrt(d_agent_x ** 2 + d_agent_y ** 2) < (self.r_fov/self.history_scale))
-        return np.logical_and(in_fov, ~(self.history[0].astype(bool))).astype(int)
+        d_agent_x = self.do_x - \
+                    (self.pos_virtual[0] + offset[0])/self.history_scale
+        d_agent_y = self.do_y - \
+                    (self.pos_virtual[1] + offset[1])/self.history_scale
+        in_fov = (np.sqrt(d_agent_x ** 2 + d_agent_y ** 2) <
+                  (self.r_fov/self.history_scale))
+        return np.logical_and(
+            in_fov, ~(self.history[0].astype(bool))
+        ).astype(int)

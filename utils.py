@@ -6,6 +6,7 @@ import aircraft
 import bullet
 import ground
 
+
 def hit_detection_and_move_bullets(
         bullets: bullet.Bullet, 
         balloons: balloon.Balloon, 
@@ -50,6 +51,7 @@ def hit_collision_player(
         if player.rot_rect.colliderect(balloon.rect):
             return True
     return False
+
 
 def hit_collision_environment(
         floor: ground.Ground, 
@@ -99,7 +101,8 @@ def create_balloons(
         return new_balloons
     else:
         return balloons
-        
+
+
 def display_balloons(
         balloons: list[balloon.Balloon], 
         screen: pygame.Surface
@@ -118,6 +121,7 @@ def display_balloons(
         screen.blit(
             plastic_orb.sprite, plastic_orb.coords
         )
+
 
 def display_bullets(
         bullets: list[bullet.Bullet], 
@@ -141,5 +145,3 @@ def display_bullets(
                 False
                 ), 
             bt.coords)
-        
-        
