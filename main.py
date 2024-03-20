@@ -275,7 +275,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
     total_time += dt
 
     if utils.hit_collision_player(balloons, player) or \
-       utils.hit_collision_environment(floor, player):
+       player.rot_rect.bottom >= floor.coll_elevation:
         running = False
 
     utils.hit_collision_player(balloons, player)

@@ -149,16 +149,34 @@ class Agent(aircraft.Aircraft):
             if (0 < d[0] < self.perception_front_dims[0]) and \
                     d[0] < d_nearest_target:
                 if 0 < d[1] < self.perception_front_dims[1]:
-                    evade_direction = 1
+                    if target[1] > \
+                            (635 - (2 * self.perception_front_dims[1])) and \
+                            (self.v_uv[0] < 0):
+                        evade_direction = -1
+                    elif target[1] < \
+                            (2 * self.perception_front_dims[1]) and \
+                            (self.v_uv[0] > 0):
+                        evade_direction = -1
+                    else:
+                        evade_direction = 1
                 elif 0 < -d[1] < self.perception_front_dims[1]:
-                    evade_direction = -1
+                    if target[1] > \
+                            (635 - (2 * self.perception_front_dims[1])) and \
+                            (self.v_uv[0] > 0):
+                        evade_direction = 1
+                    elif target[1] < \
+                            (2 * self.perception_front_dims[1]) and \
+                            (self.v_uv[0] < 0):
+                        evade_direction = 1
+                    else:
+                        evade_direction = -1
 
         if evade_direction != 0:
             self.adjust_pitch(dt*evade_direction)
         else:
             if self.orientation == 1 and (-0.9 > self.v_uv[0]):
                 self.flip()
-            elif self.orientation==-1 and (0.9 < self.v_uv[0]):
+            elif self.orientation == -1 and (0.9 < self.v_uv[0]):
                 self.flip()
             if self.pos_virtual[1] + self.v_uv[1] * 150 > 625 and \
                     (self.v_uv[1] >= -0.2):
@@ -186,7 +204,7 @@ class Agent(aircraft.Aircraft):
                     elif n_new > best:
                         best = n_new
                         best_circle = [center]
-                if len(best_circle)==1:
+                if len(best_circle) == 1:
                     best_circle = best_circle[0]
                 elif best == 0:
                     best_circle = np.average(
@@ -206,9 +224,9 @@ class Agent(aircraft.Aircraft):
                     diff_head -= 360
                 elif diff_head < -180:
                     diff_head += 360
-                if diff_head<0:
+                if diff_head < 0:
                     self.adjust_pitch(dt)
-                elif diff_head>0:
+                elif diff_head > 0:
                     self.adjust_pitch(-dt)
 
     def update_history(self, fov):

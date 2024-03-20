@@ -255,7 +255,7 @@ class Aircraft:
 
         :return: None
         """
-        if self.flipstart<0.0000001:
+        if self.flipstart < 0.0000001:
             self.orientation = -self.orientation
         self.flipstart = time.time()
 
@@ -265,7 +265,7 @@ class Aircraft:
 
         :return: None
         """
-        if self.flipstart>0.0000001:
+        if self.flipstart > 0.0000001:
             if .25 < (time.time() - self.flipstart) < .5:
                 self.sprite = self.flipsprite
 

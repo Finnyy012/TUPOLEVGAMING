@@ -1,10 +1,12 @@
 import settings
-import balloon
 import random
 import pygame
+import numpy as np
+
 import aircraft
 import bullet
 import ground
+import balloon
 
 
 def hit_detection_and_move_bullets(
@@ -35,7 +37,7 @@ def hit_detection_and_move_bullets(
                 
 def hit_collision_player(
         balloons: list[balloon.Balloon], 
-        player : aircraft.Aircraft
+        player: aircraft.Aircraft
     ) -> bool:
     """
     This function checks if the player hits a balloon.
@@ -48,27 +50,8 @@ def hit_collision_player(
     - bool: True if the player hits a balloon, False otherwise
     """
     for balloon in balloons:
-        if player.rot_rect.colliderect(balloon.rect):
+        if np.linalg.norm(np.array(player.rot_rect.center)-balloon.coords)<15:
             return True
-    return False
-
-
-def hit_collision_environment(
-        floor: ground.Ground, 
-        player: aircraft.Aircraft
-    ) -> bool:
-    """
-    This function checks if the player hits the ground.
-
-    @Parameters:
-    - floor (pygame.Rect): ground
-    - player (Player): player object
-
-    @Returns:
-    - bool: True if the player hits the ground, False otherwise
-    """
-    if player.rot_rect.bottom >= floor.coll_elevation:
-        return True
     return False
     
     
