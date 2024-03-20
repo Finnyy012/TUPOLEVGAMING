@@ -3,6 +3,7 @@ import math
 import string
 import time
 import numpy as np
+
 import settings
 
 
@@ -89,7 +90,7 @@ class Aircraft:
         - mass (float): Mass of aircraft in Kilogram (Kg).
         - engine_force (float): constant forward force in Newton (N).
         - agility (float): 
-         constant torque applied
+         constant torque applied 
          when pressing A or D in degrees per frame.
         - c_drag (float): 
          'constants' when calculating drag, 
@@ -144,6 +145,8 @@ class Aircraft:
         self.f_drag = np.array([0.0, 0.0])
         self.f_lift = np.array([0.0, 0.0])
 
+        self.plane_size = settings.PLANE_POLIKARPOV_I_16["SIZE"]
+
         # Sprite info
         self.use_gui = True
         if sprite == None:
@@ -158,10 +161,16 @@ class Aircraft:
                 self.sprite,
                 settings.PLANE_POLIKARPOV_I_16["SIZE"]
             )
-            self.rot_rect = self.sprite.get_rect(center=init_pos)
 
-        self.flipsprite = pygame.image.load("assets/top_view.png")
-        self.flipsprite = pygame.transform.scale(self.flipsprite, (24,13))
+        self.rot_rect =  pygame.Rect(
+            self.pos[0],
+            self.pos[1],
+            self.plane_size[0],
+            self.plane_size[1],
+            center=init_pos
+        )
+        self.flipsprite = pygame.image.load("assets/asterisk.png")
+        self.flipsprite = pygame.transform.scale(self.flipsprite, (48,25))
         self.spritecontainer = self.sprite
 
     def tick(self, dt: float, fov: np.ndarray)-> None:

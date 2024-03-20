@@ -1,11 +1,15 @@
 import pygame
 import random
+import numpy as np
+import matplotlib.pyplot as plt
+
+import settings
+import ground
 import agent
 import balloon
-import ground
-import numpy as np
-import settings
-import matplotlib.pyplot as plt
+import aircraft
+import bullet
+import utils
 
 screen, font = None, None
 if settings.USE_GUI:
@@ -60,9 +64,11 @@ if settings.USE_GUI:
         background,
         settings.SCREEN_RESOLUTION
     )
-balloons = balloon.load_single_type_balloons()
+balloons = []
+bullets = []
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
+    balloons = utils.create_balloons(balloons, floor.coll_elevation)
     if settings.USE_GUI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -83,15 +89,22 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         if keys[pygame.K_q]:
             player.flip()
             flip.play()
+        if keys[pygame.K_SPACE]:
+            bullets.append(bullet.Bullet(
+                player.pos,
+                player.pitch,
+                floor.coll_elevation,
+                settings.BULLET["SPRITE"])
+            )
 
-        if keys[pygame.K_j]:
-            player.pos_real[0] -= 200*dt
-        if keys[pygame.K_l]:
-            player.pos_real[0] += 200*dt
-        if keys[pygame.K_i]:
-            player.pos_real[1] -= 200*dt
-        if keys[pygame.K_k]:
-            player.pos_real[1] += 200*dt
+        # if keys[pygame.K_j]:
+        #     player.pos_real[0] -= 200*dt
+        # if keys[pygame.K_l]:
+        #     player.pos_real[0] += 200*dt
+        # if keys[pygame.K_i]:
+        #     player.pos_real[1] -= 200*dt
+        # if keys[pygame.K_k]:
+        #     player.pos_real[1] += 200*dt
 
     fov = []
     for b in balloons:
@@ -127,7 +140,10 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        pygame.draw.circle(surface=screen,color=0,center=player.pos_virtual,radius=fov_radius,width=2)
+        pygame.draw.circle(surface=screen,color=0,center=player.rect.center,radius=fov_radius,width=2)
+
+        utils.display_balloons(balloons, screen)
+        utils.display_bullets(bullets, screen)
 
         pygame.draw.line(screen, "black", center, center + player.v)
         pygame.draw.line(
@@ -252,11 +268,18 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         balloons.extend(new_balloons)
 
     # Check if player has crashed onto the ground
-    # if player.rot_rect.bottom >= floor.coll_elevation:
-    #     running = False
+    if player.rot_rect.bottom >= floor.coll_elevation:
+        running = False
 
     dt = clock.tick(settings.FPS) / 1000
     total_time += dt
+
+    if utils.hit_collision_player(balloons, player) or \
+       utils.hit_collision_environment(floor, player):
+        running = False
+
+    utils.hit_collision_player(balloons, player)
+    utils.hit_detection_and_move_bullets(bullets, balloons, dt)
 
 if settings.USE_GUI:
     screen.fill((255,255,255))
@@ -270,6 +293,7 @@ if settings.USE_GUI:
         pygame.image.load("assets/explosion2.png"), 
         (64,64)
     )
+
     explosion_rect = explosion.get_rect()
     explosion_rect.centerx = player.rot_rect.centerx
     explosion_rect.bottom = player.rot_rect.bottom

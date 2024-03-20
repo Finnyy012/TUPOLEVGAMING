@@ -6,7 +6,7 @@ import settings
 
 
 class Balloon:
-    def __init__(self, sprite: str=None) -> None:
+    def __init__(self, sprite, ground_height: str=None) -> None:
         """
         Initaliser of the balloon class
 
@@ -14,18 +14,23 @@ class Balloon:
         - sprite (string): 
          path of the image used for the sprite of the balloon 
          (Default = False)
-        
         """
         size = settings.BALLOON["SIZE"]
         self.coords = np.array((
             random.randint(
-                0 + size, 1280 - size
+                size, settings.SCREEN_WIDTH - size
             ), random.randint(
-                0 + size, 720 - size
+                0, ground_height - size
             )
         ))
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)
         self.rect.center = self.coords
+
+        pygame.draw.rect(
+            surface=pygame.display.get_surface(),
+            color="black",
+            rect=self.rect
+        )
 
         if sprite:
             self.sprite = pygame.image.load(sprite)        

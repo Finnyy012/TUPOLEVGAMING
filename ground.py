@@ -50,7 +50,3 @@ class Ground:
             )
         self.elevation = elevation
         self.coll_elevation = coll_elevation
-
-
-
-
