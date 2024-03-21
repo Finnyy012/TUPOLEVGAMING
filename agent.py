@@ -9,22 +9,24 @@ import settings
 
 
 class Agent(aircraft.Aircraft):
-    def __init__(self,
-                 window_dimensions: tuple[int, int],
-                 sprite: string = None,
-                 sprite_top: string = None,
-                 mass: float = 12,
-                 engine_force: float = 10,
-                 agility: float = 100,
-                 c_drag: float = 0.002,
-                 c_lift: float = 0.01,
-                 AoA_crit_low: tuple[float, float] = (-15.0, -0.95),
-                 AoA_crit_high: tuple[float, float] = (19.0, 1.4),
-                 cl0: float = 0.16, cd_min: float = 0.25,
-                 init_throttle: float = 0, init_pitch: float = 0,
-                 init_v: tuple[float, float] = (0, 0),
-                 init_pos: tuple[int, int] = (0, 0),
-                 plane_size: tuple[int, int] = (24,13)) -> None:
+    def __init__(
+        self,
+        window_dimensions: tuple[int, int],
+        sprite: string = None,
+        sprite_top: string = None,
+        mass: float = 12,
+        engine_force: float = 10,
+        agility: float = 100,
+        c_drag: float = 0.002,
+        c_lift: float = 0.01,
+        AoA_crit_low: tuple[float, float] = (-15.0, -0.95),
+        AoA_crit_high: tuple[float, float] = (19.0, 1.4),
+        cl0: float = 0.16, cd_min: float = 0.25,
+        init_throttle: float = 0, init_pitch: float = 0,
+        init_v: tuple[float, float] = (0, 0),
+        init_pos: tuple[int, int] = (0, 0),
+        plane_size: tuple[int, int] = (24,13)
+    ) -> None:
         """
         Initaliser for Aircraft
 
@@ -53,26 +55,27 @@ class Agent(aircraft.Aircraft):
         :param plane_size: aircraft sprite dimensions (tuple[int, int])
         """
 
-        super().__init__(window_dimensions,
-                         sprite,
-                         sprite_top,
-                         mass,
-                         engine_force,
-                         agility,
-                         c_drag,
-                         c_lift,
-                         AoA_crit_low,
-                         AoA_crit_high,
-                         cl0,
-                         cd_min,
-                         init_throttle,
-                         init_pitch,
-                         init_v,
-                         init_pos,
-                         plane_size)
+        super().__init__(
+            window_dimensions,
+            sprite,
+            sprite_top,
+            mass,
+            engine_force,
+            agility,
+            c_drag,
+            c_lift,
+            AoA_crit_low,
+            AoA_crit_high,
+            cl0,
+            cd_min,
+            init_throttle,
+            init_pitch,
+            init_v,
+            init_pos,
+            plane_size)
         # dangerzone
-        self.r_fov = 150
-        self.perception_front_dims = np.array((self.r_fov, 30))
+        self.radius_fov = 150
+        self.perception_front_dims = np.array((self.radius_fov, 30))
         self.nearest_target_pos_abs = []
 
         # debug
@@ -90,11 +93,13 @@ class Agent(aircraft.Aircraft):
                                 )
 
         # np wizardry
-        self.do_x, self.do_y = np.indices((int(window_dimensions[0] /
-                                               self.history_scale),
-                                           int(window_dimensions[1] /
-                                               self.history_scale))
-                                          )
+        self.d_origin_x, self.d_origin_y = np.indices(
+            (
+                int(window_dimensions[0] / self.history_scale),
+                int(window_dimensions[1] /self.history_scale)
+            )
+        )
+
         circle_coords = np.array([
             [9, 0],
             [9, 1],
@@ -198,8 +203,8 @@ class Agent(aircraft.Aircraft):
             elif self.orientation == -1 and (flip_cone_slope < self.v_uv[0]):
                 self.flip()
             if (
-                (self.pos_virtual[1] + self.v_uv[1] * self.r_fov) >
-                (settings.GROUND["COLL_ELEVATION"] - safe_d)
+                    (self.pos_virtual[1] + self.v_uv[1] * self.radius_fov) >
+                    (settings.GROUND["COLL_ELEVATION"] - safe_d)
             ) and (
                 self.v_uv[1] >= -safe_slope
             ):
@@ -208,7 +213,7 @@ class Agent(aircraft.Aircraft):
                     self.adjust_pitch(dt)
                 else:
                     self.adjust_pitch(-dt)
-            elif self.pos_virtual[1] + self.v_uv[1] * self.r_fov < safe_d and \
+            elif self.pos_virtual[1] + self.v_uv[1] * self.radius_fov < safe_d and \
                     (self.v_uv[1] <= safe_slope):
                 self.action = 'ceiling'
                 if self.v_uv[0] > 0:
@@ -284,18 +289,18 @@ class Agent(aircraft.Aircraft):
         :param offset: centre of circle
         :return: new area
         """
-        d_agent_x = self.do_x - (
+        d_agent_x = self.d_origin_x - (
             self.pos_virtual[0] + offset[0]
         ) / self.history_scale
 
-        d_agent_y = self.do_y - (
+        d_agent_y = self.d_origin_y - (
             self.pos_virtual[1] + offset[1]
         ) / self.history_scale
         in_fov = (
             np.sqrt(
                 d_agent_x ** 2 + d_agent_y ** 2
             ) < (
-                self.r_fov/self.history_scale
+                self.radius_fov / self.history_scale
             )
         )
         return np.logical_and(

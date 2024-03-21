@@ -30,7 +30,7 @@ class Ground:
             resolution: tuple[int, int]=None
         ) -> None:
         """
-        initialiser
+        initialiser Ground class
 
         :param height: height of sprite (int)
         :param elevation: elevation seen from the bottom, in pixels (int)

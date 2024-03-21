@@ -8,8 +8,8 @@ import bullet
 import balloon
 
 
-def hit_detection_and_move_bullets(
-        bullets: bullet.Bullet, 
+def hit_detection_and_move_projectiles(
+        projectiles: bullet.Bullet,
         targets: balloon.Balloon, 
         dt: float
     ) -> None:
@@ -24,13 +24,13 @@ def hit_detection_and_move_bullets(
     @Returns:
     - None
     """
-    for bt in bullets:
-        if bt.move_bullet(dt):
-            bullets.remove(bt)
+    for projectile in projectiles:
+        if projectile.move_bullet(dt):
+            projectiles.remove(projectile)
             continue
         for orb in targets:
-            if bt.rect.colliderect(orb.rect):
-                bullets.remove(bt)
+            if projectile.rect.colliderect(orb.rect):
+                projectiles.remove(projectile)
                 targets.remove(orb)
                 
                 
@@ -48,15 +48,15 @@ def hit_collision_player(
     @Returns:
     - bool: True if the player hits a balloon, False otherwise
     """
-    for balloon in targets:
+    for target in targets:
         if np.linalg.norm(
-            np.array(player.rot_rect.center) - balloon.coords
+            np.array(player.rot_rect.center) - target.coords
         ) < 15:
             return True
     return False
     
     
-def create_balloons(
+def create_targets(
         targets: list[balloon.Balloon], 
         ground_height: int
     ) -> list[balloon.Balloon]:
@@ -100,8 +100,8 @@ def display_targets(
         )
 
 
-def display_bullets(
-        bullets: list[bullet.Bullet], 
+def display_projectiles(
+        projectiles: list[bullet.Bullet],
         screen: pygame.Surface
     ) -> None:
     """
@@ -114,12 +114,12 @@ def display_bullets(
     @Returns:
     - None
     """
-    for bt in bullets:
+    for projectile in projectiles:
         screen.blit(
             pygame.transform.flip(
-                bt.sprite, 
+                projectile.sprite,
                 True, 
                 False
                 ), 
-            bt.coords
+            projectile.coords
         )

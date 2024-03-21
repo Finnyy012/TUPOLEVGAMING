@@ -137,9 +137,11 @@ class Aircraft:
         self.flipstart = 0.0
 
         # Dependent variables (e.g., Numpy containers)
-        self.pos_virtual = self.pos_real * \
-                           settings.PLANE_POS_SCALE % \
-                           self.window_dimensions
+        self.pos_virtual = (
+            self.pos_real *
+            settings.PLANE_POS_SCALE %
+            self.window_dimensions
+        )
         self.AoA_deg = 0
         self.pitch_uv = np.array([0.0, 0.0])
         self.v_uv = np.array([0.0, 0.0])
@@ -150,7 +152,7 @@ class Aircraft:
 
         # Sprite info
         self.use_gui = True
-        if sprite == None:
+        if sprite is None:
             self.use_gui = False
         if self.use_gui:
             self.sprite = pygame.image.load(sprite)
@@ -238,7 +240,7 @@ class Aircraft:
                            settings.PLANE_POS_SCALE % \
                            self.window_dimensions
 
-    def adjust_pitch(self, dt: float) -> None:
+    def adjust_pitch(self, dt: float)-> None:
         """
         Update pitch of aircraft over given time interval.
 
@@ -270,9 +272,10 @@ class Aircraft:
         :return: None
         """
         if self.flipstart > 0.0000001:
+            # show sprite after .25s
             if .25 < (time.time() - self.flipstart) < .5:
                 self.sprite = self.flipsprite
-
+            # reset sprite after .5s
             elif .5 <= (time.time() - self.flipstart):
                 if self.orientation == 1:
                     self.sprite = self.spritecontainer

@@ -73,7 +73,7 @@ balloons = []
 bullets = []
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
-    balloons = utils.create_balloons(balloons, floor.coll_elevation)
+    balloons = utils.create_targets(balloons, floor.coll_elevation)
     if settings.USE_GUI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -159,7 +159,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
 
         utils.display_targets(balloons, screen)
-        utils.display_bullets(bullets, screen)
+        utils.display_projectiles(bullets, screen)
 
         pygame.draw.line(screen, "black", center, center + player.v)
         pygame.draw.line(
@@ -295,7 +295,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         running = False
 
     utils.hit_collision_player(balloons, player)
-    utils.hit_detection_and_move_bullets(bullets, balloons, dt)
+    utils.hit_detection_and_move_projectiles(bullets, balloons, dt)
 
 if settings.USE_GUI:
     screen.fill((255,255,255))
