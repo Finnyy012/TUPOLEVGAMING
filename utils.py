@@ -5,13 +5,12 @@ import numpy as np
 
 import aircraft
 import bullet
-import ground
 import balloon
 
 
 def hit_detection_and_move_bullets(
         bullets: bullet.Bullet, 
-        balloons: balloon.Balloon, 
+        targets: balloon.Balloon, 
         dt: float
     ) -> None:
     """
@@ -19,7 +18,7 @@ def hit_detection_and_move_bullets(
     
     @Parameters:
     - bullets (list): list of bullets
-    - balloons (list): list of balloons
+    - targets (list): list of targets
     - dt (float): time step
 
     @Returns:
@@ -29,78 +28,73 @@ def hit_detection_and_move_bullets(
         if bt.move_bullet(dt):
             bullets.remove(bt)
             continue
-        for orb in balloons:
+        for orb in targets:
             if bt.rect.colliderect(orb.rect):
                 bullets.remove(bt)
-                balloons.remove(orb)
+                targets.remove(orb)
                 
                 
 def hit_collision_player(
-        balloons: list[balloon.Balloon], 
+        targets: list[balloon.Balloon], 
         player: aircraft.Aircraft
     ) -> bool:
     """
     This function checks if the player hits a balloon.
 
     @Parameters:
-    - balloons (list): list of balloons
+    - targets (list): list of targets
     - player (Player): player object
 
     @Returns:
     - bool: True if the player hits a balloon, False otherwise
     """
-    for balloon in balloons:
-        if np.linalg.norm(np.array(player.rot_rect.center)-balloon.coords)<15:
+    for balloon in targets:
+        if np.linalg.norm(
+            np.array(player.rot_rect.center) - balloon.coords
+        ) < 15:
             return True
     return False
     
     
-def create_balloons(
-        balloons: list[balloon.Balloon], 
+def create_targets(
+        targets: list[balloon.Balloon], 
         ground_height: int
     ) -> list[balloon.Balloon]:
     """
-    This function generates new balloons if the number of balloons is 
+    This function generates new targets if the number of targets is 
      less than the defined amount in settings.py. Ground height is used
-     to spawn balloons above the ground.
+     to spawn targets above the ground.
     
     @Parameters:
-    - balloons (list): list of balloons
+    - targets (list): list of targets
     - ground_height (int): height of the ground
 
     @Returns:
-    - list: list of balloons
+    - list: list of targets
     """
-    if len(balloons) < settings.BALLOON["BALLOON_COUNT"]:
-        new_balloons = [
-            balloon.Balloon(
-                random.choice(settings.BALLOON["SPRITES"]),
-                ground_height
-            ) for _ in range (
-                settings.BALLOON["BALLOON_COUNT"] - len(balloons)
-            )
-        ]
-        new_balloons.extend(balloons)
-        return new_balloons
+    if len(targets) < settings.BALLOON["BALLOON_COUNT"]:
+        new_targets = balloon.load_single_type_balloons()
+        new_targets.extend(targets)
+        return new_targets
     else:
-        return balloons
+        return targets
 
 
-def display_balloons(
-        balloons: list[balloon.Balloon], 
+def display_targets(
+        targets: list[balloon.Balloon], 
         screen: pygame.Surface
     ) -> None:
     """
-    This function displays the balloons on the screen.
+    This function displays the targets on the screen.
 
     @Parameters:
-    - balloons (list): list of balloons
+    - targets (list): list of targets
     - screen (pygame.Surface): screen
 
     @Returns:
     - None
     """
-    for plastic_orb in balloons:
+    for plastic_orb in targets:
         screen.blit(
             plastic_orb.sprite, plastic_orb.coords
         )
@@ -127,4 +121,5 @@ def display_bullets(
                 True, 
                 False
                 ), 
-            bt.coords)
+            bt.coords
+        )

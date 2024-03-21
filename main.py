@@ -101,19 +101,20 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 settings.BULLET["SPRITE"])
             )
 
-        # if keys[pygame.K_j]:
-        #     player.pos_real[0] -= 200*dt
-        # if keys[pygame.K_l]:
-        #     player.pos_real[0] += 200*dt
-        # if keys[pygame.K_i]:
-        #     player.pos_real[1] -= 200*dt
-        # if keys[pygame.K_k]:
-        #     player.pos_real[1] += 200*dt
+        if keys[pygame.K_j]:
+            player.pos_real[0] -= 200*dt
+        if keys[pygame.K_l]:
+            player.pos_real[0] += 200*dt
+        if keys[pygame.K_i]:
+            player.pos_real[1] -= 200*dt
+        if keys[pygame.K_k]:
+            player.pos_real[1] += 200*dt
 
     fov = []
     for b in balloons:
         if np.linalg.norm(b.coords - player.pos_virtual) < fov_radius:
             fov.append([b.coords[0], b.coords[1], 1])
+            
     # No GUI needed for tick
     player.tick(dt, np.array(fov))
 

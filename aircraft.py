@@ -98,16 +98,20 @@ class Aircraft:
          density and wing area (float)
         :param c_lift: 'constants' used in calculating lift, such as air
          density and wing area (float)
-        :param AoA_crit_low: negative critical angle of attack in degrees and
-         its corresponding lift coefficient (tuple[float, float])
-        :param AoA_crit_high: positive critical angle of attack in degrees and
-         its corresponding lift coefficient (tuple[float, float])
+        :param AoA_crit_low: negative critical angle of attack in 
+         degrees and its corresponding lift coefficient 
+         (tuple[float, float])
+        :param AoA_crit_high: positive critical angle of attack in 
+         degrees and its corresponding lift coefficient 
+         (tuple[float, float])
         :param cl0: lift coefficient at AoA == 0 (float)
-        :param cd_min: apex of drag curve; drag coefficient at AoA == 0 (float)
+        :param cd_min: apex of drag curve; drag coefficient at AoA == 0 
+         (float)
         :param init_throttle: throttle at spawn (%) (float)
         :param init_pitch: pitch at spawn (°) (float)
         :param init_v: velocity vector at spawn (tuple[float, float])
-        :param init_pos: real spawn location of aircraft (tuple[float, float])
+        :param init_pos: real spawn location of aircraft 
+         (tuple[float, float])
         :param plane_size: aircraft sprite dimensions (tuple[int, int])
         """
         self.window_dimensions = window_dimensions
