@@ -114,7 +114,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
     for b in balloons:
         if np.linalg.norm(b.coords - player.pos_virtual) < fov_radius:
             fov.append([b.coords[0], b.coords[1], 1])
-            
+
     # No GUI needed for tick
     player.tick(dt, np.array(fov))
 
@@ -155,7 +155,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                            radius=fov_radius,
                            width=2)
 
-        utils.display_balloons(balloons, screen)
+        utils.display_targets(balloons, screen)
         utils.display_bullets(bullets, screen)
 
         pygame.draw.line(screen, "black", center, center + player.v)
