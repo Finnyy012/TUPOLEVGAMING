@@ -32,7 +32,7 @@ BALLOON = {
         "assets/apple.gif"
     ],
     "SIZE" : 20,
-    "BALLOON_COUNT" : 10
+    "BALLOON_COUNT" : 0
 }
 
 BULLET = {

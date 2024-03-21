@@ -236,7 +236,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "test: " + str(player.testv3),
+                "test: " + str(player.testv),
                 False,
                 "black"
             ),
@@ -252,11 +252,19 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "d: " + str(player.nearest_target_pos_abs),
+                "test: " + str(player.testv3),
                 False,
                 "black"
             ),
             (20, 180)
+        )
+        screen.blit(
+            font.render(
+                "action: " + str(player.action),
+                False,
+                "black"
+            ),
+            (20, 200)
         )
 
         # Update display with current information

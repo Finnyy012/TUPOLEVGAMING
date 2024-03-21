@@ -217,6 +217,7 @@ class Agent(aircraft.Aircraft):
             self.nearest_target_pos_abs = d
             if (0 < d[0] < self.perception_front_dims[0]) and \
                     d[0] < d_nearest_target:
+                self.action = 'evade target'
                 if 0 < d[1] < self.perception_front_dims[1]:
                     if (
                         target[1] > (settings.GROUND["COLL_ELEVATION"] -
@@ -294,7 +295,6 @@ class Agent(aircraft.Aircraft):
                     ) * self.history_scale
                     best_circle -= self.pos_virtual
                     self.action = 'explore tiebreak'
-                    best_circle[1] = -best_circle[1]
                 else:
                     best_circle = best_circle[0]
                     pass  # TODO: gelijk aantal vakkies in de buut
