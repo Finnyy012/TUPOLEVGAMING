@@ -7,9 +7,64 @@ import aircraft
 
 
 class Agent(aircraft.Aircraft):
+    """
+    Agent class.
+
+    @Attributes:
+    - window_dimensions (tuple[float, float]): Dimensions of window.
+    - engine_power (float): Engine power of aircraft, in Neutons (N).
+    - agility (float): Degree to which the pitch can change,
+     in degrees per delta.
+    - mass (float): Mass of aircraft, in Kilogram (Kg).
+    - c_drag (float):
+     'constants' when calculating drag,
+      such as air density and wing area
+    - c_lift (float):
+     'constants' when calculating lift,
+      such as air density and wing area
+    - throttle (float): Throttle of aircraft.
+    - pitch (float): Pitch of aircraft.
+    - v (tuple[float, float]): Velocity of aircraft.
+    - pos (tuple[int, int]): Position of aircraft (x,y).
+    - sprite (pygame.Surface): Container for aircraft sprite.
+    - rot_sprite (pygame.Surface): Rotation of sprite.
+    - rot_rect (pygame.Rect): Rotation rectangle of sprite.
+
+    The six attributes below are stored in `np.ndarray`s
+     and contain exactly 2 values.
+    The first is the force on the x-axis
+     and the second the force on the y-axis.
+    - pitch_uv (np.ndarray): unitvector in the direction of pitch
+    - v_uv (np.ndarray):
+     unitvecor in the direction of the velocity vector
+    - f_gravity (np.ndarray): Force of gravity.
+    - f_engine (np.ndarray): Force of engine.
+    - f_drag (np.ndarray): Force of drag.
+    - f_lift (np.ndarray): Force of lift.
+
+    @Methods:
+    - __init__(
+        mass: float,
+        engine_power: float,
+        agility: float,
+        c_drag: float,
+        c_lift: float,
+        sprite: string,
+        init_throttle: float,
+        init_pitch: float,
+        init_v: tuple[float, float],
+        init_pos: tuple[int, int]
+      )-> None
+      Initializer for Aircraft.
+    - tick(dt: float)-> None
+      Update internal state of aircraft over given time interval.
+    - adjust_pitch(dt: float)-> None
+      Update pitch of aircraft over given time interval.
+    """
     def __init__(self,
                  window_dimensions: tuple[int, int],
                  sprite: string = None,
+                 sprite_top: string = None,
                  mass: float = 12,
                  engine_force: float = 10,
                  agility: float = 100,
@@ -52,6 +107,7 @@ class Agent(aircraft.Aircraft):
 
         super().__init__(window_dimensions,
                          sprite,
+                         sprite_top,
                          mass,
                          engine_force,
                          agility,

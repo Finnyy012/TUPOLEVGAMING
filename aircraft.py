@@ -9,7 +9,6 @@ import settings
 
 class Aircraft:
     """
-    #TODO: class docstring (beste op laatst, dit blijft steeds veranderen)
     Aircraft class.
 
     @Attributes:
@@ -68,6 +67,7 @@ class Aircraft:
         self,
         window_dimensions: tuple[int, int],
         sprite: string = None,
+        sprite_top: string = None,
         mass: float = 12,
         engine_force: float = 10,
         agility: float = 100,
@@ -165,7 +165,7 @@ class Aircraft:
             self.plane_size[1]
         )
 
-        self.flipsprite = pygame.image.load("assets/top_view.png")
+        self.flipsprite = pygame.image.load(sprite_top)
         self.flipsprite = pygame.transform.scale(
             self.flipsprite,
             self.plane_size

@@ -28,19 +28,17 @@ class Ground:
             coll_elevation: int,
             sprite: str=None,
             resolution: tuple[int, int]=None
-        )-> None:
+        ) -> None:
         """
-        Initialize Ground class.
+        initialiser
 
-        @Parameters:
-        - height (int): Height of sprite
-        - elevation (int): Elevation seen from the bottom, in pixels.
-        - coll_elevation (int): 
-         Elevation from which point the player crashes upon intersection 
-         Recommended to make this slightly above the floor, for realism.
-        - sprite (str): Path to sprite. (Default = None)
-        - resolution (tuple[int, int]): 
-         Resolution of sprite. (Default = None)
+        :param height: height of sprite (int)
+        :param elevation: elevation seen from the bottom, in pixels (int)
+        :param coll_elevation: elevation from which point the player crashes
+        upon intersection; recommended to make this slightly above the floor,
+        for realism (int)
+        :param sprite: path to sprite (str)
+        :param resolution: resolution of game window (tuple[int, int])
         """
         self.sprite = None
         if sprite:

@@ -7,14 +7,15 @@ import settings
 import ground
 import agent
 import balloon
-import aircraft
 import bullet
 import utils
 
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
-    screen = pygame.display.set_mode(size=settings.SCREEN_RESOLUTION, flags=pygame.SRCALPHA)
+    screen = pygame.display.set_mode(
+        size=settings.SCREEN_RESOLUTION, flags=pygame.SRCALPHA
+    )
     font = pygame.font.SysFont(None, 24)
 
 clock = pygame.time.Clock()
@@ -27,6 +28,7 @@ plane_1_data = settings.PLANE_POLIKARPOV_I_16
 player = agent.Agent(
     settings.SCREEN_RESOLUTION,
     plane_1_data["SPRITE"],
+    plane_1_data["SPRITE_TOP"],
     plane_1_data["MASS"],
     plane_1_data["ENGINE_FORCE"],
     plane_1_data["AGILITY"],
@@ -58,7 +60,9 @@ if settings.USE_GUI:
 
     # pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
     # pygame.mixer.music.play(-1)
-    flip = pygame.mixer.Sound("assets/Flip de beer intro-[AudioTrimmer.com].mp3")
+    flip = pygame.mixer.Sound(
+        "assets/Flip de beer intro-[AudioTrimmer.com].mp3"
+    )
     background = pygame.image.load("assets/background.png")
     background = pygame.transform.scale(
         background,
@@ -108,7 +112,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
 
     fov = []
     for b in balloons:
-        if(np.linalg.norm(b.coords - player.pos_virtual)<fov_radius):
+        if np.linalg.norm(b.coords - player.pos_virtual) < fov_radius:
             fov.append([b.coords[0], b.coords[1], 1])
     # No GUI needed for tick
     player.tick(dt, np.array(fov))
@@ -125,11 +129,15 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 plastic_orb.sprite, plastic_orb.coords
             )
             colour="black"
-            if(np.linalg.norm(plastic_orb.coords - player.pos_virtual)<fov_radius):
+            if(np.linalg.norm(
+                    plastic_orb.coords - player.pos_virtual
+            )<fov_radius):
                 colour = "green"
             screen.blit(
                 font.render(
-                    str(np.linalg.norm(plastic_orb.coords - player.pos_virtual)),
+                    str(
+                        np.linalg.norm(plastic_orb.coords - player.pos_virtual)
+                    ),
                     False,
                     colour
                 ),
@@ -140,7 +148,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        pygame.draw.circle(surface=screen,color=0,center=player.rot_rect.center,radius=fov_radius,width=2)
+        pygame.draw.circle(surface=screen,
+                           color=0,
+                           center=player.rot_rect.center,
+                           radius=fov_radius,
+                           width=2)
 
         utils.display_balloons(balloons, screen)
         utils.display_bullets(bullets, screen)
