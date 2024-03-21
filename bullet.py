@@ -5,6 +5,21 @@ import settings
 
 
 class Bullet:
+    """
+    Bullet class
+
+    @Attributes:
+    - sprite (pygame.surface): optional sprite with contents of bullet.
+
+    @Methods:
+    __init__(
+        self,
+        coords: tuple[int, int],
+        pitch: float,
+        ground_height: int,
+        sprite: str=None,
+    ) -> None
+    """
     def __init__(
             self,
             coords: tuple[int, int],
@@ -14,17 +29,12 @@ class Bullet:
     ) -> None:
         """
         Initaliser of the bullet class
-        @Parameters:
 
-        - coords (tuple):
-            initial position of the bullet
-        - pitch (float):
-            angle of the bullet
-        - ground_height (int):
-            height of the ground   
-        - sprite (string):
-            path of the image used for the sprite of the bullet 
-            (Default = False)
+        :param coords: initial position of the bullet (tuple[int, int])
+        :param pitch: angle of the bullet (float)
+        :param ground_height: height of the ground (int)
+        :param sprite: path of the image used for the sprite of the bullet
+        :return: None
         """
         self.size = settings.BULLET["SIZE"]
         self.current_time = 0
@@ -55,13 +65,11 @@ class Bullet:
         This function calculates the new position of the bullet based on 
          the pitch of the plane. If the bullet has been alive for too 
          long, it destroys itself. If the bullet hits the ground, it 
-         is also destroyed.
+         is also destroyed. The function returns True if the bullet 
+         needs to be destroyed.
 
-        @Parameters:
-        - dt (float): time step
-
-        @Returns:
-        - bool: True if the bullet is destroyed, False otherwise
+        :param dt: time step (float)
+        :return: bool
         """
         self.current_time += dt
 

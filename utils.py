@@ -1,5 +1,4 @@
 import settings
-import random
 import pygame
 import numpy as np
 
@@ -16,13 +15,10 @@ def hit_detection_and_move_projectiles(
     """
     This function checks if a bullet hits a balloon.
     
-    @Parameters:
-    - bullets (list): list of bullets
-    - targets (list): list of targets
-    - dt (float): time step
-
-    @Returns:
-    - None
+    :param projectiles: list of bullets (list[bullet.Bullet])
+    :param targets: list of balloons (list[balloon.Balloon])
+    :param dt: time step (float)
+    :return: None
     """
     for projectile in projectiles:
         if projectile.move_bullet(dt):
@@ -39,14 +35,12 @@ def hit_collision_player(
         player: aircraft.Aircraft
     ) -> bool:
     """
-    This function checks if the player hits a balloon.
+    This function checks if the player hits a balloon. If a player
+     hits a balloon, the function returns True.
 
-    @Parameters:
-    - targets (list): list of targets
-    - player (Player): player object
-
-    @Returns:
-    - bool: True if the player hits a balloon, False otherwise
+    :param targets: list of balloons (list[Balloon])
+    :param player: player object (aircraft.Aircraft)
+    :return: bool
     """
     for target in targets:
         if np.linalg.norm(
@@ -65,15 +59,15 @@ def create_targets(
      less than the defined amount in settings.py. Ground height is used
      to spawn targets above the ground.
     
-    @Parameters:
-    - targets (list): list of targets
-    - ground_height (int): height of the ground
-
-    @Returns:
-    - list: list of targets
+    :param targets: list of balloons (list[Balloon])
+    :param ground_height: height of the ground (int)
+    :return: list of balloons (list[Balloon])
     """
     if len(targets) < settings.BALLOON["BALLOON_COUNT"]:
-        new_targets = balloon.load_single_type_balloons(ground_height)
+        new_targets = balloon.load_single_type_balloons(
+            ground_height,
+            settings.BALLOON["BALLOON_COUNT"] - len(targets)
+        )
         new_targets.extend(targets)
         return new_targets
     else:
@@ -86,13 +80,10 @@ def display_targets(
     ) -> None:
     """
     This function displays the targets on the screen.
-
-    @Parameters:
-    - targets (list): list of targets
-    - screen (pygame.Surface): screen
-
-    @Returns:
-    - None
+    
+    :param targets: list of balloons (list[Balloon])
+    :param screen: screen (pygame.Surface)
+    :return: None
     """
     for plastic_orb in targets:
         screen.blit(
@@ -108,11 +99,9 @@ def display_projectiles(
     This function displays the bullets on the screen.
 
     @Parameters:
-    - bullets (list): list of bullets
-    - screen (pygame.Surface): screen
-
-    @Returns:
-    - None
+    :param projectiles: list of bullets (list[bullet.Bullet])
+    :param screen: screen (pygame.Surface)
+    :return: None
     """
     for projectile in projectiles:
         screen.blit(
