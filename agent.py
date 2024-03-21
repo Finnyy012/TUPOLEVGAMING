@@ -12,6 +12,7 @@ class Agent(aircraft.Aircraft):
     def __init__(self,
                  window_dimensions: tuple[int, int],
                  sprite: string = None,
+                 sprite_top: string = None,
                  mass: float = 12,
                  engine_force: float = 10,
                  agility: float = 100,
@@ -54,6 +55,7 @@ class Agent(aircraft.Aircraft):
 
         super().__init__(window_dimensions,
                          sprite,
+                         sprite_top,
                          mass,
                          engine_force,
                          agility,
@@ -191,23 +193,23 @@ class Agent(aircraft.Aircraft):
             safe_d = 10
             safe_slope = 0.2
             flip_cone_slope = 0.9
-            if self.orientation == 1 and (-0.9 > self.v_uv[0]):
+            if self.orientation == 1 and (-flip_cone_slope > self.v_uv[0]):
                 self.flip()
-            elif self.orientation == -1 and (0.9 < self.v_uv[0]):
+            elif self.orientation == -1 and (flip_cone_slope < self.v_uv[0]):
                 self.flip()
             if (
                 (self.pos_virtual[1] + self.v_uv[1] * self.r_fov) >
-                (settings.GROUND["COLL_ELEVATION"] - 10)
+                (settings.GROUND["COLL_ELEVATION"] - safe_d)
             ) and (
-                self.v_uv[1] >= -0.2
+                self.v_uv[1] >= -safe_slope
             ):
                 self.action = 'floor'
                 if self.v_uv[0] > 0:
                     self.adjust_pitch(dt)
                 else:
                     self.adjust_pitch(-dt)
-            elif self.pos_virtual[1] + self.v_uv[1] * self.r_fov < 10 and \
-                    (self.v_uv[1] <= 0.2):
+            elif self.pos_virtual[1] + self.v_uv[1] * self.r_fov < safe_d and \
+                    (self.v_uv[1] <= safe_slope):
                 self.action = 'ceiling'
                 if self.v_uv[0] > 0:
                     self.adjust_pitch(-dt)
@@ -264,7 +266,7 @@ class Agent(aircraft.Aircraft):
             int((self.rot_rect.centerx-1)/self.history_scale)
         ][
             int((self.rot_rect.centery-1)/self.history_scale)
-        ] = time.time()-self.timestart + 10  # self.pitch
+        ] = time.time()-self.timestart + 10  # time rn voor mooi
         for x in fov:
             self.history[1][
                 int(x[0]/self.history_scale)
