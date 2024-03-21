@@ -9,6 +9,59 @@ import settings
 
 
 class Agent(aircraft.Aircraft):
+    """
+    Agent class.
+
+    + window_dimensions: (tuple[float, float]) dimensions of window
+    + mass: (float) mass of aircraft, in kilogram (Kg).
+    + engine_force: (float) constant force applied in direction
+    of `pitch` in Newtons (N)
+    + agility: (float) Degree to which the pitch can change,
+    in degrees per delta.
+    + c_drag: (float) 'constants' when calculating drag,
+    such as air density and wing area
+    + c_lift: (float) 'constants' when calculating lift,
+    such as air density and wing area
+    + AoA_crit_low: (tuple[float, float]) negative critical angle
+     of attack in degrees and its corresponding lift coefficient
+    + AoA_crit_high: (tuple[float, float]) positive critical angle
+     of attack in degrees and its corresponding lift coefficient
+    + cl0: (float) lift coefficient at AoA == 0
+    + cd_min: (float) apex of drag curve; drag coefficient at AoA == 0
+    + plane_size: (tuple[int, int]) dimensions of aircraft
+    (length, height) in meter (m)
+    + throttle: (float) throttle
+    + pitch: (float) pitch in degrees
+    + v: (tuple[float, float]) velocity vector
+    + pos_real: (tuple[float, float]) aircraft position in m
+    + orientation: (int) direction of lift vector
+    + flipstart: (float) timer for flip sprite
+    + pos_virtual: (tuple[float, float]) aircraft position on screen
+    + AoA_deg: (float) angle of attack in deg
+    + pitch_uv: (tuple[float, float]) unitvector corresponding to
+    `pitch`
+    + v_uv: (tuple[float, float]) unitvector corresponding to `v`
+    + f_gravity: (tuple[float, float]) gravity force vector
+    + f_engine: (tuple[float, float]) engine force vector
+    + f_drag: (tuple[float, float]) drag force vector
+    + f_lift: (tuple[float, float]) drag force vector
+    + use_gui: (bool) true if using GUI
+    + sprite: (pygame.Surface) side view sprite
+    + rot_sprite: (pygame.Surface) side view sprite, rotated
+    + rot_rect: (pygame.Rect) rectangle object for pygame
+    + flipsprite: (pygame.Surface) top view sprite
+    + spritecontainer: (pygame.Surface) temp container for `flip()`
+
+    + radius_fov: (int) radius of field of view
+    + perception_front_dims: (tuple[float, float]) dimensions of
+     'danger-zone'
+    + nearest_target_pos_abs: (np.ndarray) distance to nearest
+     target, relative to origin
+    + timestart: (float) UNIX time at initialisation, for debug
+    + action: (str) current action, for debug
+    + circle_coords: (np.ndarray) coordinates of circle for
+     `diff_overlap_circle`
+    """
     def __init__(
         self,
         window_dimensions: tuple[int, int],
@@ -28,11 +81,12 @@ class Agent(aircraft.Aircraft):
         plane_size: tuple[int, int] = (24,13)
     ) -> None:
         """
-        Initaliser for Aircraft
+        Initaliser for Agent
 
         :param window_dimensions: dimensions of pygame window
          (tuple[float, float])
         :param sprite: filepath to sprite (str)
+        :param sprite: filepath to top view sprite (str)
         :param mass: mass of aircraft in Kilogram (Kg) (float)
         :param engine_force: constant force applied in direction of
          heading (pitch) in Newton (N) (float)

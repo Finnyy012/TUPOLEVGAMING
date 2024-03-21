@@ -11,56 +11,45 @@ class Aircraft:
     """
     Aircraft class.
 
-    @Attributes:
-    - window_dimensions (tuple[float, float]): Dimensions of window.
-    - engine_power (float): Engine power of aircraft, in Neutons (N).
-    - agility (float): Degree to which the pitch can change,
-     in degrees per delta.
-    - mass (float): Mass of aircraft, in Kilogram (Kg).
-    - c_drag (float):
-     'constants' when calculating drag,
-      such as air density and wing area
-    - c_lift (float):
-     'constants' when calculating lift,
-      such as air density and wing area
-    - throttle (float): Throttle of aircraft.
-    - pitch (float): Pitch of aircraft.
-    - v (tuple[float, float]): Velocity of aircraft.
-    - pos (tuple[int, int]): Position of aircraft (x,y).
-    - sprite (pygame.Surface): Container for aircraft sprite.
-    - rot_sprite (pygame.Surface): Rotation of sprite.
-    - rot_rect (pygame.Rect): Rotation rectangle of sprite.
-
-    The six attributes below are stored in `np.ndarray`s
-     and contain exactly 2 values.
-    The first is the force on the x-axis
-     and the second the force on the y-axis.
-    - pitch_uv (np.ndarray): unitvector in the direction of pitch
-    - v_uv (np.ndarray):
-     unitvecor in the direction of the velocity vector
-    - f_gravity (np.ndarray): Force of gravity.
-    - f_engine (np.ndarray): Force of engine.
-    - f_drag (np.ndarray): Force of drag.
-    - f_lift (np.ndarray): Force of lift.
-
-    @Methods:
-    - __init__(
-        mass: float,
-        engine_power: float,
-        agility: float,
-        c_drag: float,
-        c_lift: float,
-        sprite: string,
-        init_throttle: float,
-        init_pitch: float,
-        init_v: tuple[float, float],
-        init_pos: tuple[int, int]
-      )-> None
-      Initializer for Aircraft.
-    - tick(dt: float)-> None
-      Update internal state of aircraft over given time interval.
-    - adjust_pitch(dt: float)-> None
-      Update pitch of aircraft over given time interval.
+    + window_dimensions: (tuple[float, float]) dimensions of window
+    + mass: (float) mass of aircraft, in kilogram (Kg).
+    + engine_force: (float) constant force applied in direction
+    of `pitch` in Newtons (N)
+    + agility: (float) Degree to which the pitch can change,
+    in degrees per delta.
+    + c_drag: (float) 'constants' when calculating drag,
+    such as air density and wing area
+    + c_lift: (float) 'constants' when calculating lift,
+    such as air density and wing area
+    + AoA_crit_low: (tuple[float, float]) negative critical angle
+     of attack in degrees and its corresponding lift coefficient
+    + AoA_crit_high: (tuple[float, float]) positive critical angle
+     of attack in degrees and its corresponding lift coefficient
+    + cl0: (float) lift coefficient at AoA == 0
+    + cd_min: (float) apex of drag curve; drag coefficient at AoA == 0
+    + plane_size: (tuple[int, int]) dimensions of aircraft
+    (length, height) in meter (m)
+    + throttle: (float) throttle
+    + pitch: (float) pitch in degrees
+    + v: (tuple[float, float]) velocity vector
+    + pos_real: (tuple[float, float]) aircraft position in m
+    + orientation: (int) direction of lift vector
+    + flipstart: (float) timer for flip sprite
+    + pos_virtual: (tuple[float, float]) aircraft position on screen
+    + AoA_deg: (float) angle of attack in deg
+    + pitch_uv: (tuple[float, float]) unitvector corresponding to
+    `pitch`
+    + v_uv: (tuple[float, float]) unitvector corresponding to `v`
+    + f_gravity: (tuple[float, float]) gravity force vector
+    + f_engine: (tuple[float, float]) engine force vector
+    + f_drag: (tuple[float, float]) drag force vector
+    + f_lift: (tuple[float, float]) drag force vector
+    + use_gui: (bool) true if using GUI
+    + sprite: (pygame.Surface) side view sprite
+    + rot_sprite: (pygame.Surface) side view sprite, rotated
+    + rot_rect: (pygame.Rect) rectangle object for pygame
+    + flipsprite: (pygame.Surface) top view sprite
+    + spritecontainer: (pygame.Surface) temp container for `flip()`
     """
 
     def __init__(
