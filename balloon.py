@@ -50,7 +50,7 @@ class Balloon:
         return self.rect.collidepoint(point)
 
 
-def load_single_type_balloons(ground_height: int) -> list[Balloon]:
+def load_single_type_balloons(ground_height: int, balloon_count: int) -> list[Balloon]:
     """
     This function loads a list of balloons with the same sprite.
     @Parameters:
@@ -64,7 +64,7 @@ def load_single_type_balloons(ground_height: int) -> list[Balloon]:
             settings.BALLOON["SPRITE"],
             ground_height
         ) for _ in range(
-            settings.BALLOON["BALLOON_COUNT"]
+            balloon_count
         )
     ]
 
@@ -74,7 +74,7 @@ def load_multiple_types_balloons(ground_height: int) -> list[Balloon]:
     This function loads a list of balloons with different sprites.
     @Parameters:
     - ground_height (int): height of the ground
-    
+
     @Returns:
     - list (list[Balloon]): list of balloons
     """
@@ -84,7 +84,8 @@ def load_multiple_types_balloons(ground_height: int) -> list[Balloon]:
     return [
         Balloon(
             random.choice(
-                settings.BALLOON["SPRITES"]
+                settings.BALLOON["SPRITES"],
+                ground_height
             )
         ) for _ in range(
             settings.BALLOON["BALLOON_COUNT"]

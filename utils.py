@@ -72,8 +72,12 @@ def create_balloons(
     @Returns:
     - list: list of targets
     """
+    missing_balloons = settings.BALLOON["BALLOON_COUNT"] - len(targets)
     if len(targets) < settings.BALLOON["BALLOON_COUNT"]:
-        new_targets = balloon.load_single_type_balloons(ground_height)
+        
+        new_targets = balloon.load_single_type_balloons(
+            ground_height,
+            missing_balloons)
         new_targets.extend(targets)
         return new_targets
     else:

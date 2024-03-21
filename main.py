@@ -268,17 +268,18 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                     if x.is_hit(event.pos):
                         balloons.remove(x)
 
-    if len(balloons) < settings.BALLOON["BALLOON_COUNT"]:
-        new_balloons = [
-            balloon.Balloon(
-                random.choice(
-                    settings.BALLOON["SPRITES"]
-                )
-            ) for _ in range (
-                settings.BALLOON["BALLOON_COUNT"] - len(balloons)
-            )
-        ]
-        balloons.extend(new_balloons)
+    # if len(balloons) < settings.BALLOON["BALLOON_COUNT"]:
+    #     new_balloons = [
+    #         balloon.Balloon(
+    #             random.choice(
+    #                 settings.BALLOON["SPRITE"]
+    #             ),
+    #             ground_height=floor.coll_elevation
+    #         ) for _ in range (
+    #             settings.BALLOON["BALLOON_COUNT"] - len(balloons)
+    #         )
+    #     ]
+    #     balloons.extend(new_balloons)
 
     # Check if player has crashed onto the ground
     if player.rot_rect.bottom >= floor.coll_elevation:
