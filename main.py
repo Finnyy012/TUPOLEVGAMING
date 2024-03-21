@@ -14,7 +14,8 @@ screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
     screen = pygame.display.set_mode(
-        size=settings.SCREEN_RESOLUTION, flags=pygame.SRCALPHA
+        size=settings.SCREEN_RESOLUTION,
+        flags=pygame.SRCALPHA
     )
     font = pygame.font.SysFont(None, 24)
 
@@ -60,9 +61,9 @@ if settings.USE_GUI:
 
     # pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
     # pygame.mixer.music.play(-1)
-    flip = pygame.mixer.Sound(
-        "assets/Flip de beer intro-[AudioTrimmer.com].mp3"
-    )
+    # flip = pygame.mixer.Sound(
+    #     "assets/Flip de beer intro-[AudioTrimmer.com].mp3"
+    # )
     background = pygame.image.load("assets/background.png")
     background = pygame.transform.scale(
         background,
@@ -92,7 +93,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             player.adjust_pitch(-dt)
         if keys[pygame.K_q]:
             player.flip()
-            flip.play()
+            # flip.play()
         if keys[pygame.K_SPACE]:
             bullets.append(bullet.Bullet(
                 player.pos_virtual,
@@ -132,7 +133,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             colour="black"
             if(np.linalg.norm(
                     plastic_orb.coords - player.pos_virtual
-            )<fov_radius):
+            ) < fov_radius):
                 colour = "green"
             screen.blit(
                 font.render(
@@ -149,11 +150,13 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        pygame.draw.circle(surface=screen,
-                           color=0,
-                           center=player.rot_rect.center,
-                           radius=fov_radius,
-                           width=2)
+        pygame.draw.circle(
+            surface=screen,
+            color=0,
+            center=player.rot_rect.center,
+            radius=fov_radius,
+            width=2
+        )
 
         utils.display_targets(balloons, screen)
         utils.display_bullets(bullets, screen)
