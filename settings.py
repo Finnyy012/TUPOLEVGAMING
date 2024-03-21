@@ -42,3 +42,10 @@ BULLET = {
     "SPEED": 10
 }
 
+GROUND = {
+    "SPRITE" : "assets/environment.png",
+    "HEIGHT" : 50,
+    "ELEVATION" : 600,
+    "COLL_ELEVATION" : 635,
+}
+

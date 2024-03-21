@@ -136,7 +136,7 @@ class Aircraft:
         self.orientation = 1
         self.flipstart = 0.0
 
-        # Dependent variables (oa Numpy containers)
+        # Dependent variables (e.g., Numpy containers)
         self.pos_virtual = self.pos_real * \
                            settings.PLANE_POS_SCALE % \
                            self.window_dimensions

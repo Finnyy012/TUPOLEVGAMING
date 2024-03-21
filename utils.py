@@ -56,7 +56,7 @@ def hit_collision_player(
     return False
     
     
-def create_targets(
+def create_balloons(
         targets: list[balloon.Balloon], 
         ground_height: int
     ) -> list[balloon.Balloon]:

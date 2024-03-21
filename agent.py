@@ -1,9 +1,11 @@
 import math
 import string
+import sys
 import time
 import numpy as np
 
 import aircraft
+import settings
 
 
 class Agent(aircraft.Aircraft):
@@ -67,7 +69,8 @@ class Agent(aircraft.Aircraft):
                          init_pos,
                          plane_size)
         # dangerzone
-        self.perception_front_dims = np.array((150, 30))
+        self.r_fov = 150
+        self.perception_front_dims = np.array((self.r_fov, 30))
         self.nearest_target_pos_abs = []
 
         # debug
@@ -85,7 +88,6 @@ class Agent(aircraft.Aircraft):
                                 )
 
         # np wizardry
-        self.r_fov = 150
         self.do_x, self.do_y = np.indices((int(window_dimensions[0] /
                                                self.history_scale),
                                            int(window_dimensions[1] /
@@ -137,9 +139,9 @@ class Agent(aircraft.Aircraft):
         :param fov: targets within fov (passed from main)
         :return: None
         """
-        d_nearest_target = 9999999
+        d_nearest_target = sys.maxsize
         rotation_matrix = np.array([
-            [ 
+            [
                 math.cos((-self.pitch) * math.pi / 180),
                 -math.sin((-self.pitch) * math.pi / 180)
             ], [
@@ -155,9 +157,12 @@ class Agent(aircraft.Aircraft):
             if (0 < d[0] < self.perception_front_dims[0]) and \
                     d[0] < d_nearest_target:
                 if 0 < d[1] < self.perception_front_dims[1]:
-                    if target[1] > \
-                            (635 - (2 * self.perception_front_dims[1])) and \
-                            (self.v_uv[0] < 0):
+                    if (
+                        target[1] > (settings.GROUND["COLL_ELEVATION"] -
+                        (2 * self.perception_front_dims[1]))
+                    ) and (
+                        self.v_uv[0] < 0
+                    ):
                         evade_direction = -1
                     elif target[1] < \
                             (2 * self.perception_front_dims[1]) and \
@@ -166,9 +171,12 @@ class Agent(aircraft.Aircraft):
                     else:
                         evade_direction = 1
                 elif 0 < -d[1] < self.perception_front_dims[1]:
-                    if target[1] > \
-                            (635 - (2 * self.perception_front_dims[1])) and \
-                            (self.v_uv[0] > 0):
+                    if (
+                        target[1] > (settings.GROUND["COLL_ELEVATION"] -
+                        2 * self.perception_front_dims[1])
+                    ) and (
+                        self.v_uv[0] > 0
+                    ):
                         evade_direction = 1
                     elif target[1] < \
                             (2 * self.perception_front_dims[1]) and \
@@ -180,18 +188,25 @@ class Agent(aircraft.Aircraft):
         if evade_direction != 0:
             self.adjust_pitch(dt*evade_direction)
         else:
+            safe_d = 10
+            safe_slope = 0.2
+            flip_cone_slope = 0.9
             if self.orientation == 1 and (-0.9 > self.v_uv[0]):
                 self.flip()
             elif self.orientation == -1 and (0.9 < self.v_uv[0]):
                 self.flip()
-            if self.pos_virtual[1] + self.v_uv[1] * 150 > 625 and \
-                    (self.v_uv[1] >= -0.2):
+            if (
+                (self.pos_virtual[1] + self.v_uv[1] * self.r_fov) >
+                (settings.GROUND["COLL_ELEVATION"] - 10)
+            ) and (
+                self.v_uv[1] >= -0.2
+            ):
                 self.action = 'floor'
                 if self.v_uv[0] > 0:
                     self.adjust_pitch(dt)
                 else:
                     self.adjust_pitch(-dt)
-            elif self.pos_virtual[1] + self.v_uv[1] * 150 < 10 and \
+            elif self.pos_virtual[1] + self.v_uv[1] * self.r_fov < 10 and \
                     (self.v_uv[1] <= 0.2):
                 self.action = 'ceiling'
                 if self.v_uv[0] > 0:
