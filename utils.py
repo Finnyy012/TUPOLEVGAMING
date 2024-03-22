@@ -1,15 +1,16 @@
 import settings
-import balloon
 import random
 import pygame
+import numpy as np
+
 import aircraft
 import bullet
-import ground
+import balloon
 
 
-def hit_detection_and_move_bullets(
-        bullets: bullet.Bullet, 
-        balloons: balloon.Balloon, 
+def hit_detection_and_move_projectiles(
+        projectiles: bullet.Bullet,
+        targets: balloon.Balloon, 
         dt: float
     ) -> None:
     """
@@ -17,114 +18,90 @@ def hit_detection_and_move_bullets(
     
     @Parameters:
     - bullets (list): list of bullets
-    - balloons (list): list of balloons
+    - targets (list): list of targets
     - dt (float): time step
 
     @Returns:
     - None
     """
-    for bt in bullets:
-        if bt.move_bullet(dt):
-            bullets.remove(bt)
+    for projectile in projectiles:
+        if projectile.move_bullet(dt):
+            projectiles.remove(projectile)
             continue
-        for orb in balloons:
-            if bt.rect.colliderect(orb.rect):
-                bullets.remove(bt)
-                balloons.remove(orb)
+        for orb in targets:
+            if projectile.rect.colliderect(orb.rect):
+                projectiles.remove(projectile)
+                targets.remove(orb)
                 
                 
 def hit_collision_player(
-        balloons: list[balloon.Balloon], 
-        player : aircraft.Aircraft
+        targets: list[balloon.Balloon], 
+        player: aircraft.Aircraft
     ) -> bool:
     """
     This function checks if the player hits a balloon.
 
     @Parameters:
-    - balloons (list): list of balloons
+    - targets (list): list of targets
     - player (Player): player object
 
     @Returns:
     - bool: True if the player hits a balloon, False otherwise
     """
-    for balloon in balloons:
-        if player.rot_rect.colliderect(balloon.rect):
+    for target in targets:
+        if np.linalg.norm(
+            np.array(player.rot_rect.center) - target.coords
+        ) < 15:
             return True
     return False
-
-
-def hit_collision_environment(
-        floor: ground.Ground, 
-        player: aircraft.Aircraft
-    ) -> bool:
-    """
-    This function checks if the player hits the ground.
-
-    @Parameters:
-    - floor (pygame.Rect): ground
-    - player (Player): player object
-
-    @Returns:
-    - bool: True if the player hits the ground, False otherwise
-    """
-    if player.rot_rect.bottom >= floor.coll_elevation:
-        return True
-    return False
     
     
-def create_balloons(
-        balloons: list[balloon.Balloon], 
+def create_targets(
+        targets: list[balloon.Balloon], 
         ground_height: int
     ) -> list[balloon.Balloon]:
     """
-    This function generates new balloons if the number of balloons is 
+    This function generates new targets if the number of targets is 
      less than the defined amount in settings.py. Ground height is used
-     to spawn balloons above the ground.
+     to spawn targets above the ground.
     
     @Parameters:
-    - balloons (list): list of balloons
+    - targets (list): list of targets
     - ground_height (int): height of the ground
 
     @Returns:
-    - list: list of balloons
+    - list: list of targets
     """
-    if len(balloons) < settings.BALLOON["BALLOON_COUNT"]:
-        new_balloons = [
-            balloon.Balloon(
-                random.choice(settings.BALLOON["SPRITES"]),
-                ground_height
-            ) for _ in range (
-                settings.BALLOON["BALLOON_COUNT"] - len(balloons)
-            )
-        ]
-        new_balloons.extend(balloons)
-        return new_balloons
+    if len(targets) < settings.BALLOON["BALLOON_COUNT"]:
+        new_targets = balloon.load_single_type_balloons(ground_height)
+        new_targets.extend(targets)
+        return new_targets
     else:
-        return balloons
+        return targets
 
 
-def display_balloons(
-        balloons: list[balloon.Balloon], 
+def display_targets(
+        targets: list[balloon.Balloon], 
         screen: pygame.Surface
     ) -> None:
     """
-    This function displays the balloons on the screen.
+    This function displays the targets on the screen.
 
     @Parameters:
-    - balloons (list): list of balloons
+    - targets (list): list of targets
     - screen (pygame.Surface): screen
 
     @Returns:
     - None
     """
-    for plastic_orb in balloons:
+    for plastic_orb in targets:
         screen.blit(
             plastic_orb.sprite, plastic_orb.coords
         )
 
 
-def display_bullets(
-        bullets: list[bullet.Bullet], 
+def display_projectiles(
+        projectiles: list[bullet.Bullet],
         screen: pygame.Surface
     ) -> None:
     """
@@ -137,11 +114,12 @@ def display_bullets(
     @Returns:
     - None
     """
-    for bt in bullets:
+    for projectile in projectiles:
         screen.blit(
             pygame.transform.flip(
-                bt.sprite, 
+                projectile.sprite,
                 True, 
                 False
                 ), 
-            bt.coords)
+            projectile.coords
+        )

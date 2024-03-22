@@ -32,7 +32,7 @@ BALLOON = {
         "assets/apple.gif"
     ],
     "SIZE" : 20,
-    "BALLOON_COUNT" : 10
+    "BALLOON_COUNT" : 0
 }
 
 BULLET = {
@@ -40,5 +40,12 @@ BULLET = {
     "LIFETIME" : .66,
     "SIZE" : 5,
     "SPEED": 10
+}
+
+GROUND = {
+    "SPRITE" : "assets/environment.png",
+    "HEIGHT" : 50,
+    "ELEVATION" : 600,
+    "COLL_ELEVATION" : 635,
 }
 

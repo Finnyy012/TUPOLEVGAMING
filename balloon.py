@@ -6,7 +6,7 @@ import settings
 
 
 class Balloon:
-    def __init__(self, sprite, ground_height: str=None) -> None:
+    def __init__(self, sprite, ground_height: int=None) -> None:
         """
         Initaliser of the balloon class
 
@@ -50,26 +50,31 @@ class Balloon:
         return self.rect.collidepoint(point)
 
 
-def load_single_type_balloons() -> list[Balloon]:
+def load_single_type_balloons(ground_height: int) -> list[Balloon]:
     """
     This function loads a list of balloons with the same sprite.
+    @Parameters:
+    - ground_height (int): height of the ground
 
     @Returns:
     - list(list[Balloon]): list of balloons
     """
     return [
         Balloon(
-            settings.BALLOON["SPRITE"]
+            settings.BALLOON["SPRITE"],
+            ground_height
         ) for _ in range(
             settings.BALLOON["BALLOON_COUNT"]
         )
     ]
 
 
-def load_multiple_types_balloons() -> list[Balloon]:
+def load_multiple_types_balloons(ground_height: int) -> list[Balloon]:
     """
     This function loads a list of balloons with different sprites.
-
+    @Parameters:
+    - ground_height (int): height of the ground
+    
     @Returns:
     - list (list[Balloon]): list of balloons
     """

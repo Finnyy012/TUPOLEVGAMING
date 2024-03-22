@@ -7,14 +7,16 @@ import settings
 import ground
 import agent
 import balloon
-import aircraft
 import bullet
 import utils
 
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
-    screen = pygame.display.set_mode(size=settings.SCREEN_RESOLUTION, flags=pygame.SRCALPHA)
+    screen = pygame.display.set_mode(
+        size=settings.SCREEN_RESOLUTION,
+        flags=pygame.SRCALPHA
+    )
     font = pygame.font.SysFont(None, 24)
 
 clock = pygame.time.Clock()
@@ -27,6 +29,7 @@ plane_1_data = settings.PLANE_POLIKARPOV_I_16
 player = agent.Agent(
     settings.SCREEN_RESOLUTION,
     plane_1_data["SPRITE"],
+    plane_1_data["SPRITE_TOP"],
     plane_1_data["MASS"],
     plane_1_data["ENGINE_FORCE"],
     plane_1_data["AGILITY"],
@@ -58,7 +61,9 @@ if settings.USE_GUI:
 
     # pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
     # pygame.mixer.music.play(-1)
-    flip = pygame.mixer.Sound("assets/Flip de beer intro-[AudioTrimmer.com].mp3")
+    # flip = pygame.mixer.Sound(
+    #     "assets/Flip de beer intro-[AudioTrimmer.com].mp3"
+    # )
     background = pygame.image.load("assets/background.png")
     background = pygame.transform.scale(
         background,
@@ -68,7 +73,7 @@ balloons = []
 bullets = []
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
-    balloons = utils.create_balloons(balloons, floor.coll_elevation)
+    balloons = utils.create_targets(balloons, floor.coll_elevation)
     if settings.USE_GUI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -88,7 +93,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             player.adjust_pitch(-dt)
         if keys[pygame.K_q]:
             player.flip()
-            flip.play()
+            # flip.play()
         if keys[pygame.K_SPACE]:
             bullets.append(bullet.Bullet(
                 player.pos_virtual,
@@ -97,19 +102,20 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 settings.BULLET["SPRITE"])
             )
 
-        # if keys[pygame.K_j]:
-        #     player.pos_real[0] -= 200*dt
-        # if keys[pygame.K_l]:
-        #     player.pos_real[0] += 200*dt
-        # if keys[pygame.K_i]:
-        #     player.pos_real[1] -= 200*dt
-        # if keys[pygame.K_k]:
-        #     player.pos_real[1] += 200*dt
+        if keys[pygame.K_j]:
+            player.pos_real[0] -= 200*dt
+        if keys[pygame.K_l]:
+            player.pos_real[0] += 200*dt
+        if keys[pygame.K_i]:
+            player.pos_real[1] -= 200*dt
+        if keys[pygame.K_k]:
+            player.pos_real[1] += 200*dt
 
     fov = []
     for b in balloons:
-        if(np.linalg.norm(b.coords - player.pos_virtual)<fov_radius):
+        if np.linalg.norm(b.coords - player.pos_virtual) < fov_radius:
             fov.append([b.coords[0], b.coords[1], 1])
+
     # No GUI needed for tick
     player.tick(dt, np.array(fov))
 
@@ -125,11 +131,15 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 plastic_orb.sprite, plastic_orb.coords
             )
             colour="black"
-            if(np.linalg.norm(plastic_orb.coords - player.pos_virtual)<fov_radius):
+            if(np.linalg.norm(
+                    plastic_orb.coords - player.pos_virtual
+            ) < fov_radius):
                 colour = "green"
             screen.blit(
                 font.render(
-                    str(np.linalg.norm(plastic_orb.coords - player.pos_virtual)),
+                    str(
+                        np.linalg.norm(plastic_orb.coords - player.pos_virtual)
+                    ),
                     False,
                     colour
                 ),
@@ -140,10 +150,16 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        pygame.draw.circle(surface=screen,color=0,center=player.rot_rect.center,radius=fov_radius,width=2)
+        pygame.draw.circle(
+            surface=screen,
+            color=0,
+            center=player.rot_rect.center,
+            radius=fov_radius,
+            width=2
+        )
 
-        utils.display_balloons(balloons, screen)
-        utils.display_bullets(bullets, screen)
+        utils.display_targets(balloons, screen)
+        utils.display_projectiles(bullets, screen)
 
         pygame.draw.line(screen, "black", center, center + player.v)
         pygame.draw.line(
@@ -220,7 +236,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "test: " + str(player.testv3),
+                "test: " + str(player.testv),
                 False,
                 "black"
             ),
@@ -236,11 +252,19 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "d: " + str(player.nearest_target_pos_abs),
+                "test: " + str(player.testv3),
                 False,
                 "black"
             ),
             (20, 180)
+        )
+        screen.blit(
+            font.render(
+                "action: " + str(player.action),
+                False,
+                "black"
+            ),
+            (20, 200)
         )
 
         # Update display with current information
@@ -275,11 +299,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
     total_time += dt
 
     if utils.hit_collision_player(balloons, player) or \
-       utils.hit_collision_environment(floor, player):
+       player.rot_rect.bottom >= floor.coll_elevation:
         running = False
 
     utils.hit_collision_player(balloons, player)
-    utils.hit_detection_and_move_bullets(bullets, balloons, dt)
+    utils.hit_detection_and_move_projectiles(bullets, balloons, dt)
 
 if settings.USE_GUI:
     screen.fill((255,255,255))
