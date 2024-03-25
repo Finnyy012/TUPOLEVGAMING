@@ -3,7 +3,7 @@ import pygame
 import numpy as np
 
 import aircraft
-import bulletv2 as bullet
+import bullet as bullet
 import balloon
 
 

@@ -1,14 +1,12 @@
 import pygame
-import random
 import agent
-import balloon
 import ground
 import numpy as np
 import settings
 import matplotlib.pyplot as plt
-import bulletv2 as bullet
+import bullet as bullet
 
-import utilsv2 as utils
+import utils as utils
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
@@ -62,10 +60,15 @@ if settings.USE_GUI:
         background,
         settings.SCREEN_RESOLUTION
     )
+
 balloons = []
 bullets = []
+
 while running and total_time <= settings.SIMULATION_RUNTIME:
+    #if respawning needs to be disabled, place the following line 
+    # outside the while loop
     balloons = utils.create_targets(balloons, floor.coll_elevation)
+
     if settings.USE_GUI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -244,11 +247,6 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
 
         # Update display with current information
         pygame.display.flip()
-
-
-    # Check if player has crashed onto the ground
-    # if player.rot_rect.bottom >= floor.coll_elevation:
-    #     running = False
 
     dt = clock.tick(settings.FPS) / 1000
     total_time += dt
