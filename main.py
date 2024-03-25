@@ -6,7 +6,9 @@ import ground
 import numpy as np
 import settings
 import matplotlib.pyplot as plt
+import bulletv2 as bullet
 
+import utilsv2 as utils
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
@@ -60,9 +62,10 @@ if settings.USE_GUI:
         background,
         settings.SCREEN_RESOLUTION
     )
-balloons = balloon.load_single_type_balloons()
-
+balloons = []
+bullets = []
 while running and total_time <= settings.SIMULATION_RUNTIME:
+    balloons = utils.create_targets(balloons, floor.coll_elevation)
     if settings.USE_GUI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -92,7 +95,13 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             player.pos_real[1] -= 200*dt
         if keys[pygame.K_k]:
             player.pos_real[1] += 200*dt
-
+        if keys[pygame.K_SPACE]:
+            bullets.append(bullet.Bullet(
+                player.pos_virtual,
+                player.pitch,
+                floor.coll_elevation,
+                settings.BULLET["SPRITE"])
+            )
     fov = []
     for b in balloons:
         if(np.linalg.norm(b.coords - player.pos_virtual)<fov_radius):
@@ -226,30 +235,16 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             ),
             (20, 180)
         )
+        utils.display_targets(balloons, screen)
+        utils.display_projectiles(bullets, screen)
+        utils.hit_detection_and_move_projectiles(bullets, balloons, dt)
+        if utils.hit_collision_player(balloons, player) or \
+           player.rot_rect.bottom >= floor.coll_elevation:
+            running = False
 
         # Update display with current information
         pygame.display.flip()
 
-        # Handle player input
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                #@TODO:
-                #change mouse click to plane sprite hit detection
-                for x in balloons:
-                    if x.is_hit(event.pos):
-                        balloons.remove(x)
-
-    if len(balloons) < settings.BALLOON["BALLOON_COUNT"]:
-        new_balloons = [
-            balloon.Balloon(
-                random.choice(
-                    settings.BALLOON["SPRITES"]
-                )
-            ) for _ in range (
-                settings.BALLOON["BALLOON_COUNT"] - len(balloons)
-            )
-        ]
-        balloons.extend(new_balloons)
 
     # Check if player has crashed onto the ground
     # if player.rot_rect.bottom >= floor.coll_elevation:

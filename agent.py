@@ -4,7 +4,7 @@ import time
 import numpy as np
 
 import aircraft
-
+import settings
 
 class Agent(aircraft.Aircraft):
     def __init__(self,
@@ -112,11 +112,36 @@ class Agent(aircraft.Aircraft):
         for target in fov:
             d = np.matmul((target[:2]-self.rot_rect.center), rotation_matrix)
             self.nearest_target_pos_abs = d
-            if (0 < d[0] < self.perception_front_dims[0]) and d[0] < d_nearest_target:
+            if (0 < d[0] < self.perception_front_dims[0]) and \
+                    d[0] < d_nearest_target:
                 if 0 < d[1] < self.perception_front_dims[1]:
-                    evade_direction = 1
+                    if (
+                        target[1] > (settings.GROUND["COLL_ELEVATION"] -
+                        (2 * self.perception_front_dims[1]))
+                    ) and (
+                        self.v_uv[0] < 0
+                    ):
+                        evade_direction = -1
+                    elif target[1] < \
+                            (2 * self.perception_front_dims[1]) and \
+                            (self.v_uv[0] > 0):
+                        evade_direction = -1
+                    else:
+                        evade_direction = 1
                 elif 0 < -d[1] < self.perception_front_dims[1]:
-                    evade_direction = -1
+                    if (
+                        target[1] > (settings.GROUND["COLL_ELEVATION"] -
+                        2 * self.perception_front_dims[1])
+                    ) and (
+                        self.v_uv[0] > 0
+                    ):
+                        evade_direction = 1
+                    elif target[1] < \
+                            (2 * self.perception_front_dims[1]) and \
+                            (self.v_uv[0] < 0):
+                        evade_direction = 1
+                    else:
+                        evade_direction = -1
 
         if evade_direction != 0:
             self.adjust_pitch(dt*evade_direction)

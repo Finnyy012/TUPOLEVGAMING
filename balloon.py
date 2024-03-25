@@ -6,26 +6,30 @@ import settings
 
 
 class Balloon:
-    def __init__(self, sprite: str=None) -> None:
+    def __init__(self, ground_height: int, sprite:str=None) -> None:
         """
         Initaliser of the balloon class
 
-        @Parameters:
-        - sprite (string): 
-         path of the image used for the sprite of the balloon 
-         (Default = False)
-        
+        :param ground_height: height of the ground (int)
+        :param sprite: path of the image used for the sprite of the 
+         balloon (Default = False)
         """
         size = settings.BALLOON["SIZE"]
         self.coords = np.array((
             random.randint(
-                0 + size, 1280 - size
+                size, settings.SCREEN_WIDTH - size
             ), random.randint(
-                0 + size, 720 - size
+                0, ground_height - size
             )
         ))
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)
         self.rect.center = self.coords
+
+        pygame.draw.rect(
+            surface=pygame.display.get_surface(),
+            color="black",
+            rect=self.rect
+        )
 
         if sprite:
             self.sprite = pygame.image.load(sprite)        
@@ -45,18 +49,20 @@ class Balloon:
         return self.rect.collidepoint(point)
 
 
-def load_single_type_balloons() -> list[Balloon]:
+def load_single_type_balloons(ground_height: int, target_count: int) -> list[Balloon]:
     """
     This function loads a list of balloons with the same sprite.
-
-    @Returns:
-    - list(list[Balloon]): list of balloons
+    
+    :param ground_height: height of the ground (int)
+    :param target_count: number of balloons to be loaded (int)
+    :return: list of balloons (list(list[Balloon]))
     """
     return [
         Balloon(
+            ground_height,
             settings.BALLOON["SPRITE"]
         ) for _ in range(
-            settings.BALLOON["BALLOON_COUNT"]
+            target_count
         )
     ]
 
