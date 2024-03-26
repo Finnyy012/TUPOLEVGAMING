@@ -4,19 +4,19 @@ import numpy as np
 
 import aircraft
 import bullet as bullet
-import balloon
+import target
 
 
 def hit_detection_and_move_projectiles(
         projectiles: bullet.Bullet,
-        targets: balloon.Balloon, 
+        targets: target.Target,
         dt: float
     ) -> None:
     """
     This function checks if a bullet hits a balloon.
     
     :param projectiles: list of bullets (list[bullet.Bullet])
-    :param targets: list of balloons (list[balloon.Balloon])
+    :param targets: list of balloons (list[balloon.Target])
     :param dt: time step (float)
     :return: None
     """
@@ -31,14 +31,14 @@ def hit_detection_and_move_projectiles(
                 
                 
 def hit_collision_player(
-        targets: list[balloon.Balloon], 
+        targets: list[target.Target],
         player: aircraft.Aircraft
     ) -> bool:
     """
     This function checks if the player hits a balloon. If a player
      hits a balloon, the function returns True.
 
-    :param targets: list of balloons (list[Balloon])
+    :param targets: list of balloons (list[Target])
     :param player: player object (aircraft.Aircraft)
     :return: bool
     """
@@ -51,20 +51,20 @@ def hit_collision_player(
     
     
 def create_targets(
-        targets: list[balloon.Balloon], 
+        targets: list[target.Target],
         ground_height: int
-    ) -> list[balloon.Balloon]:
+    ) -> list[target.Target]:
     """
     This function generates new targets if the number of targets is 
      less than the defined amount in settings.py. Ground height is used
      to spawn targets above the ground.
     
-    :param targets: list of balloons (list[Balloon])
+    :param targets: list of balloons (list[Target])
     :param ground_height: height of the ground (int)
-    :return: list of balloons (list[Balloon])
+    :return: list of balloons (list[Target])
     """
     if len(targets) < settings.BALLOON["BALLOON_COUNT"]:
-        new_targets = balloon.load_single_type_balloons(
+        new_targets = target.load_single_type_balloons(
             ground_height,
             settings.BALLOON["BALLOON_COUNT"] - len(targets)
         )
@@ -75,13 +75,13 @@ def create_targets(
 
 
 def display_targets(
-        targets: list[balloon.Balloon], 
+        targets: list[target.Target],
         screen: pygame.Surface
     ) -> None:
     """
     This function displays the targets on the screen.
     
-    :param targets: list of balloons (list[Balloon])
+    :param targets: list of balloons (list[Target])
     :param screen: screen (pygame.Surface)
     :return: None
     """

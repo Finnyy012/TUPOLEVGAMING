@@ -1,10 +1,11 @@
 import pygame
-import agent
-import ground
 import numpy as np
 import settings
 import matplotlib.pyplot as plt
+
 import bullet as bullet
+import agent
+import ground
 
 import utils as utils
 screen, font = None, None
