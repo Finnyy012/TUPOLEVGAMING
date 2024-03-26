@@ -181,8 +181,8 @@ class Agent(aircraft.Aircraft):
         """
         'tick' function; updates internal state
 
-        :param dt: time since last frame in s
-        :param fov: targets within fov (passed from main)
+        :param dt: (float) time since last frame in s
+        :param fov: (np.ndarray) targets within fov (passed from main)
         :return: None
         """
         super().tick(dt, fov)
@@ -197,8 +197,8 @@ class Agent(aircraft.Aircraft):
          - ground/ceiling are avoided
          - as much area as possible is discovered
 
-        :param dt: time since last frame in s
-        :param fov: targets within fov (passed from main)
+        :param dt: (float) time since last frame in s
+        :param fov: (np.ndarray) targets within fov (passed from main)
         :return: None
         """
         d_nearest_target = sys.maxsize
@@ -345,7 +345,8 @@ class Agent(aircraft.Aircraft):
          - history of fov
          - history of targets
 
-        :param fov: np array with targets in fov, passed from main
+        :param fov: (np.ndarray) np array with targets in fov,
+         passed from main
         :return: None
         """
         self.history[0][
@@ -361,14 +362,15 @@ class Agent(aircraft.Aircraft):
             ] = x[2]
         self.history[0] += self.diff_overlap_circle()
 
-    def diff_overlap_circle(self, offset:tuple[int, int]=(0, 0)):
+    def diff_overlap_circle(self, offset:tuple[int, int]=(0, 0)) -> np.ndarray:
         """
-        Returns the logical and of the circle with radius `r_fov` and centre `offset`,
-         and the unexplored area. Effectively returns the area that would be discovered
-         if the agent were to move to `offset`
+        Returns the logical and of the circle with radius `r_fov` and
+        centre `offset`, and the unexplored area. Effectively returns
+        the area that would be discovered if the agent were to move to
+        `offset`
 
-        :param offset: centre of circle
-        :return: new area
+        :param offset: (tuple[int, int]) centre of circle
+        :return: (np.ndarray) new area
         """
         d_agent_x = (
             self.do_x -
