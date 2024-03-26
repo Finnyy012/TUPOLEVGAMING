@@ -1,16 +1,20 @@
 import pygame
-import agent
-import ground
 import numpy as np
 import settings
 import matplotlib.pyplot as plt
-import bullet as bullet
 
-import utils as utils
+import bullet
+import agent
+import ground
+import utils
+
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
-    screen = pygame.display.set_mode(size=settings.SCREEN_RESOLUTION, flags=pygame.SRCALPHA)
+    screen = pygame.display.set_mode(
+        size=settings.SCREEN_RESOLUTION,
+        flags=pygame.SRCALPHA
+    )
     font = pygame.font.SysFont(None, 24)
 
 clock = pygame.time.Clock()
@@ -19,10 +23,11 @@ dt = 0
 total_time = 0
 fov_radius = 150
 
-plane_1_data = settings.PLANE_POLIKARPOV_I_16
+plane_1_data = settings.PLANE_MESSERSCHMIDT_109E
 player = agent.Agent(
     settings.SCREEN_RESOLUTION,
     plane_1_data["SPRITE"],
+    plane_1_data["SPRITE_TOP"],
     plane_1_data["MASS"],
     plane_1_data["ENGINE_FORCE"],
     plane_1_data["AGILITY"],
@@ -36,6 +41,8 @@ player = agent.Agent(
     plane_1_data["INIT_PITCH"],
     plane_1_data["INIT_V"],
     plane_1_data["INIT_POS"],
+    plane_1_data["SIZE"],
+    np.array((200,30))
 )
 
 floor = ground.Ground(
@@ -54,7 +61,9 @@ if settings.USE_GUI:
 
     # pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
     # pygame.mixer.music.play(-1)
-    flip = pygame.mixer.Sound("assets/Flip de beer intro-[AudioTrimmer.com].mp3")
+    flip = pygame.mixer.Sound(
+        "assets/Flip de beer intro-[AudioTrimmer.com].mp3"
+    )
     background = pygame.image.load("assets/background.png")
     background = pygame.transform.scale(
         background,
@@ -124,11 +133,20 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 plastic_orb.sprite, plastic_orb.coords
             )
             colour="black"
-            if(np.linalg.norm(plastic_orb.coords - player.pos_virtual)<fov_radius):
+            if (
+                np.linalg.norm(
+                    plastic_orb.coords - player.pos_virtual
+                ) < fov_radius
+            ):
                 colour = "green"
             screen.blit(
                 font.render(
-                    str(np.linalg.norm(plastic_orb.coords - player.pos_virtual)),
+                    str(
+                        np.linalg.norm(
+                            plastic_orb.coords -
+                            player.pos_virtual
+                        )
+                    ),
                     False,
                     colour
                 ),
@@ -139,7 +157,13 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        pygame.draw.circle(surface=screen,color=0,center=player.pos_virtual,radius=fov_radius,width=2)
+        pygame.draw.circle(
+            surface=screen,
+            color=0,
+            center=player.pos_virtual,
+            radius=fov_radius,
+            width=2
+        )
 
         pygame.draw.line(screen, "black", center, center + player.v)
         pygame.draw.line(

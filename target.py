@@ -5,14 +5,21 @@ import random
 import settings
 
 
-class Balloon:
+class Target:
+    """
+    Target class
+
+    + coords: (Tuple[int, int]) coördinaten
+    + rect: (pygame.rect) rect
+    + sprite: (pygame.surface) sprite
+    """
     def __init__(self, ground_height: int, sprite:str=None) -> None:
         """
-        Initaliser of the balloon class
+        Initaliser of the Target class
 
         :param ground_height: height of the ground (int)
-        :param sprite: path of the image used for the sprite of the 
-         balloon (Default = False)
+        :param sprite: path of the image used for the sprite of the (str)
+         target (Default = False)
         """
         size = settings.BALLOON["SIZE"]
         self.coords = np.array((
@@ -33,32 +40,21 @@ class Balloon:
 
         if sprite:
             self.sprite = pygame.image.load(sprite)        
-            self.sprite = pygame.transform.scale(self.sprite, (size, size))    
-
-    def is_hit(self, point) -> bool:
-        """
-        This function checks if the balloon is hit.
-        
-        @Parameters:
-        - point (tuple): position of the event that needs to be checked
-                         (pygame.event.pos) 
-
-        @Returns:
-        - bool: True if the point is within the balloon, False otherwise
-        """
-        return self.rect.collidepoint(point)
+            self.sprite = pygame.transform.scale(self.sprite, (size, size))
 
 
-def load_single_type_balloons(ground_height: int, target_count: int) -> list[Balloon]:
+def load_single_type_targets(
+        ground_height: int, target_count: int
+) -> list[Target]:
     """
-    This function loads a list of balloons with the same sprite.
+    This function loads a list of target with the same sprite.
     
     :param ground_height: height of the ground (int)
-    :param target_count: number of balloons to be loaded (int)
-    :return: list of balloons (list(list[Balloon]))
+    :param target_count: number of target to be loaded (int)
+    :return: list of target (list[Target])
     """
     return [
-        Balloon(
+        Target(
             ground_height,
             settings.BALLOON["SPRITE"]
         ) for _ in range(
@@ -67,18 +63,17 @@ def load_single_type_balloons(ground_height: int, target_count: int) -> list[Bal
     ]
 
 
-def load_multiple_types_balloons() -> list[Balloon]:
+def load_multiple_types_targets() -> list[Target]:
     """
-    This function loads a list of balloons with different sprites.
+    This function loads a list of target with different sprites.
 
-    @Returns:
-    - list (list[Balloon]): list of balloons
+    :return: list of target (list[Target])
     """
-    #@NOTE:
-    #This function can be expanded further once multiple 
-    # types of balloons are implemented.
+    # @NOTE:
+    # This function can be expanded further once multiple
+    #  types of balloons are implemented.
     return [
-        Balloon(
+        Target(
             random.choice(
                 settings.BALLOON["SPRITES"]
             )

@@ -23,7 +23,26 @@ PLANE_POLIKARPOV_I_16 = {
     "INIT_PITCH" : 0, 
     "INIT_V" : (100.0, 0.0),
     "INIT_POS" : (SCREEN_WIDTH / 2, 200),
-    "SIZE" : (24,13)  # 6.13 : 3.25 irl
+    "SIZE" : (24, 17)  # 6.13 : 3.25 irl
+}
+
+PLANE_MESSERSCHMIDT_109E = {
+    "SPRITE" : "assets/sprite_nationalist_109E.png",
+    "SPRITE_TOP" : "assets/sprite_nationalist_109E_top.png",
+    "MASS" : 2500,
+    "ENGINE_FORCE" : 1000,
+    "AGILITY" : 100,
+    "C_DRAG" : 0.6,
+    "C_LIFT" : 100,
+    "AOA_CRIT_LOW" : (-15.0, -0.95),
+    "AOA_CRIT_HIGH" : (19.0, 1.4),
+    "CL0" : 0.32,
+    "CD_MIN" : 0.5,
+    "INIT_THROTTLE" : 100,
+    "INIT_PITCH" : 0,
+    "INIT_V" : (100.0, 0.0),
+    "INIT_POS" : (SCREEN_WIDTH / 2, 200),
+    "SIZE" : (35, 15)  # 8.95 : 2.6 irl
 }
 
 BALLOON = {
