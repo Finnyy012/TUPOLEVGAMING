@@ -186,20 +186,8 @@ if settings.USE_GUI:
     )
 
 balloons = []
-
-bullets1 = []
-bullets2 = []
-bullets3 = []
-bullets4 = []
-bullets5 = []
-bullets6 = []
-bullets7 = []
-bullets8 = []
-
-# bullets = [bullets1, bullets2, bullets3, bullets4, bullets5, bullets6, bullets7, bullets8]
-bullets = [bullets1, bullets2, bullets3, bullets4]
-# agents = [player, player2, player3, player4, player5, player6, player7, player8]
 agents = [player, player2, player3, player4]
+
 while running and total_time <= settings.SIMULATION_RUNTIME:
     #if respawning needs to be disabled, place the following line 
     # outside the while loop
@@ -212,13 +200,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             elif event.type == pygame.KEYUP:
             # This block runs when a key is released
                 if event.key == pygame.K_SPACE:
-                    for x, a in enumerate(agents):
-                        bullets[x].append(bullet.Bullet(
-                        a.pos_virtual,
-                        a.pitch,
-                        floor.coll_elevation,
-                        settings.BULLET["SPRITE"])
-                    )
+                    player.shoot()
             
         screen.fill("white")
 
@@ -271,42 +253,13 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         agents,
         fov_radius
     )    
-    
-    # player5_fov = utils.check_surround(
-    #     player5, 
-    #     balloons, 
-    #     agents,
-    #     fov_radius
-    # )    
-    
-    # player6_fov = utils.check_surround(
-    #     player6, 
-    #     balloons, 
-    #     agents,
-    #     fov_radius
-    # )    
-    
-    # player7_fov = utils.check_surround(
-    #     player7, 
-    #     balloons, 
-    #     agents,
-    #     fov_radius
-    # )    
-    
-    # player8_fov = utils.check_surround(
-    #     player8, 
-    #     balloons, 
-    #     agents,
-    #     fov_radius
-    # )
-    fov_list = [player1_fov, player2_fov, player3_fov, player4_fov]
-    # fov_list = [player1_fov, player2_fov, player3_fov, player4_fov, player5_fov, player6_fov, player7_fov, player8_fov]
 
+    fov_list = [player1_fov, player2_fov, player3_fov, player4_fov]
 
     for x, a in enumerate(agents):
         a.tick(dt, np.array(fov_list[x]))
     
-    # utils.hit_detection_agents(agents)
+    utils.hit_detection_agents(agents)
     # No GUI needed for tick
 
 
@@ -449,11 +402,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             ),
             (20, 180)
         )
-        utils.display_targets(balloons, screen)
-        utils.display_projectiles(bullets, screen)
+        # utils.display_targets(balloons, screen)
+        utils.display_projectiles(agents, screen)
         
         for x, a in enumerate(agents):
-            utils.hit_detection_and_move_projectiles(bullets, balloons, agents, a, dt)
+            utils.hit_detection_and_move_projectiles(a.bullets, balloons, agents, a, dt)
             if utils.hit_collision_player(balloons, a) or a.rot_rect.bottom >= floor.coll_elevation:
                 agents.remove(a)
 

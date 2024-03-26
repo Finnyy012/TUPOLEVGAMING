@@ -5,6 +5,7 @@ import numpy as np
 
 import aircraft
 import settings
+import bullet 
 
 class Agent(aircraft.Aircraft):
     def __init__(self,
@@ -47,8 +48,8 @@ class Agent(aircraft.Aircraft):
         self.testv3 = [0,0]
         self.timestart = time.time()
         self.action = 'none'
-
         # internal state
+        self.bullets = []
         self.history_scale = 10
         self.history = np.zeros((2,
                                  int(window_dimensions[0]/self.history_scale),
@@ -102,100 +103,101 @@ class Agent(aircraft.Aircraft):
         :param fov: targets within fov (passed from main)
         :return: None
         """
-        d_nearest_target = 9999999
-        rotation_matrix = np.array([[ math.cos((-self.pitch) * math.pi / 180),
-                                     -math.sin((-self.pitch) * math.pi / 180)],
-                                    [ math.sin((-self.pitch) * math.pi / 180),
-                                      math.cos((-self.pitch) * math.pi / 180)]])
-        evade_direction = 0
+        pass
+        # d_nearest_target = 9999999
+        # rotation_matrix = np.array([[ math.cos((-self.pitch) * math.pi / 180),
+        #                              -math.sin((-self.pitch) * math.pi / 180)],
+        #                             [ math.sin((-self.pitch) * math.pi / 180),
+        #                               math.cos((-self.pitch) * math.pi / 180)]])
+        # evade_direction = 0
 
-        for target in fov:
-            d = np.matmul((target[:2]-self.rot_rect.center), rotation_matrix)
-            self.nearest_target_pos_abs = d
-            if (0 < d[0] < self.perception_front_dims[0]) and \
-                    d[0] < d_nearest_target:
-                if 0 < d[1] < self.perception_front_dims[1]:
-                    if (
-                        target[1] > (settings.GROUND["COLL_ELEVATION"] -
-                        (2 * self.perception_front_dims[1]))
-                    ) and (
-                        self.v_uv[0] < 0
-                    ):
-                        evade_direction = -1
-                    elif target[1] < \
-                            (2 * self.perception_front_dims[1]) and \
-                            (self.v_uv[0] > 0):
-                        evade_direction = -1
-                    else:
-                        evade_direction = 1
-                elif 0 < -d[1] < self.perception_front_dims[1]:
-                    if (
-                        target[1] > (settings.GROUND["COLL_ELEVATION"] -
-                        2 * self.perception_front_dims[1])
-                    ) and (
-                        self.v_uv[0] > 0
-                    ):
-                        evade_direction = 1
-                    elif target[1] < \
-                            (2 * self.perception_front_dims[1]) and \
-                            (self.v_uv[0] < 0):
-                        evade_direction = 1
-                    else:
-                        evade_direction = -1
+        # for target in fov:
+        #     d = np.matmul((target[:2]-self.rot_rect.center), rotation_matrix)
+        #     self.nearest_target_pos_abs = d
+        #     if (0 < d[0] < self.perception_front_dims[0]) and \
+        #             d[0] < d_nearest_target:
+        #         if 0 < d[1] < self.perception_front_dims[1]:
+        #             if (
+        #                 target[1] > (settings.GROUND["COLL_ELEVATION"] -
+        #                 (2 * self.perception_front_dims[1]))
+        #             ) and (
+        #                 self.v_uv[0] < 0
+        #             ):
+        #                 evade_direction = -1
+        #             elif target[1] < \
+        #                     (2 * self.perception_front_dims[1]) and \
+        #                     (self.v_uv[0] > 0):
+        #                 evade_direction = -1
+        #             else:
+        #                 evade_direction = 1
+        #         elif 0 < -d[1] < self.perception_front_dims[1]:
+        #             if (
+        #                 target[1] > (settings.GROUND["COLL_ELEVATION"] -
+        #                 2 * self.perception_front_dims[1])
+        #             ) and (
+        #                 self.v_uv[0] > 0
+        #             ):
+        #                 evade_direction = 1
+        #             elif target[1] < \
+        #                     (2 * self.perception_front_dims[1]) and \
+        #                     (self.v_uv[0] < 0):
+        #                 evade_direction = 1
+        #             else:
+        #                 evade_direction = -1
 
-        if evade_direction != 0:
-            self.adjust_pitch(dt*evade_direction)
-        else:
-            if self.orientation == 1 and (-0.9 > self.v_uv[0]):
-                self.flip()
-            elif self.orientation==-1 and (0.9 < self.v_uv[0]):
-                self.flip()
-            if self.pos_virtual[1] + self.v_uv[1] * 150 > 625 and (self.v_uv[1] >= -0.2):
-                self.action = 'floor'
-                if self.v_uv[0] > 0:
-                    self.adjust_pitch(dt)
-                else:
-                    self.adjust_pitch(-dt)
-            elif self.pos_virtual[1] + self.v_uv[1] * 150 < 10 and (self.v_uv[1] <= 0.2):
-                self.action = 'ceiling'
-                if self.v_uv[0] > 0:
-                    self.adjust_pitch(-dt)
-                else:
-                    self.adjust_pitch(dt)
-            else:
-                self.action = 'explore'
-                best = 0
-                best_circle = []
-                for center in self.circle_coords:
-                    n_new = np.sum(self.diff_overlap_circle(center))
-                    if n_new == best:
-                        best = n_new
-                        best_circle.append(center)
-                    elif n_new > best:
-                        best = n_new
-                        best_circle = [center]
-                if len(best_circle)==1:
-                    best_circle = best_circle[0]
-                elif best == 0:
-                    best_circle = np.average(np.where(self.history[0][:,:64] == 0), axis=1)*self.history_scale
-                    best_circle -= self.pos_virtual
-                    self.action = 'explore tiebreak'
-                    best_circle[1] = -best_circle[1]
-                else:
-                    best_circle = best_circle[0]
-                    pass  # TODO: gelijk aantal vakkies in de buut
+        # if evade_direction != 0:
+        #     self.adjust_pitch(dt*evade_direction)
+        # else:
+        #     if self.orientation == 1 and (-0.9 > self.v_uv[0]):
+        #         self.flip()
+        #     elif self.orientation==-1 and (0.9 < self.v_uv[0]):
+        #         self.flip()
+        #     if self.pos_virtual[1] + self.v_uv[1] * 150 > 625 and (self.v_uv[1] >= -0.2):
+        #         self.action = 'floor'
+        #         if self.v_uv[0] > 0:
+        #             self.adjust_pitch(dt)
+        #         else:
+        #             self.adjust_pitch(-dt)
+        #     elif self.pos_virtual[1] + self.v_uv[1] * 150 < 10 and (self.v_uv[1] <= 0.2):
+        #         self.action = 'ceiling'
+        #         if self.v_uv[0] > 0:
+        #             self.adjust_pitch(-dt)
+        #         else:
+        #             self.adjust_pitch(dt)
+        #     else:
+        #         self.action = 'explore'
+        #         best = 0
+        #         best_circle = []
+        #         for center in self.circle_coords:
+        #             n_new = np.sum(self.diff_overlap_circle(center))
+        #             if n_new == best:
+        #                 best = n_new
+        #                 best_circle.append(center)
+        #             elif n_new > best:
+        #                 best = n_new
+        #                 best_circle = [center]
+        #         if len(best_circle)==1:
+        #             best_circle = best_circle[0]
+        #         elif best == 0:
+        #             best_circle = np.average(np.where(self.history[0][:,:64] == 0), axis=1)*self.history_scale
+        #             best_circle -= self.pos_virtual
+        #             self.action = 'explore tiebreak'
+        #             best_circle[1] = -best_circle[1]
+        #         else:
+        #             best_circle = best_circle[0]
+        #             pass  # TODO: gelijk aantal vakkies in de buut
 
-                diff_head = (math.atan2(best_circle[0], best_circle[1]) -
-                             math.atan2(self.v[0], self.v[1])) * 180 / math.pi
+        #         diff_head = (math.atan2(best_circle[0], best_circle[1]) -
+        #                      math.atan2(self.v[0], self.v[1])) * 180 / math.pi
 
-                if diff_head > 180:
-                    diff_head -= 360
-                elif diff_head < -180:
-                    diff_head += 360
-                if diff_head<0:
-                    self.adjust_pitch(dt)
-                elif diff_head>0:
-                    self.adjust_pitch(-dt)
+        #         if diff_head > 180:
+        #             diff_head -= 360
+        #         elif diff_head < -180:
+        #             diff_head += 360
+        #         if diff_head<0:
+        #             self.adjust_pitch(dt)
+        #         elif diff_head>0:
+        #             self.adjust_pitch(-dt)
 
     def update_history(self, fov):
         """
@@ -233,3 +235,15 @@ class Agent(aircraft.Aircraft):
         d_agent_y = (self.do_y - self.pos_virtual[1]/self.history_scale + offset[1]/self.history_scale)
         in_fov = (np.sqrt(d_agent_x ** 2 + d_agent_y ** 2) < (self.r_fov/self.history_scale))
         return np.logical_and(in_fov, ~(self.history[0].astype(bool))).astype(int)
+
+    
+    def shoot(self):
+        self.bullets.append(
+            bullet.Bullet(
+                self.pos_virtual,
+                self.pitch,
+                settings.GROUND["COLL_ELEVATION"],
+                settings.BULLET["SPRITE"]
+            )
+        )
+

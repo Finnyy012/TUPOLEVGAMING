@@ -16,32 +16,31 @@ def hit_detection_and_move_projectiles(
         dt: float
     ) -> None:
     """
-    This function checks if a bullet hits a balloon.
+    This function checks if a bullet hits a balloon or a plane.
     
     :param projectiles: list of bullets (list[bullet.Bullet])
     :param targets: list of balloons (list[balloon.Balloon])
     :param dt: time step (float)
     :return: None
     """
-    for projectile_list in projectiles:
-        for projectile in projectile_list:
-        # for a in agents:
-        #     if a == agent:
-        #         continue
-        #     if np.linalg.norm(np.array(a.rot_rect.center)) - \
-        #        np.linalg.norm(np.array(projectile.rect.center)) < 5:
-        #         projectiles.remove(projectile)
-        #         agents.remove(a)
-        #         continue
-            if projectile.move_bullet(dt):
-                projectile_list.remove(projectile)
+
+
+    for projectile in projectiles:
+        if projectile.move_bullet(dt):
+            projectiles.remove(projectile)
+            continue
+        for a in agents:
+            if np.linalg.norm(np.array(a.rot_rect.center) - \
+               np.array(projectile.rect.center)) <= 5 and a != agent:
+                projectiles.remove(projectile)
+                agents.remove(a)
                 continue
-            
-            for orb in targets:
-                if projectile.rect.colliderect(orb.rect):
-                    projectile_list.remove(projectile)
-                    targets.remove(orb)
-                    continue
+
+        for orb in targets:
+            if projectile.rect.colliderect(orb.rect):
+                projectiles.remove(projectile)
+                targets.remove(orb)
+                continue
     
 def hit_detection_agents(
         agents: list[agent.Agent],
@@ -76,7 +75,7 @@ def hit_collision_player(
     """
     for target in targets:
         if np.linalg.norm(
-            np.array(player.rot_rect.center) - target.coords
+            np.array(player.rot_rect.center) - target.rect.center
         ) < 10:
             return True
     return False
@@ -123,7 +122,7 @@ def display_targets(
 
 
 def display_projectiles(
-        projectiles: list[bullet.Bullet],
+        agents: list[agent.Agent],
         screen: pygame.Surface
     ) -> None:
     """
@@ -134,9 +133,8 @@ def display_projectiles(
     :param screen: screen (pygame.Surface)
     :return: None
     """
-    for bullet_list in projectiles:
-        for bullet in bullet_list:
-
+    for agent in agents:
+        for bullet in agent.bullets:
             screen.blit(
                 pygame.transform.flip(
                     bullet.sprite,
