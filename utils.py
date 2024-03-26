@@ -1,7 +1,8 @@
 import settings
 import pygame
 import numpy as np
-
+from itertools import compress
+import agent
 import aircraft
 import bullet as bullet
 import balloon
@@ -10,6 +11,8 @@ import balloon
 def hit_detection_and_move_projectiles(
         projectiles: bullet.Bullet,
         targets: balloon.Balloon, 
+        agents: list[agent.Agent],
+        agent: agent.Agent,
         dt: float
     ) -> None:
     """
@@ -20,14 +23,43 @@ def hit_detection_and_move_projectiles(
     :param dt: time step (float)
     :return: None
     """
-    for projectile in projectiles:
-        if projectile.move_bullet(dt):
-            projectiles.remove(projectile)
-            continue
-        for orb in targets:
-            if projectile.rect.colliderect(orb.rect):
-                projectiles.remove(projectile)
-                targets.remove(orb)
+    for projectile_list in projectiles:
+        for projectile in projectile_list:
+        # for a in agents:
+        #     if a == agent:
+        #         continue
+        #     if np.linalg.norm(np.array(a.rot_rect.center)) - \
+        #        np.linalg.norm(np.array(projectile.rect.center)) < 5:
+        #         projectiles.remove(projectile)
+        #         agents.remove(a)
+        #         continue
+            if projectile.move_bullet(dt):
+                projectile_list.remove(projectile)
+                continue
+            
+            for orb in targets:
+                if projectile.rect.colliderect(orb.rect):
+                    projectile_list.remove(projectile)
+                    targets.remove(orb)
+                    continue
+    
+def hit_detection_agents(
+        agents: list[agent.Agent],
+    ) -> None:
+    """
+    This function checks if an agent hits another agent
+    
+    :param agents: list of agents (list[agent.Agent])
+    :return: None
+    """
+    for agent1 in agents:
+        for agent2 in agents:
+            if agent1 != agent2:
+                if np.linalg.norm(np.array(agent1.rot_rect.center) \
+                - np.array(agent2.rot_rect.center) 
+                ) < 24:
+                    agents.remove(agent1)
+                    agents.remove(agent2)
                 
                 
 def hit_collision_player(
@@ -45,11 +77,10 @@ def hit_collision_player(
     for target in targets:
         if np.linalg.norm(
             np.array(player.rot_rect.center) - target.coords
-        ) < 15:
+        ) < 10:
             return True
     return False
-    
-    
+     
 def create_targets(
         targets: list[balloon.Balloon], 
         ground_height: int
@@ -103,12 +134,41 @@ def display_projectiles(
     :param screen: screen (pygame.Surface)
     :return: None
     """
-    for projectile in projectiles:
-        screen.blit(
-            pygame.transform.flip(
-                projectile.sprite,
-                True, 
-                False
-                ), 
-            projectile.coords
-        )
+    for bullet_list in projectiles:
+        for bullet in bullet_list:
+
+            screen.blit(
+                pygame.transform.flip(
+                    bullet.sprite,
+                    True, 
+                    False
+                    ), 
+                bullet.coords
+            )
+
+
+def check_surround(
+        player: agent.Agent, 
+        balloons: list[balloon.Balloon], 
+        agents : list[agent.Agent],
+        fov_radius: int
+    ) -> list: 
+    """
+    This function checks the surrounding of the agent and returns a 
+     list of all nearby targets.
+
+    :param player: player object (agent.Agent)
+    :param balloons: list of balloons (list[balloon.Balloon])
+    :agents: list of agents (list[agent.Agent])
+    :param fov_radius: field of view radius (int)
+    :return: list of balloons (list[balloon.Balloon])
+    """
+    fov = []
+    for b in balloons:
+        if(np.linalg.norm(b.coords - player.pos_virtual) < fov_radius):
+            fov.append([b.coords[0], b.coords[1], 1])
+    # for a in agents:
+    #     if(np.linalg.norm(a.pos_virtual - player.pos_virtual) < fov_radius) \
+    #         and a != player:
+    #         fov.append([a.pos_virtual[0], a.pos_virtual[1], 1])
+    return fov

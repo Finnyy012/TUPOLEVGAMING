@@ -38,7 +38,7 @@ class Agent(aircraft.Aircraft):
                          init_v,
                          init_pos)
         # dangerzone
-        self.perception_front_dims = np.array((150, 30))
+        self.perception_front_dims = np.array((150, 40))
         self.nearest_target_pos_abs = []
 
         # debug

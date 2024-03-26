@@ -5,7 +5,7 @@ import numpy as np
 import settings
 import matplotlib.pyplot as plt
 import bullet as bullet
-
+from itertools import compress
 import utils as utils
 screen, font = None, None
 if settings.USE_GUI:
@@ -38,6 +38,130 @@ player = agent.Agent(
     plane_1_data["INIT_POS"],
 )
 
+player2 = agent.Agent(
+    settings.SCREEN_RESOLUTION,
+    plane_1_data["SPRITE"],
+    plane_1_data["MASS"],
+    plane_1_data["ENGINE_FORCE"],
+    plane_1_data["AGILITY"],
+    plane_1_data["C_DRAG"],
+    plane_1_data["C_LIFT"],
+    plane_1_data["AOA_CRIT_LOW"],
+    plane_1_data["AOA_CRIT_HIGH"],
+    plane_1_data["CL0"],
+    plane_1_data["CD_MIN"],
+    plane_1_data["INIT_THROTTLE"],
+    plane_1_data["INIT_PITCH"],
+    plane_1_data["INIT_V"],
+    (1280 / 2, 100),
+)
+
+player3 = agent.Agent(
+    settings.SCREEN_RESOLUTION,
+    plane_1_data["SPRITE"],
+    plane_1_data["MASS"],
+    plane_1_data["ENGINE_FORCE"],
+    plane_1_data["AGILITY"],
+    plane_1_data["C_DRAG"],
+    plane_1_data["C_LIFT"],
+    plane_1_data["AOA_CRIT_LOW"],
+    plane_1_data["AOA_CRIT_HIGH"],
+    plane_1_data["CL0"],
+    plane_1_data["CD_MIN"],
+    plane_1_data["INIT_THROTTLE"],
+    plane_1_data["INIT_PITCH"],
+    plane_1_data["INIT_V"],
+    (1280 / 2, 300),
+)
+
+player4 = agent.Agent(
+    settings.SCREEN_RESOLUTION,
+    plane_1_data["SPRITE"],
+    plane_1_data["MASS"],
+    plane_1_data["ENGINE_FORCE"],
+    plane_1_data["AGILITY"],
+    plane_1_data["C_DRAG"],
+    plane_1_data["C_LIFT"],
+    plane_1_data["AOA_CRIT_LOW"],
+    plane_1_data["AOA_CRIT_HIGH"],
+    plane_1_data["CL0"],
+    plane_1_data["CD_MIN"],
+    plane_1_data["INIT_THROTTLE"],
+    plane_1_data["INIT_PITCH"],
+    plane_1_data["INIT_V"],
+    (1280 / 4, 250),
+)
+player5 = agent.Agent(
+    settings.SCREEN_RESOLUTION,
+    plane_1_data["SPRITE"],
+    plane_1_data["MASS"],
+    plane_1_data["ENGINE_FORCE"],
+    plane_1_data["AGILITY"],
+    plane_1_data["C_DRAG"],
+    plane_1_data["C_LIFT"],
+    plane_1_data["AOA_CRIT_LOW"],
+    plane_1_data["AOA_CRIT_HIGH"],
+    plane_1_data["CL0"],
+    plane_1_data["CD_MIN"],
+    plane_1_data["INIT_THROTTLE"],
+    plane_1_data["INIT_PITCH"],
+    plane_1_data["INIT_V"],
+    (1280 / 4, 300),
+)
+player6 = agent.Agent(
+    settings.SCREEN_RESOLUTION,
+    plane_1_data["SPRITE"],
+    plane_1_data["MASS"],
+    plane_1_data["ENGINE_FORCE"],
+    plane_1_data["AGILITY"],
+    plane_1_data["C_DRAG"],
+    plane_1_data["C_LIFT"],
+    plane_1_data["AOA_CRIT_LOW"],
+    plane_1_data["AOA_CRIT_HIGH"],
+    plane_1_data["CL0"],
+    plane_1_data["CD_MIN"],
+    plane_1_data["INIT_THROTTLE"],
+    plane_1_data["INIT_PITCH"],
+    plane_1_data["INIT_V"],
+    (1280 / 4, 250),
+)
+
+player7 = agent.Agent(
+    settings.SCREEN_RESOLUTION,
+    plane_1_data["SPRITE"],
+    plane_1_data["MASS"],
+    plane_1_data["ENGINE_FORCE"],
+    plane_1_data["AGILITY"],
+    plane_1_data["C_DRAG"],
+    plane_1_data["C_LIFT"],
+    plane_1_data["AOA_CRIT_LOW"],
+    plane_1_data["AOA_CRIT_HIGH"],
+    plane_1_data["CL0"],
+    plane_1_data["CD_MIN"],
+    plane_1_data["INIT_THROTTLE"],
+    plane_1_data["INIT_PITCH"],
+    plane_1_data["INIT_V"],
+    (1280 / 4, 150),
+)
+
+player8 = agent.Agent(
+    settings.SCREEN_RESOLUTION,
+    plane_1_data["SPRITE"],
+    plane_1_data["MASS"],
+    plane_1_data["ENGINE_FORCE"],
+    plane_1_data["AGILITY"],
+    plane_1_data["C_DRAG"],
+    plane_1_data["C_LIFT"],
+    plane_1_data["AOA_CRIT_LOW"],
+    plane_1_data["AOA_CRIT_HIGH"],
+    plane_1_data["CL0"],
+    plane_1_data["CD_MIN"],
+    plane_1_data["INIT_THROTTLE"],
+    plane_1_data["INIT_PITCH"],
+    plane_1_data["INIT_V"],
+    (1280 / 4, 100),
+)
+
 floor = ground.Ground(
     height=50, 
     elevation=600, 
@@ -62,8 +186,20 @@ if settings.USE_GUI:
     )
 
 balloons = []
-bullets = []
 
+bullets1 = []
+bullets2 = []
+bullets3 = []
+bullets4 = []
+bullets5 = []
+bullets6 = []
+bullets7 = []
+bullets8 = []
+
+# bullets = [bullets1, bullets2, bullets3, bullets4, bullets5, bullets6, bullets7, bullets8]
+bullets = [bullets1, bullets2, bullets3, bullets4]
+# agents = [player, player2, player3, player4, player5, player6, player7, player8]
+agents = [player, player2, player3, player4]
 while running and total_time <= settings.SIMULATION_RUNTIME:
     #if respawning needs to be disabled, place the following line 
     # outside the while loop
@@ -73,6 +209,17 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.KEYUP:
+            # This block runs when a key is released
+                if event.key == pygame.K_SPACE:
+                    for x, a in enumerate(agents):
+                        bullets[x].append(bullet.Bullet(
+                        a.pos_virtual,
+                        a.pitch,
+                        floor.coll_elevation,
+                        settings.BULLET["SPRITE"])
+                    )
+            
         screen.fill("white")
 
         keys = pygame.key.get_pressed()
@@ -98,25 +245,78 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             player.pos_real[1] -= 200*dt
         if keys[pygame.K_k]:
             player.pos_real[1] += 200*dt
-        if keys[pygame.K_SPACE]:
-            bullets.append(bullet.Bullet(
-                player.pos_virtual,
-                player.pitch,
-                floor.coll_elevation,
-                settings.BULLET["SPRITE"])
-            )
-    fov = []
-    for b in balloons:
-        if(np.linalg.norm(b.coords - player.pos_virtual)<fov_radius):
-            fov.append([b.coords[0], b.coords[1], 1])
+        
+
+    player1_fov = utils.check_surround(
+        player, 
+        balloons, 
+        agents,
+        fov_radius
+    )
+    player2_fov = utils.check_surround(
+        player2, 
+        balloons, 
+        agents,
+        fov_radius
+    )
+    player3_fov = utils.check_surround(
+        player3, 
+        balloons, 
+        agents,
+        fov_radius
+    )
+    player4_fov = utils.check_surround(
+        player4, 
+        balloons, 
+        agents,
+        fov_radius
+    )    
+    
+    # player5_fov = utils.check_surround(
+    #     player5, 
+    #     balloons, 
+    #     agents,
+    #     fov_radius
+    # )    
+    
+    # player6_fov = utils.check_surround(
+    #     player6, 
+    #     balloons, 
+    #     agents,
+    #     fov_radius
+    # )    
+    
+    # player7_fov = utils.check_surround(
+    #     player7, 
+    #     balloons, 
+    #     agents,
+    #     fov_radius
+    # )    
+    
+    # player8_fov = utils.check_surround(
+    #     player8, 
+    #     balloons, 
+    #     agents,
+    #     fov_radius
+    # )
+    fov_list = [player1_fov, player2_fov, player3_fov, player4_fov]
+    # fov_list = [player1_fov, player2_fov, player3_fov, player4_fov, player5_fov, player6_fov, player7_fov, player8_fov]
+
+
+    for x, a in enumerate(agents):
+        a.tick(dt, np.array(fov_list[x]))
+    
+    # utils.hit_detection_agents(agents)
     # No GUI needed for tick
-    player.tick(dt, np.array(fov))
+
 
     if settings.USE_GUI:
         # Draw (blit) background, player, ground, 
         #  baloons, lines, and tekst
         screen.blit(background, (0, 0))
-        screen.blit(player.rot_sprite, player.rot_rect)
+
+        for a in agents:  
+            screen.blit(a.rot_sprite, a.rot_rect)
         screen.blit(floor.sprite, [0, floor.elevation])
 
         for plastic_orb in balloons:
@@ -124,11 +324,17 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 plastic_orb.sprite, plastic_orb.coords
             )
             colour="black"
-            if(np.linalg.norm(plastic_orb.coords - player.pos_virtual)<fov_radius):
+            if(np.linalg.norm(
+                plastic_orb.coords - player.pos_virtual
+            ) < fov_radius):
                 colour = "green"
             screen.blit(
                 font.render(
-                    str(np.linalg.norm(plastic_orb.coords - player.pos_virtual)),
+                    str(
+                        np.linalg.norm(
+                        plastic_orb.coords - player.pos_virtual
+                        )   
+                    ),
                     False,
                     colour
                 ),
@@ -139,7 +345,12 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        pygame.draw.circle(surface=screen,color=0,center=player.pos_virtual,radius=fov_radius,width=2)
+        pygame.draw.circle(
+            surface=screen,
+            color=0,center=player.pos_virtual,
+            radius=fov_radius,
+            width=2
+        )
 
         pygame.draw.line(screen, "black", center, center + player.v)
         pygame.draw.line(
@@ -240,11 +451,14 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         utils.display_targets(balloons, screen)
         utils.display_projectiles(bullets, screen)
-        utils.hit_detection_and_move_projectiles(bullets, balloons, dt)
-        if utils.hit_collision_player(balloons, player) or \
-           player.rot_rect.bottom >= floor.coll_elevation:
-            running = False
+        
+        for x, a in enumerate(agents):
+            utils.hit_detection_and_move_projectiles(bullets, balloons, agents, a, dt)
+            if utils.hit_collision_player(balloons, a) or a.rot_rect.bottom >= floor.coll_elevation:
+                agents.remove(a)
 
+        if not agents:
+            running = False
         # Update display with current information
         pygame.display.flip()
 
@@ -278,21 +492,21 @@ if settings.USE_GUI:
 
 pygame.quit()
 
-plt.imshow(player.history[0].T)
-plt.show()
+# plt.imshow(player.history[0].T)
+# plt.show()
 
-appels = (np.where(player.history[1]==1))
-for i in range(len(appels[0])):
-    for x in range(3):
-        for y in range(3):
-            player.history[1][appels[0][i]-1+x][appels[1][i]-1+y] = 1
+# appels = (np.where(player.history[1]==1))
+# for i in range(len(appels[0])):
+#     for x in range(3):
+#         for y in range(3):
+#             player.history[1][appels[0][i]-1+x][appels[1][i]-1+y] = 1
 
 
-plt.imshow(player.history[1].astype(bool))
-plt.show()
+# plt.imshow(player.history[1].astype(bool))
+# plt.show()
 
-plt.imshow(player.history[0].T + (player.history[1].T * 60))
-plt.show()
+# plt.imshow(player.history[0].T + (player.history[1].T * 60))
+# plt.show()
 
 
 
