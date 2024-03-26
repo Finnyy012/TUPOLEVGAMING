@@ -23,6 +23,7 @@ plane_1_data = settings.PLANE_POLIKARPOV_I_16
 player = agent.Agent(
     settings.SCREEN_RESOLUTION,
     plane_1_data["SPRITE"],
+    plane_1_data["SPRITE_TOP"],
     plane_1_data["MASS"],
     plane_1_data["ENGINE_FORCE"],
     plane_1_data["AGILITY"],
@@ -36,6 +37,7 @@ player = agent.Agent(
     plane_1_data["INIT_PITCH"],
     plane_1_data["INIT_V"],
     plane_1_data["INIT_POS"],
+    plane_1_data["SIZE"]
 )
 
 floor = ground.Ground(

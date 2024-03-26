@@ -3,6 +3,7 @@ import math
 import string
 import time
 import numpy as np
+
 import settings
 
 
@@ -10,62 +11,51 @@ class Aircraft:
     """
     Aircraft class.
 
-    @Attributes:
-    - window_dimensions (tuple[float, float]): Dimensions of window.
-    - engine_power (float): Engine power of aircraft, in Neutons (N).
-    - agility (float): Degree to which the pitch can change, 
-     in degrees per delta.
-    - mass (float): Mass of aircraft, in Kilogram (Kg).
-    - c_drag (float): 
-     'constants' when calculating drag, 
-      such as air density and wing area
-    - c_lift (float): 
-     'constants' when calculating lift, 
-      such as air density and wing area
-    - throttle (float): Throttle of aircraft.
-    - pitch (float): Pitch of aircraft.
-    - v (tuple[float, float]): Velocity of aircraft.
-    - pos (tuple[int, int]): Position of aircraft (x,y).
-    - sprite (pygame.Surface): Container for aircraft sprite.
-    - rot_sprite (pygame.Surface): Rotation of sprite.
-    - rot_rect (pygame.Rect): Rotation rectangle of sprite.
-
-    The six attributes below are stored in `np.ndarray`s 
-     and contain exactly 2 values. 
-    The first is the force on the x-axis 
-     and the second the force on the y-axis.
-    - pitch_uv (np.ndarray): unitvector in the direction of pitch
-    - v_uv (np.ndarray): 
-     unitvecor in the direction of the velocity vector
-    - f_gravity (np.ndarray): Force of gravity.
-    - f_engine (np.ndarray): Force of engine.
-    - f_drag (np.ndarray): Force of drag.
-    - f_lift (np.ndarray): Force of lift.
-
-    @Methods:
-    - __init__(
-        mass: float,
-        engine_power: float,
-        agility: float,  
-        c_drag: float,
-        c_lift: float,
-        sprite: string,
-        init_throttle: float,
-        init_pitch: float,
-        init_v: tuple[float, float],
-        init_pos: tuple[int, int]
-      )-> None
-      Initializer for Aircraft.
-    - tick(dt: float)-> None
-      Update internal state of aircraft over given time interval.
-    - adjust_pitch(dt: float)-> None
-      Update pitch of aircraft over given time interval.
+    + window_dimensions: (tuple[float, float]) dimensions of window
+    + mass: (float) mass of aircraft, in kilogram (Kg).
+    + engine_force: (float) constant force applied in direction
+    of `pitch` in Newtons (N)
+    + agility: (float) Degree to which the pitch can change,
+    in degrees per delta.
+    + c_drag: (float) 'constants' when calculating drag,
+    such as air density and wing area
+    + c_lift: (float) 'constants' when calculating lift,
+    such as air density and wing area
+    + AoA_crit_low: (tuple[float, float]) negative critical angle
+     of attack in degrees and its corresponding lift coefficient
+    + AoA_crit_high: (tuple[float, float]) positive critical angle
+     of attack in degrees and its corresponding lift coefficient
+    + cl0: (float) lift coefficient at AoA == 0
+    + cd_min: (float) apex of drag curve; drag coefficient at AoA == 0
+    + plane_size: (tuple[int, int]) dimensions of aircraft
+    (length, height) in meter (m)
+    + throttle: (float) throttle
+    + pitch: (float) pitch in degrees
+    + v: (tuple[float, float]) velocity vector
+    + pos_real: (tuple[float, float]) aircraft position in m
+    + orientation: (int) direction of lift vector
+    + flipstart: (float) timer for flip sprite
+    + pos_virtual: (tuple[float, float]) aircraft position on screen
+    + AoA_deg: (float) angle of attack in deg
+    + pitch_uv: (tuple[float, float]) unitvector corresponding to
+    `pitch`
+    + v_uv: (tuple[float, float]) unitvector corresponding to `v`
+    + f_gravity: (tuple[float, float]) gravity force vector
+    + f_engine: (tuple[float, float]) engine force vector
+    + f_drag: (tuple[float, float]) drag force vector
+    + f_lift: (tuple[float, float]) drag force vector
+    + use_gui: (bool) true if using GUI
+    + sprite: (pygame.Surface) side view sprite
+    + rot_sprite: (pygame.Surface) side view sprite, rotated
+    + rot_rect: (pygame.Rect) rectangle object for pygame
+    + flipsprite: (pygame.Surface) top view sprite
+    + spritecontainer: (pygame.Surface) temp container for `flip()`
     """
-
     def __init__(
         self,
         window_dimensions: tuple[int, int],
         sprite: string = None,
+        sprite_top: string = None,
         mass: float = 12,
         engine_force: float = 10,
         agility: float = 100,
@@ -78,40 +68,39 @@ class Aircraft:
         init_throttle: float = 0,
         init_pitch: float = 0,
         init_v: tuple[float, float] = (0, 0),
-        init_pos: tuple[int, int] = (0, 0)
-    )-> None:
+        init_pos: tuple[int, int] = (0, 0),
+        plane_size: tuple[int, int] = (24, 13)
+    ) -> None:
         """
         Initaliser for Aircraft
 
-        @Parameters:
-        - window_dimensions (tuple[float, float]): Dimensions of window.
-        - sprite (string): Filepath to sprite used for visualisation.
-        - mass (float): Mass of aircraft in Kilogram (Kg).
-        - engine_force (float): constant forward force in Newton (N).
-        - agility (float): 
-         constant torque applied
-         when pressing A or D in degrees per frame.
-        - c_drag (float): 
-         'constants' when calculating drag, 
-          such as air density and wing area
-        - c_lift (float): 
-         'constants' when calculating lift, 
-          such as air density and wing area
-        - AoA_crit_low (tuple[float, float]): 
-         negative critical angle of attack in degrees and
-         its accompanying lift coefficient
-        - AoA_crit_high (tuple[float, float]): 
-         positive critical angle of attack in degrees and
-         its accompanying lift coefficient
-        - cl0 (float): lift coefficient at AoA == 0
-        - cd_min (float): 
-         apex of drag curve; drag coefficient at AoA == 0
-        - init_throttle (float): Throttle of aircraft at spawn.
-        - init_pitch (float): Pitch of aircraft at spawn.
-        - init_v (tuple[float, float]): 
-         velocity vector of aircraft at spawn.
-        - init_pos: (tuple[int int]): 
-         spawning location of aircraft (x, y).
+        :param window_dimensions: dimensions of pygame window
+         (tuple[float, float])
+        :param sprite: filepath to sprite (str)
+        :param mass: mass of aircraft in Kilogram (Kg) (float)
+        :param engine_force: constant force applied in direction of
+         heading (pitch) in Newton (N) (float)
+        :param agility: constant torque applied when changing pitch in
+         degrees per second (°/s) (float)
+        :param c_drag: 'constants' used in calculating drag, such as air
+         density and wing area (float)
+        :param c_lift: 'constants' used in calculating lift, such as air
+         density and wing area (float)
+        :param AoA_crit_low: negative critical angle of attack in
+         degrees and its corresponding lift coefficient
+         (tuple[float, float])
+        :param AoA_crit_high: positive critical angle of attack in
+         degrees and its corresponding lift coefficient
+         (tuple[float, float])
+        :param cl0: lift coefficient at AoA == 0 (float)
+        :param cd_min: apex of drag curve; drag coefficient at AoA == 0
+         (float)
+        :param init_throttle: throttle at spawn (%) (float)
+        :param init_pitch: pitch at spawn (°) (float)
+        :param init_v: velocity vector at spawn (tuple[float, float])
+        :param init_pos: real spawn location of aircraft
+         (tuple[float, float])
+        :param plane_size: aircraft sprite dimensions (tuple[int, int])
         """
         self.window_dimensions = window_dimensions
 
@@ -135,7 +124,11 @@ class Aircraft:
         self.flipstart = 0.0
 
         # Dependent variables (oa Numpy containers)
-        self.pos_virtual = self.pos_real * settings.PLANE_POS_SCALE % self.window_dimensions
+        self.pos_virtual = (
+            self.pos_real *
+            settings.PLANE_POS_SCALE %
+            self.window_dimensions
+        )
         self.AoA_deg = 0
         self.pitch_uv = np.array([0.0, 0.0])
         self.v_uv = np.array([0.0, 0.0])
@@ -152,25 +145,25 @@ class Aircraft:
             self.sprite = pygame.image.load(sprite)
             self.rot_sprite = pygame.transform.scale(
                 self.sprite,
-                settings.PLANE_POLIKARPOV_I_16["SIZE"]
+                plane_size
             )
             self.sprite = pygame.transform.scale(
                 self.sprite,
-                settings.PLANE_POLIKARPOV_I_16["SIZE"]
+                plane_size
             )
             self.rot_rect = self.sprite.get_rect(center=init_pos)
 
-        self.flipsprite = pygame.image.load("assets/top_view.png")
-        self.flipsprite = pygame.transform.scale(self.flipsprite, (24,13))
+        self.flipsprite = pygame.image.load(sprite_top)
+        self.flipsprite = pygame.transform.scale(self.flipsprite, plane_size)
         self.spritecontainer = self.sprite
 
-    def tick(self, dt: float, fov: np.ndarray)-> None:
+    def tick(self, dt: float, fov: np.ndarray) -> None:
         """
         Update internal state of aircraft over given time interval.
-        
-        @Parameters:
-        - dt (float): 
-         Delta time over which changes need to be calculated.
+
+        :param dt: time since last frame (s) (float)
+        :param fov: array containing objects within fov radius (np.ndarray)
+        :return: None
         """
 
         # pitch unit vector
@@ -196,8 +189,12 @@ class Aircraft:
 
         # lift force vector
         coef_lift = self.lift_curve(self.orientation * self.AoA_deg)
-        norm_lift = self.const_lift * coef_lift * \
-            np.linalg.norm(self.v)**2 * self.orientation
+        norm_lift = (
+            self.const_lift *
+            coef_lift *
+            np.linalg.norm(self.v)**2 *
+            self.orientation
+        )
         self.f_lift[0] = norm_lift * self.v_uv[1]
         self.f_lift[1] = norm_lift * -self.v_uv[0]
 
@@ -221,16 +218,19 @@ class Aircraft:
             self.adjust_pitch(-norm_drag*0.0001*dt)
 
         if self.use_gui:
-            self.flipupdatesprite()
-        self.pos_virtual = self.pos_real * settings.PLANE_POS_SCALE % self.window_dimensions
+            self.flip_update_sprite()
+        self.pos_virtual = (
+            self.pos_real *
+            settings.PLANE_POS_SCALE %
+            self.window_dimensions
+        )
 
     def adjust_pitch(self, dt: float):
         """
         Update pitch of aircraft over given time interval.
-        
-        @Parameters:
-        - dt (float): 
-         Delta time over which changes need to be calculated.
+
+        :param dt: Delta time over which changes need to be calculated.
+        :return: None
         """
         self.pitch = (self.pitch + self.agility * dt) % 360
         if self.use_gui:
@@ -241,24 +241,26 @@ class Aircraft:
 
     def flip(self):
         """
-        Flips orientation of the aircraft and starts timer for `flipupdatesprite()`
+        Flips orientation of the aircraft and starts timer for
+        `flipupdatesprite()`
 
         :return: None
         """
-        if self.flipstart<0.0000001:
+        if self.flipstart < 0.0000001:
             self.orientation = -self.orientation
         self.flipstart = time.time()
 
-    def flipupdatesprite(self):
+    def flip_update_sprite(self):
         """
         Updates aircraft sprite during orientation flip
 
         :return: None
         """
-        if self.flipstart>0.0000001:
+        if self.flipstart > 0.0000001:
+            # show sprite after .25s
             if .25 < (time.time() - self.flipstart) < .5:
                 self.sprite = self.flipsprite
-
+            # reset sprite after .5s
             elif .5 <= (time.time() - self.flipstart):
                 if self.orientation == 1:
                     self.sprite = self.spritecontainer
@@ -276,12 +278,12 @@ class Aircraft:
         )
 
     def lift_curve(self, AoA: float):
-        '''
+        """
         Lift curve function based on critical angles and cl0
 
         :param AoA: angle of attack
         :return: lift coefficient at AoA
-        '''
+        """
         if AoA < self.AoA_crit_low[0]-1:
             return 0.0
         elif self.AoA_crit_low[0]-1 <= AoA < self.AoA_crit_low[0]:
@@ -305,4 +307,3 @@ class Aircraft:
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/lifteq.html
 # https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/drageq.html
 # https://www.aerodynamics4students.com/aircraft-performance/drag-and-drag-coefficient.php
-

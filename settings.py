@@ -23,7 +23,7 @@ PLANE_POLIKARPOV_I_16 = {
     "INIT_PITCH" : 0, 
     "INIT_V" : (100.0, 0.0),
     "INIT_POS" : (SCREEN_WIDTH / 2, 200),
-    "SIZE" : (24,13)  # 6.13 : 3.25 irl
+    "SIZE" : (24, 13)  # 6.13 : 3.25 irl
 }
 
 BALLOON = {
