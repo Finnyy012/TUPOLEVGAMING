@@ -74,11 +74,14 @@ class Agent(aircraft.Aircraft):
         c_lift: float = 0.01,
         AoA_crit_low: tuple[float, float] = (-15.0, -0.95),
         AoA_crit_high: tuple[float, float] = (19.0, 1.4),
-        cl0: float = 0.16, cd_min: float = 0.25,
-        init_throttle: float = 0, init_pitch: float = 0,
+        cl0: float = 0.16,
+        cd_min: float = 0.25,
+        init_throttle: float = 0,
+        init_pitch: float = 0,
         init_v: tuple[float, float] = (0, 0),
         init_pos: tuple[int, int] = (0, 0),
-        plane_size: tuple[int, int] = (24, 13)
+        plane_size: tuple[int, int] = (24, 13),
+        evade_zone: tuple[int, int] = np.array((150, 30))
     ) -> None:
         """
         Initaliser for Agent
@@ -107,6 +110,7 @@ class Agent(aircraft.Aircraft):
         :param init_v: velocity vector at spawn (tuple[float, float])
         :param init_pos: real spawn location of aircraft (tuple[float, float])
         :param plane_size: aircraft sprite dimensions (tuple[int, int])
+        :param evade_zone: evade things in this area (tuple[int, int])
         """
 
         super().__init__(
@@ -131,7 +135,7 @@ class Agent(aircraft.Aircraft):
 
         # dangerzone
         self.radius_fov = 150
-        self.perception_front_dims = np.array((150, 30))
+        self.perception_front_dims = evade_zone
         self.nearest_target_pos_abs = []
 
         # debug
@@ -156,22 +160,22 @@ class Agent(aircraft.Aircraft):
             int(window_dimensions[1]/self.history_scale)
         ))
 
-        circle_coords = np.array(
-            [[9, 0],
-             [9, 1],
-             [9, 2],
-             [8, 3],
-             [8, 4],
-             [7, 5],
-             [7, 6],
-             [6, 7],
-             [5, 7],
-             [4, 8],
-             [3, 8],
-             [2, 9],
-             [1, 9],
-             [0, 9]]
-        )
+        circle_coords = np.array([
+            [9, 0],
+            [9, 1],
+            [9, 2],
+            [8, 3],
+            [8, 4],
+            [7, 5],
+            [7, 6],
+            [6, 7],
+            [5, 7],
+            [4, 8],
+            [3, 8],
+            [2, 9],
+            [1, 9],
+            [0, 9]
+        ])
         c_temp = circle_coords.copy()
         c_temp[:, 0] = -c_temp[:, 0]
         circle_coords = np.concatenate([c_temp, circle_coords], 0)
@@ -304,7 +308,7 @@ class Agent(aircraft.Aircraft):
                     elif n_new > best:
                         best = n_new
                         best_circle = [center]
-                if len(best_circle)==1:
+                if len(best_circle) == 1:
                     best_circle = best_circle[0]
                 elif best == 0:
                     best_circle = np.average(
@@ -338,7 +342,7 @@ class Agent(aircraft.Aircraft):
                 elif diff_head > 0:
                     self.adjust_pitch(-dt)
 
-    def update_history(self, fov):
+    def update_history(self, fov: np.ndarray) -> None:
         """
         Updates the history matrix with:
          - history of position/pitch
@@ -362,7 +366,10 @@ class Agent(aircraft.Aircraft):
             ] = x[2]
         self.history[0] += self.diff_overlap_circle()
 
-    def diff_overlap_circle(self, offset:tuple[int, int]=(0, 0)) -> np.ndarray:
+    def diff_overlap_circle(
+        self,
+        offset: tuple[int, int] = (0, 0)
+    ) -> np.ndarray:
         """
         Returns the logical and of the circle with radius `r_fov` and
         centre `offset`, and the unexplored area. Effectively returns
@@ -389,4 +396,6 @@ class Agent(aircraft.Aircraft):
                 self.r_fov/self.history_scale
             )
         )
-        return np.logical_and(in_fov, ~(self.history[0].astype(bool))).astype(int)
+        return np.logical_and(
+            in_fov, ~(self.history[0].astype(bool))
+        ).astype(int)

@@ -77,6 +77,7 @@ class Aircraft:
         :param window_dimensions: dimensions of pygame window
          (tuple[float, float])
         :param sprite: filepath to sprite (str)
+        :param sprite_top: filepath to top view sprite (str)
         :param mass: mass of aircraft in Kilogram (Kg) (float)
         :param engine_force: constant force applied in direction of
          heading (pitch) in Newton (N) (float)

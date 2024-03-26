@@ -13,10 +13,10 @@ def hit_detection_and_move_projectiles(
         dt: float
     ) -> None:
     """
-    This function checks if a bullet hits a balloon.
+    This function checks if a bullet hits a target.
     
     :param projectiles: list of bullets (list[bullet.Bullet])
-    :param targets: list of balloons (list[balloon.Target])
+    :param targets: list of target (list[target.Target])
     :param dt: time step (float)
     :return: None
     """
@@ -35,10 +35,10 @@ def hit_collision_player(
         player: aircraft.Aircraft
     ) -> bool:
     """
-    This function checks if the player hits a balloon. If a player
-     hits a balloon, the function returns True.
+    This function checks if the player hits a target. If a player
+     hits a target, the function returns True.
 
-    :param targets: list of balloons (list[Target])
+    :param targets: list of target (list[target.Target])
     :param player: player object (aircraft.Aircraft)
     :return: bool
     """
@@ -59,12 +59,12 @@ def create_targets(
      less than the defined amount in settings.py. Ground height is used
      to spawn targets above the ground.
     
-    :param targets: list of balloons (list[Target])
+    :param targets: list of target (list[target.Target])
     :param ground_height: height of the ground (int)
-    :return: list of balloons (list[Target])
+    :return: list of target (list[target.Target])
     """
     if len(targets) < settings.BALLOON["BALLOON_COUNT"]:
-        new_targets = target.load_single_type_balloons(
+        new_targets = target.load_single_type_targets(
             ground_height,
             settings.BALLOON["BALLOON_COUNT"] - len(targets)
         )
@@ -81,7 +81,7 @@ def display_targets(
     """
     This function displays the targets on the screen.
     
-    :param targets: list of balloons (list[Target])
+    :param targets: list of targets (list[Target])
     :param screen: screen (pygame.Surface)
     :return: None
     """

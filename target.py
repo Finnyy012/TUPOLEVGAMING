@@ -15,11 +15,11 @@ class Target:
     """
     def __init__(self, ground_height: int, sprite:str=None) -> None:
         """
-        Initaliser of the balloon class
+        Initaliser of the Target class
 
         :param ground_height: height of the ground (int)
-        :param sprite: path of the image used for the sprite of the 
-         balloon (Default = False)
+        :param sprite: path of the image used for the sprite of the (str)
+         target (Default = False)
         """
         size = settings.BALLOON["SIZE"]
         self.coords = np.array((
@@ -43,15 +43,15 @@ class Target:
             self.sprite = pygame.transform.scale(self.sprite, (size, size))
 
 
-def load_single_type_balloons(
+def load_single_type_targets(
         ground_height: int, target_count: int
 ) -> list[Target]:
     """
-    This function loads a list of balloons with the same sprite.
+    This function loads a list of target with the same sprite.
     
     :param ground_height: height of the ground (int)
-    :param target_count: number of balloons to be loaded (int)
-    :return: list of balloons (list(list[Target]))
+    :param target_count: number of target to be loaded (int)
+    :return: list of target (list[Target])
     """
     return [
         Target(
@@ -63,11 +63,11 @@ def load_single_type_balloons(
     ]
 
 
-def load_multiple_types_balloons() -> list[Target]:
+def load_multiple_types_targets() -> list[Target]:
     """
-    This function loads a list of balloons with different sprites.
+    This function loads a list of target with different sprites.
 
-    :return: list of balloons (list(list[Target]))
+    :return: list of target (list[Target])
     """
     # @NOTE:
     # This function can be expanded further once multiple

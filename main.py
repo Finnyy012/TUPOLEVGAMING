@@ -3,11 +3,11 @@ import numpy as np
 import settings
 import matplotlib.pyplot as plt
 
-import bullet as bullet
+import bullet
 import agent
 import ground
+import utils
 
-import utils as utils
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
@@ -23,7 +23,7 @@ dt = 0
 total_time = 0
 fov_radius = 150
 
-plane_1_data = settings.PLANE_POLIKARPOV_I_16
+plane_1_data = settings.PLANE_MESSERSCHMIDT_109E
 player = agent.Agent(
     settings.SCREEN_RESOLUTION,
     plane_1_data["SPRITE"],
@@ -41,7 +41,8 @@ player = agent.Agent(
     plane_1_data["INIT_PITCH"],
     plane_1_data["INIT_V"],
     plane_1_data["INIT_POS"],
-    plane_1_data["SIZE"]
+    plane_1_data["SIZE"],
+    np.array((200,30))
 )
 
 floor = ground.Ground(
