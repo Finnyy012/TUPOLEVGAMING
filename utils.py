@@ -24,10 +24,10 @@ def hit_detection_and_move_projectiles(
         if projectile.move_bullet(dt):
             projectiles.remove(projectile)
             continue
-        for orb in targets:
-            if projectile.rect.colliderect(orb.rect):
+        for target in targets:
+            if projectile.rect.colliderect(target.rect):
                 projectiles.remove(projectile)
-                targets.remove(orb)
+                targets.remove(target)
                 
                 
 def hit_collision_player(
