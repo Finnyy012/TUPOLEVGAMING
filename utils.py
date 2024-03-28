@@ -1,44 +1,45 @@
 import settings
 import pygame
 import numpy as np
-from itertools import compress
+
 import agent
 import aircraft
 import bullet as bullet
-import balloon
+import target
 
 
 def hit_detection_and_move_projectiles(
-        projectiles: bullet.Bullet,
-        targets: balloon.Balloon, 
+        targets: target.Target,
         agents: list[agent.Agent],
-        agent: agent.Agent,
+        current_agent: agent.Agent,
         dt: float
     ) -> None:
     """
-    This function checks if a bullet hits a balloon or a plane.
+    This function checks if a bullet hits a target.
     
-    :param projectiles: list of bullets (list[bullet.Bullet])
-    :param targets: list of balloons (list[balloon.Balloon])
+    :param targets: list of target (list[target.Target])
+    :param agents: list of agents (list[agent.Agent])
+    :param current_agent: current agent (agent.Agent)
     :param dt: time step (float)
     :return: None
     """
 
 
-    for projectile in projectiles:
+    for projectile in current_agent.bullets:
         if projectile.move_bullet(dt):
-            projectiles.remove(projectile)
+            current_agent.bullets.remove(projectile)
             continue
-        for a in agents:
-            if np.linalg.norm(np.array(a.rot_rect.center) - \
-               np.array(projectile.rect.center)) <= 5 and a != agent:
-                projectiles.remove(projectile)
-                agents.remove(a)
+        for agent in agents:
+            if np.linalg.norm(np.array(agent.rot_rect.center) - \
+               np.array(projectile.rect.center)) <= 5 and \
+               agent != current_agent:
+                current_agent.bullets.remove(projectile)
+                agents.remove(agent)
                 continue
 
         for orb in targets:
             if projectile.rect.colliderect(orb.rect):
-                projectiles.remove(projectile)
+                current_agent.bullets.remove(projectile)
                 targets.remove(orb)
                 continue
     
@@ -61,15 +62,15 @@ def hit_detection_agents(
                     agents.remove(agent2)
                 
                 
-def hit_collision_player(
-        targets: list[balloon.Balloon], 
+def hit_collision_agents(
+        targets: list[target.Target],
         player: aircraft.Aircraft
     ) -> bool:
     """
-    This function checks if the player hits a balloon. If a player
-     hits a balloon, the function returns True.
+    This function checks if the player hits a target. If a player
+     hits a target, the function returns True.
 
-    :param targets: list of balloons (list[Balloon])
+    :param targets: list of target (list[target.Target])
     :param player: player object (aircraft.Aircraft)
     :return: bool
     """
@@ -81,22 +82,22 @@ def hit_collision_player(
     return False
      
 def create_targets(
-        targets: list[balloon.Balloon], 
+        targets: list[target.Target],
         ground_height: int
-    ) -> list[balloon.Balloon]:
+    ) -> list[target.Target]:
     """
     This function generates new targets if the number of targets is 
      less than the defined amount in settings.py. Ground height is used
      to spawn targets above the ground.
     
-    :param targets: list of balloons (list[Balloon])
+    :param targets: list of target (list[target.Target])
     :param ground_height: height of the ground (int)
-    :return: list of balloons (list[Balloon])
+    :return: list of target (list[target.Target])
     """
-    if len(targets) < settings.BALLOON["BALLOON_COUNT"]:
-        new_targets = balloon.load_single_type_balloons(
+    if len(targets) < settings.TARGET["TARGET_COUNT"]:
+        new_targets = target.load_single_type_targets(
             ground_height,
-            settings.BALLOON["BALLOON_COUNT"] - len(targets)
+            settings.TARGET["TARGET_COUNT"] - len(targets)
         )
         new_targets.extend(targets)
         return new_targets
@@ -105,19 +106,19 @@ def create_targets(
 
 
 def display_targets(
-        targets: list[balloon.Balloon], 
+        targets: list[target.Target],
         screen: pygame.Surface
     ) -> None:
     """
     This function displays the targets on the screen.
     
-    :param targets: list of balloons (list[Balloon])
+    :param targets: list of targets (list[Target])
     :param screen: screen (pygame.Surface)
     :return: None
     """
-    for plastic_orb in targets:
+    for target in targets:
         screen.blit(
-            plastic_orb.sprite, plastic_orb.coords
+            target.sprite, target.coords
         )
 
 
@@ -146,8 +147,8 @@ def display_projectiles(
 
 
 def check_surround(
-        player: agent.Agent, 
-        balloons: list[balloon.Balloon], 
+        current_agent: agent.Agent, 
+        targets: list[target.Target], 
         agents : list[agent.Agent],
         fov_radius: int
     ) -> list: 
@@ -156,17 +157,17 @@ def check_surround(
      list of all nearby targets.
 
     :param player: player object (agent.Agent)
-    :param balloons: list of balloons (list[balloon.Balloon])
+    :param targets: list of targets (list[TARGET.TARGET])
     :agents: list of agents (list[agent.Agent])
     :param fov_radius: field of view radius (int)
-    :return: list of balloons (list[balloon.Balloon])
+    :return: list of targets (list[TARGET.TARGET])
     """
     fov = []
-    for b in balloons:
-        if(np.linalg.norm(b.coords - player.pos_virtual) < fov_radius):
-            fov.append([b.coords[0], b.coords[1], 1])
-    # for a in agents:
-    #     if(np.linalg.norm(a.pos_virtual - player.pos_virtual) < fov_radius) \
-    #         and a != player:
-    #         fov.append([a.pos_virtual[0], a.pos_virtual[1], 1])
+    for target in targets:
+        if(np.linalg.norm(target.coords - current_agent.pos_virtual) < fov_radius):
+            fov.append([target.coords[0], target.coords[1], 1])
+    for agent in agents:
+        if(np.linalg.norm(agent.pos_virtual - current_agent.pos_virtual) < fov_radius) \
+            and agent != current_agent:
+            fov.append([agent.pos_virtual[0], agent.pos_virtual[1], 1])
     return fov

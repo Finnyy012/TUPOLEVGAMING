@@ -8,17 +8,14 @@ class Bullet:
     """
     Bullet class
 
-    @Attributes:
-    - sprite (pygame.surface): optional sprite with contents of bullet.
-
-    @Methods:
-    __init__(
-        self,
-        coords: tuple[int, int],
-        pitch: float,
-        ground_height: int,
-        sprite: str=None,
-    ) -> None
+    + sprite: (pygame.surface) optional sprite with contents of bullet
+    + size: (int) bullet 2r
+    + current_time: (float) accumulator for dt TODO: max dit kan beter
+    + pitch: (float) pitch of bullet
+    + speed: (float) bullet speed (m/s)
+    + ground_height: (int) ground_height (pixels)
+    + coords: (Tuple[int, int]) location (x, y) (pixels)
+    + rect: (Tuple[int, int]) balloon rect
     """
     def __init__(
             self,
@@ -63,10 +60,10 @@ class Bullet:
     def move_bullet(self, dt: float) -> bool:
         """
         This function calculates the new position of the bullet based on 
-         the pitch of the plane. If the bullet has been alive for too 
-         long, it destroys itself. If the bullet hits the ground, it 
-         is also destroyed. The function returns True if the bullet 
-         needs to be destroyed.
+        the pitch of the plane. If the bullet has been alive for too
+        long, it destroys itself. If the bullet hits the ground, it
+        is also destroyed. The function returns True if the bullet
+        needs to be destroyed.
 
         :param dt: time step (float)
         :return: bool
