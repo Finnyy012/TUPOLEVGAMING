@@ -6,7 +6,7 @@ import numpy as np
 
 import aircraft
 import settings
-
+import bullet 
 
 class Agent(aircraft.Aircraft):
     """
@@ -144,8 +144,8 @@ class Agent(aircraft.Aircraft):
         self.testv3 = [0,0]
         self.timestart = time.time()
         self.action = 'none'
-
         # internal state
+        self.bullets = []
         self.history_scale = 10
         self.history = np.zeros((
             2,
@@ -197,7 +197,7 @@ class Agent(aircraft.Aircraft):
         """
         'explore' function; steers the aircraft such that
         (in order of priority):
-         - balloons are avoided
+         - targets are avoided
          - ground/ceiling are avoided
          - as much area as possible is discovered
 
