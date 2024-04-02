@@ -5,21 +5,9 @@ class Ground:
     """
     Ground class
 
-    @Attributes
-    - sprite (pygame.surface) optional sprite with contents of ground.
-    - elevation (int): Elevation seen from the bottom, in pixels.
-    - coll_elevation (int): 
-     Elevation from which point the player crashes upon intersection.
-
-    @Methods:
-    __init__(
-        self, 
-        height: int, 
-        elevation: int, 
-        coll_elevation: int,
-        sprite: str=None,
-        resolution: tuple[int, int]=None
-    )-> None
+    + sprite: (pygame.Surface) ground sprite
+    + elevation: (int) pixels from top of screen to top of ground sprite
+    + coll_elevation: (int) pixels from top of screen to in-sprite ground
     """
     def __init__(
             self, 
@@ -30,17 +18,15 @@ class Ground:
             resolution: tuple[int, int]=None
         )-> None:
         """
-        Initialize Ground class.
+        initialiser Ground class
 
-        @Parameters:
-        - height (int): Height of sprite
-        - elevation (int): Elevation seen from the bottom, in pixels.
-        - coll_elevation (int): 
-         Elevation from which point the player crashes upon intersection 
-         Recommended to make this slightly above the floor, for realism.
-        - sprite (str): Path to sprite. (Default = None)
-        - resolution (tuple[int, int]): 
-         Resolution of sprite. (Default = None)
+        :param height: height of sprite (int)
+        :param elevation: pixels from top of screen to top of
+        ground sprite (int)
+        :param coll_elevation: pixels from top of screen to in-sprite
+        ground (int)
+        :param sprite: path to sprite (str)
+        :param resolution: resolution of game window (tuple[int, int])
         """
         self.sprite = None
         if sprite:

@@ -3,12 +3,13 @@ SCREEN_WIDTH      = 1280
 SCREEN_RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 FPS = 60
-SIMULATION_RUNTIME = 10000 # in seconds
+SIMULATION_RUNTIME = 1000000 # in seconds
 USE_GUI = True
 PLANE_POS_SCALE = 2
 
 PLANE_POLIKARPOV_I_16 = {
     "SPRITE" : "assets/facing_right.png",
+    "SPRITE_TOP" : "assets/top_view.png",
     "MASS" : 1200,
     "ENGINE_FORCE" : 300,
     "AGILITY" : 100, 
@@ -22,23 +23,47 @@ PLANE_POLIKARPOV_I_16 = {
     "INIT_PITCH" : 0, 
     "INIT_V" : (100.0, 0.0),
     "INIT_POS" : (SCREEN_WIDTH / 2, 200),
-    "SIZE" : (24,13)
+    "SIZE" : (24, 17)  # 6.13 : 3.25 irl
 }
 
-BALLOON = {
+PLANE_MESSERSCHMIDT_109E = {
+    "SPRITE" : "assets/sprite_nationalist_109E.png",
+    "SPRITE_TOP" : "assets/sprite_nationalist_109E_top.png",
+    "MASS" : 2500,
+    "ENGINE_FORCE" : 1000,
+    "AGILITY" : 100,
+    "C_DRAG" : 0.6,
+    "C_LIFT" : 100,
+    "AOA_CRIT_LOW" : (-15.0, -0.95),
+    "AOA_CRIT_HIGH" : (19.0, 1.4),
+    "CL0" : 0.32,
+    "CD_MIN" : 0.5,
+    "INIT_THROTTLE" : 100,
+    "INIT_PITCH" : 0,
+    "INIT_V" : (100.0, 0.0),
+    "INIT_POS" : (SCREEN_WIDTH / 2, 200),
+    "SIZE" : (35, 15)  # 8.95 : 2.6 irl
+}
+
+TARGET = {
     "SPRITE" : "assets/apple.gif",
     "SPRITES" : [
-        "assets/finn_zoom.png",
-        "assets/5g_joris.png",
-        "assets/5g_nick.png",
-        "assets/5g_max.png",
-        "assets/hu_bas.png",
-        "assets/joris_zoom.png",
-        "assets/joris.png",
-        "assets/cool_joost.png",
-        "assets/max.png",
-        "assets/igor.png"
+        "assets/apple.gif"
     ],
     "SIZE" : 20,
-    "BALLOON_COUNT" : 10
+    "TARGET_COUNT" : 10
+}
+
+BULLET = {
+    "SPRITE" : "assets/bullet.png",
+    "LIFETIME" : .66,
+    "SIZE" : 5,
+    "SPEED": 10
+}
+
+GROUND = {
+    "SPRITE" : "assets/environment.png",
+    "HEIGHT" : 50,
+    "ELEVATION" : 600,
+    "COLL_ELEVATION" : 635,
 }
