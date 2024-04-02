@@ -21,7 +21,7 @@ class Target:
         :param sprite: path of the image used for the sprite of the (str)
          target (Default = False)
         """
-        size = settings.BALLOON["SIZE"]
+        size = settings.TARGET["SIZE"]
         self.coords = np.array((
             random.randint(
                 size, settings.SCREEN_WIDTH - size
@@ -56,7 +56,7 @@ def load_single_type_targets(
     return [
         Target(
             ground_height,
-            settings.BALLOON["SPRITE"]
+            settings.TARGET["SPRITE"]
         ) for _ in range(
             target_count
         )
@@ -71,13 +71,13 @@ def load_multiple_types_targets() -> list[Target]:
     """
     # @NOTE:
     # This function can be expanded further once multiple
-    #  types of balloons are implemented.
+    #  types of TARGETs are implemented.
     return [
         Target(
             random.choice(
-                settings.BALLOON["SPRITES"]
+                settings.TARGET["SPRITES"]
             )
         ) for _ in range(
-            settings.BALLOON["BALLOON_COUNT"]
+            settings.TARGET["TARGET_COUNT"]
         )
     ]

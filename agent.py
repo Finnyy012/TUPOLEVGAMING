@@ -6,7 +6,7 @@ import numpy as np
 
 import aircraft
 import settings
-
+import bullet 
 
 class Agent(aircraft.Aircraft):
     """
@@ -99,16 +99,20 @@ class Agent(aircraft.Aircraft):
          density and wing area (float)
         :param c_lift: 'constants' used in calculating lift, such as air
          density and wing area (float)
-        :param AoA_crit_low: negative critical angle of attack in degrees and
-         its corresponding lift coefficient (tuple[float, float])
-        :param AoA_crit_high: positive critical angle of attack in degrees and
-         its corresponding lift coefficient (tuple[float, float])
+        :param AoA_crit_low: negative critical angle of attack in 
+         degrees and its corresponding lift coefficient 
+         (tuple[float, float])
+        :param AoA_crit_high: positive critical angle of attack in 
+         degrees and its corresponding lift coefficient 
+         (tuple[float, float])
         :param cl0: lift coefficient at AoA == 0 (float)
-        :param cd_min: apex of drag curve; drag coefficient at AoA == 0 (float)
+        :param cd_min: apex of drag curve; drag coefficient at AoA == 0 
+         (float)
         :param init_throttle: throttle at spawn (%) (float)
         :param init_pitch: pitch at spawn (°) (float)
         :param init_v: velocity vector at spawn (tuple[float, float])
-        :param init_pos: real spawn location of aircraft (tuple[float, float])
+        :param init_pos: real spawn location of aircraft 
+         (tuple[float, float])
         :param plane_size: aircraft sprite dimensions (tuple[int, int])
         :param evade_zone: evade things in this area (tuple[int, int])
         """
@@ -144,8 +148,8 @@ class Agent(aircraft.Aircraft):
         self.testv3 = [0,0]
         self.timestart = time.time()
         self.action = 'none'
-
         # internal state
+        self.bullets = []
         self.history_scale = 10
         self.history = np.zeros((
             2,
@@ -197,7 +201,7 @@ class Agent(aircraft.Aircraft):
         """
         'explore' function; steers the aircraft such that
         (in order of priority):
-         - balloons are avoided
+         - targets are avoided
          - ground/ceiling are avoided
          - as much area as possible is discovered
 
@@ -399,3 +403,14 @@ class Agent(aircraft.Aircraft):
         return np.logical_and(
             in_fov, ~(self.history[0].astype(bool))
         ).astype(int)
+
+    def shoot(self):
+        self.bullets.append(
+            bullet.Bullet(
+                self.pos_virtual,
+                self.pitch,
+                settings.GROUND["COLL_ELEVATION"],
+                settings.BULLET["SPRITE"]
+            )
+        )
+    

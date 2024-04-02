@@ -45,13 +45,13 @@ PLANE_MESSERSCHMIDT_109E = {
     "SIZE" : (35, 15)  # 8.95 : 2.6 irl
 }
 
-BALLOON = {
+TARGET = {
     "SPRITE" : "assets/apple.gif",
     "SPRITES" : [
         "assets/apple.gif"
     ],
     "SIZE" : 20,
-    "BALLOON_COUNT" : 10
+    "TARGET_COUNT" : 10
 }
 
 BULLET = {
