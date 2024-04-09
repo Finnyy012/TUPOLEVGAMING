@@ -8,6 +8,7 @@ import aircraft
 import settings
 import bullet
 
+
 class Agent(aircraft.Aircraft):
     """
     Agent class.
@@ -187,18 +188,16 @@ class Agent(aircraft.Aircraft):
         circle_coords = np.concatenate([c_temp, circle_coords], 0)
         self.circle_coords = np.concatenate([-circle_coords, circle_coords], 0)
 
-    def tick(self, dt: float, fov) -> None:
+    def tick(self, dt: float, fov: np.ndarray) -> None:
         """
         'tick' function; updates internal state
 
         :param dt: (float) time since last frame in s
-        :param fov: (np.ndarray) targets within fov_evade (passed from main)
+        :param fov: (np.ndarray) targets within fov (passed from main)
         :return: None
         """
         super().tick(dt, fov)
-        # self.update_history(fov)
-        # self.explore(dt, fov)
-        self.kill_target(dt, fov)
+        self.kill_target(dt)
 
     def explore(self, dt, fov_evade):
         """
@@ -349,7 +348,7 @@ class Agent(aircraft.Aircraft):
                 elif diff_head > 0:
                     self.adjust_pitch(-dt)
 
-    def kill_target(self, dt, target):
+    def kill_target(self, dt):
         safe_d = 10
         safe_slope = 0.2
         flip_cone_slope = 0.9
@@ -391,7 +390,7 @@ class Agent(aircraft.Aircraft):
                 math.sin((-self.pitch) * math.pi / 180),
                 math.cos((-self.pitch) * math.pi / 180)
             ]])
-            d = np.matmul((target-self.rot_rect.center), rotation_matrix)
+            d = np.matmul((self.target-self.rot_rect.center), rotation_matrix)
             if (abs(d[0]) < 150) and (abs(d[1]) < 10):
                 self.shoot()
 
@@ -409,12 +408,12 @@ class Agent(aircraft.Aircraft):
                 sign = 1
                 if self.v_uv[0] < 0:
                     sign = -1
-                target_projected = target + sign * np.array([1280,0])
+                target_projected = self.target + sign * np.array([1280,0])
                 self.testv3 = abs(self.rot_rect.center[0]-target_projected[0])
-                self.testv2 = abs(self.rot_rect.center[0]-target[0])+turn_circle
+                self.testv2 = abs(self.rot_rect.center[0]-self.target[0])+turn_circle
                 self.action = 'rotate pass'
 
-                if abs(self.rot_rect.center[0]-target_projected[0]) > abs(self.rot_rect.center[0]-target[0])+turn_circle:
+                if abs(self.rot_rect.center[0]-target_projected[0]) > abs(self.rot_rect.center[0]-self.target[0])+turn_circle:
                     # TODO: deze conditie moet iets anders: in een zeldzaam geval doet die zo heen en weer like een dolfijn
                     if self.rot_rect.center[1] < (settings.GROUND["COLL_ELEVATION"]/2):
                         direction = -1
@@ -440,31 +439,6 @@ class Agent(aircraft.Aircraft):
                         pass
 
             self.adjust_pitch(direction*dt)
-
-
-    # def update_history(self, fov: np.ndarray) -> None:
-    #     """
-    #     Updates the history matrix with:
-    #      - history of position/pitch
-    #      - history of fov_evade
-    #      - history of targets
-    #
-    #     :param fov: (np.ndarray) np array with targets in fov_evade,
-    #      passed from main
-    #     :return: None
-    #     """
-    #     self.history[0][
-    #         int((self.rot_rect.centerx-1)/self.history_scale)
-    #     ][
-    #         int((self.rot_rect.centery-1)/self.history_scale)
-    #     ] = time.time()-self.timestart + 10  # self.pitch
-    #     for x in fov:
-    #         self.history[1][
-    #             int(x[0]/self.history_scale)
-    #         ][
-    #             int(x[1]/self.history_scale)
-    #         ] = x[2]
-    #     self.history[0] += self.diff_overlap_circle()
 
     def diff_overlap_circle(
         self,
