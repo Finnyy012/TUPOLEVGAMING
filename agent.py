@@ -6,7 +6,7 @@ import numpy as np
 
 import aircraft
 import settings
-import bullet 
+import bullet
 
 class Agent(aircraft.Aircraft):
     """
@@ -148,6 +148,7 @@ class Agent(aircraft.Aircraft):
         self.testv3 = [0,0]
         self.timestart = time.time()
         self.action = 'none'
+
         # internal state
         self.bullets = []
         self.history_scale = 10
@@ -156,6 +157,7 @@ class Agent(aircraft.Aircraft):
             int(window_dimensions[0]/self.history_scale),
             int(window_dimensions[1]/self.history_scale)
         ))
+        self.target = np.array([0,0])
 
         # np wizardry
         self.r_fov = 150
@@ -185,19 +187,20 @@ class Agent(aircraft.Aircraft):
         circle_coords = np.concatenate([c_temp, circle_coords], 0)
         self.circle_coords = np.concatenate([-circle_coords, circle_coords], 0)
 
-    def tick(self, dt: float, fov: np.ndarray) -> None:
+    def tick(self, dt: float, fov) -> None:
         """
         'tick' function; updates internal state
 
         :param dt: (float) time since last frame in s
-        :param fov: (np.ndarray) targets within fov (passed from main)
+        :param fov: (np.ndarray) targets within fov_evade (passed from main)
         :return: None
         """
         super().tick(dt, fov)
-        self.update_history(fov)
-        self.explore(dt, fov)
+        # self.update_history(fov)
+        # self.explore(dt, fov)
+        self.kill_target(dt, fov)
 
-    def explore(self, dt, fov):
+    def explore(self, dt, fov_evade):
         """
         'explore' function; steers the aircraft such that
         (in order of priority):
@@ -206,7 +209,7 @@ class Agent(aircraft.Aircraft):
          - as much area as possible is discovered
 
         :param dt: (float) time since last frame in s
-        :param fov: (np.ndarray) targets within fov (passed from main)
+        :param fov_evade: (np.ndarray) targets within fov (passed from main)
         :return: None
         """
         d_nearest_target = sys.maxsize
@@ -219,7 +222,7 @@ class Agent(aircraft.Aircraft):
         ]])
         evade_direction = 0
 
-        for target in fov:
+        for target in fov_evade:
             d = np.matmul((target[:2]-self.rot_rect.center), rotation_matrix)
             self.nearest_target_pos_abs = d
             if (
@@ -346,29 +349,121 @@ class Agent(aircraft.Aircraft):
                 elif diff_head > 0:
                     self.adjust_pitch(-dt)
 
-    def update_history(self, fov: np.ndarray) -> None:
-        """
-        Updates the history matrix with:
-         - history of position/pitch
-         - history of fov
-         - history of targets
+    def kill_target(self, dt, target):
+        safe_d = 10
+        safe_slope = 0.2
+        flip_cone_slope = 0.9
+        if self.orientation == 1 and (-flip_cone_slope > self.v_uv[0]):
+            self.flip()
+        elif self.orientation == -1 and (flip_cone_slope < self.v_uv[0]):
+            self.flip()
+        if (
+                (
+                        self.pos_virtual[1] + self.v_uv[1] * self.radius_fov
+                ) > (
+                        settings.GROUND["COLL_ELEVATION"] - safe_d
+                )
+        ) and (
+                self.v_uv[1] >= -safe_slope
+        ):
+            self.action = 'floor'
+            if self.v_uv[0] > 0:
+                self.adjust_pitch(dt)
+            else:
+                self.adjust_pitch(-dt)
+        elif (
+                self.pos_virtual[1] + self.v_uv[1] * self.radius_fov < safe_d
+        ) and (
+                self.v_uv[1] <= safe_slope
+        ):
+            self.action = 'ceiling'
+            if self.v_uv[0] > 0:
+                self.adjust_pitch(-dt)
+            else:
+                self.adjust_pitch(dt)
 
-        :param fov: (np.ndarray) np array with targets in fov,
-         passed from main
-        :return: None
-        """
-        self.history[0][
-            int((self.rot_rect.centerx-1)/self.history_scale)
-        ][
-            int((self.rot_rect.centery-1)/self.history_scale)
-        ] = time.time()-self.timestart + 10  # self.pitch
-        for x in fov:
-            self.history[1][
-                int(x[0]/self.history_scale)
-            ][
-                int(x[1]/self.history_scale)
-            ] = x[2]
-        self.history[0] += self.diff_overlap_circle()
+        else:
+            direction = 0
+            rotation_matrix = np.array([[
+                math.cos((-self.pitch) * math.pi / 180),
+                -math.sin((-self.pitch) * math.pi / 180)
+            ], [
+                math.sin((-self.pitch) * math.pi / 180),
+                math.cos((-self.pitch) * math.pi / 180)
+            ]])
+            d = np.matmul((target-self.rot_rect.center), rotation_matrix)
+            if (abs(d[0]) < 150) and (abs(d[1]) < 10):
+                self.shoot()
+
+            if (d[0] > 0) and (d[1] > 0):
+                direction = -1
+                self.action = 'tgt right'
+            elif (d[0] > 0) and (d[1] < 0):
+                direction = 1
+                self.action = 'tgt left'
+            elif (d[0] > 0) and (d[1] == 0):
+                self.action = 'tgt pass'
+                pass
+            elif (d[0] <= 0):
+                turn_circle = 150
+                sign = 1
+                if self.v_uv[0] < 0:
+                    sign = -1
+                target_projected = target + sign * np.array([1280,0])
+                self.testv3 = abs(self.rot_rect.center[0]-target_projected[0])
+                self.testv2 = abs(self.rot_rect.center[0]-target[0])+turn_circle
+                self.action = 'rotate pass'
+
+                if abs(self.rot_rect.center[0]-target_projected[0]) > abs(self.rot_rect.center[0]-target[0])+turn_circle:
+                    if self.rot_rect.center[1] < (settings.GROUND["COLL_ELEVATION"]/2):
+                        direction = -1
+                        self.action = 'rotate right'
+                    else:
+                        direction = 1
+                        self.action = 'rotate left'
+                    if self.v_uv[0] < 0:
+                        direction *= -1
+                        self.action += ' mirror'
+                else:
+                    d2 = np.matmul((target_projected-self.rot_rect.center), rotation_matrix)
+                    if (abs(d2[0]) < 150) and (abs(d2[1]) < 10):
+                        self.shoot()
+                    if (d2[0] > 0) and (d2[1] > 0):
+                        direction = -1
+                        self.action = 'tgt right wrap'
+                    elif (d2[0] > 0) and (d2[1] < 0):
+                        direction = 1
+                        self.action = 'tgt left wrap'
+                    elif (d2[0] > 0) and (d2[1] == 0):
+                        self.action = 'tgt pass wrap'
+                        pass
+
+            self.adjust_pitch(direction*dt)
+
+
+    # def update_history(self, fov: np.ndarray) -> None:
+    #     """
+    #     Updates the history matrix with:
+    #      - history of position/pitch
+    #      - history of fov_evade
+    #      - history of targets
+    #
+    #     :param fov: (np.ndarray) np array with targets in fov_evade,
+    #      passed from main
+    #     :return: None
+    #     """
+    #     self.history[0][
+    #         int((self.rot_rect.centerx-1)/self.history_scale)
+    #     ][
+    #         int((self.rot_rect.centery-1)/self.history_scale)
+    #     ] = time.time()-self.timestart + 10  # self.pitch
+    #     for x in fov:
+    #         self.history[1][
+    #             int(x[0]/self.history_scale)
+    #         ][
+    #             int(x[1]/self.history_scale)
+    #         ] = x[2]
+    #     self.history[0] += self.diff_overlap_circle()
 
     def diff_overlap_circle(
         self,

@@ -44,63 +44,6 @@ agent1 = Agent(
     plane_2_data["INIT_POS"],
 )
 
-agent2 = Agent(
-    settings.SCREEN_RESOLUTION,
-    plane_2_data["SPRITE"],
-    plane_2_data["SPRITE_TOP"],
-    plane_2_data["MASS"],
-    plane_2_data["ENGINE_FORCE"],
-    plane_2_data["AGILITY"],
-    plane_2_data["C_DRAG"],
-    plane_2_data["C_LIFT"],
-    plane_2_data["AOA_CRIT_LOW"],
-    plane_2_data["AOA_CRIT_HIGH"],
-    plane_2_data["CL0"],
-    plane_2_data["CD_MIN"],
-    plane_2_data["INIT_THROTTLE"],
-    plane_2_data["INIT_PITCH"],
-    plane_2_data["INIT_V"],
-    (1280 / 8, 250),
-)
-
-agent3 = Agent(
-    settings.SCREEN_RESOLUTION,
-    plane_1_data["SPRITE"],
-    plane_1_data["SPRITE_TOP"],
-    plane_1_data["MASS"],
-    plane_1_data["ENGINE_FORCE"],
-    plane_1_data["AGILITY"],
-    plane_1_data["C_DRAG"],
-    plane_1_data["C_LIFT"],
-    plane_1_data["AOA_CRIT_LOW"],
-    plane_1_data["AOA_CRIT_HIGH"],
-    plane_1_data["CL0"],
-    plane_1_data["CD_MIN"],
-    plane_1_data["INIT_THROTTLE"],
-    plane_1_data["INIT_PITCH"],
-    plane_1_data["INIT_V"],
-    (1280 / 4, 250),
-)
-
-agent4 = Agent(
-    settings.SCREEN_RESOLUTION,
-    plane_1_data["SPRITE"],
-    plane_1_data["SPRITE_TOP"],
-    plane_1_data["MASS"],
-    plane_1_data["ENGINE_FORCE"],
-    plane_1_data["AGILITY"],
-    plane_1_data["C_DRAG"],
-    plane_1_data["C_LIFT"],
-    plane_1_data["AOA_CRIT_LOW"],
-    plane_1_data["AOA_CRIT_HIGH"],
-    plane_1_data["CL0"],
-    plane_1_data["CD_MIN"],
-    plane_1_data["INIT_THROTTLE"],
-    plane_1_data["INIT_PITCH"],
-    plane_1_data["INIT_V"],
-    (1280 / 2, 250),
-
-)
 floor = ground.Ground(
     height=50, 
     elevation=600, 
@@ -128,7 +71,7 @@ if settings.USE_GUI:
 
 targets = []
 # agents = [agent1]
-agents = [agent1, agent2, agent3, agent4]
+agents = [agent1]
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
     #if respawning needs to be disabled, place the following line 
@@ -177,33 +120,14 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         agents,
         fov_radius
     )
-    agent2_fov = utils.check_surround(
-        agent2, 
-        targets, 
-        agents,
-        fov_radius
-    )
-    agent3_fov = utils.check_surround(
-        agent3, 
-        targets, 
-        agents,
-        fov_radius
-    )
-    agent14_fov = utils.check_surround(
-        agent4, 
-        targets, 
-        agents,
-        fov_radius
-    )    
 
-    fov_list = [agent11_fov, agent2_fov, agent3_fov, agent14_fov]
+    fov_list = [agent11_fov]
 
     for x, agent in enumerate(agents):
-        agent.tick(dt, np.array(fov_list[x]))
+        agent.tick(dt, targets[0].coords)
     
     utils.hit_detection_agents(agents)
     # No GUI needed for tick
-
 
     if settings.USE_GUI:
         # Draw (blit) background, agent1, ground, 
@@ -342,7 +266,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         )
         screen.blit(
             font.render(
-                "d: " + str(agent1.nearest_target_pos_abs),
+                "action: " + str(agent1.action),
                 False,
                 "black"
             ),

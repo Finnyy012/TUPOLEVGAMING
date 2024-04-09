@@ -51,7 +51,7 @@ TARGET = {
         "assets/apple.gif"
     ],
     "SIZE" : 20,
-    "TARGET_COUNT" : 10
+    "TARGET_COUNT" : 1
 }
 
 BULLET = {
