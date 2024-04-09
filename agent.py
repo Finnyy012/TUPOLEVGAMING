@@ -415,6 +415,7 @@ class Agent(aircraft.Aircraft):
                 self.action = 'rotate pass'
 
                 if abs(self.rot_rect.center[0]-target_projected[0]) > abs(self.rot_rect.center[0]-target[0])+turn_circle:
+                    # TODO: deze conditie moet iets anders: in een zeldzaam geval doet die zo heen en weer like een dolfijn
                     if self.rot_rect.center[1] < (settings.GROUND["COLL_ELEVATION"]/2):
                         direction = -1
                         self.action = 'rotate right'
