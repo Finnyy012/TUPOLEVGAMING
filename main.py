@@ -252,18 +252,3 @@ if settings.USE_GUI:
     pygame.time.wait(5000)
 
 pygame.quit()
-
-plt.imshow(agent1.history[0].T)
-plt.show()
-
-appels = (np.where(agent1.history[1] == 1))
-for i in range(len(appels[0])):
-    for x in range(3):
-        for y in range(3):
-            agent1.history[1][appels[0][i] - 1 + x][appels[1][i] - 1 + y] = 1
-
-plt.imshow(agent1.history[1].astype(bool))
-plt.show()
-
-plt.imshow(agent1.history[0].T + (agent1.history[1].T * 60))
-plt.show()
