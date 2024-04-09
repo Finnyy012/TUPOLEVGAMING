@@ -181,96 +181,12 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                     ) < fov_radius
             ):
                 colour = "green"
-            screen.blit(
-                font.render(
-                    str(
-                        np.linalg.norm(
-                            plastic_orb.coords -
-                            agent1.pos_virtual
-                        )
-                    ),
-                    False,
-                    colour
-                ),
-                plastic_orb.coords
-            )
+
 
         center = np.array(
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        screen.blit(
-            font.render(
-                "throttle: " + str(agent1.throttle),
-                False,
-                "black"
-            ),
-            (20, 20)
-        )
-        screen.blit(
-            font.render(
-                "pitch:    " + str(agent1.pitch),
-                False,
-                "black"
-            ),
-            (20, 40)
-        )
-        screen.blit(
-            font.render(
-                "IAS M/S: " + str(np.linalg.norm(agent1.v)),
-                False,
-                "black"
-            ),
-            (20, 60)
-        )
-        screen.blit(
-            font.render(
-                "IAS KPH: " + str(np.linalg.norm(agent1.v) * 3.6),
-                False,
-                "black"
-            ),
-            (20, 80)
-        )
-        screen.blit(
-            font.render(
-                "altitude: " + str(agent1.pos_real[1]),
-                False,
-                "black"
-            ),
-            (20, 100)
-        )
-        screen.blit(
-            font.render(
-                "AoA: " + str(agent1.AoA_deg),
-                False,
-                "black"
-            ),
-            (20, 120)
-        )
-        screen.blit(
-            font.render(
-                "test: " + str(agent1.testv3),
-                False,
-                "black"
-            ),
-            (20, 140)
-        )
-        screen.blit(
-            font.render(
-                "test: " + str(agent1.testv2),
-                False,
-                "black"
-            ),
-            (20, 160)
-        )
-        screen.blit(
-            font.render(
-                "d: " + str(agent1.nearest_target_pos_abs),
-                False,
-                "black"
-            ),
-            (20, 180)
-        )
         # utils.display_targets(targets, screen)
         utils.display_projectiles(agents, screen)
 

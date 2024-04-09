@@ -197,8 +197,23 @@ class Agent(aircraft.Aircraft):
         :return: None
         """
         super().tick(dt, fov)
+        self.dangerzone(fov)
         if self.target is not None:
             self.kill_target(dt)
+
+    def dangerzone(self, fov):
+        rotation_matrix = np.array([[
+            math.cos((-self.pitch) * math.pi / 180),
+            -math.sin((-self.pitch) * math.pi / 180)
+        ], [
+            math.sin((-self.pitch) * math.pi / 180),
+            math.cos((-self.pitch) * math.pi / 180)
+        ]])
+
+        for target in fov:
+            d = np.matmul((target[:2]-self.rot_rect.center), rotation_matrix)
+            if (0 < d[0] < 150) and (abs(d[1]) < 10) and target[2]!=2:
+                self.shoot()
 
     def explore(self, dt, fov_evade):
         """
