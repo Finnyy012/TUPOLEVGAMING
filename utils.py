@@ -37,10 +37,10 @@ def hit_detection_and_move_projectiles(
                 agents.remove(agent)
                 continue
 
-        for orb in targets:
-            if projectile.rect.colliderect(orb.rect):
+        for target in targets:
+            if projectile.rect.colliderect(target.rect):
                 current_agent.bullets.remove(projectile)
-                targets.remove(orb)
+                targets.remove(target)
                 continue
     
 def hit_detection_agents(
@@ -179,9 +179,10 @@ def check_surround(
             if(
                 np.linalg.norm(
                     target.coords - (
-                        settings.SCREEN_WIDTH - 
-                        current_agent.pos_virtual[0] + 
-                        fov_radius, 
+                        settings.SCREEN_WIDTH - (
+                            current_agent.pos_virtual[0] + 
+                            fov_radius
+                        ), 
                         current_agent.pos_virtual[1]
                     )
                 ) < 
@@ -203,7 +204,6 @@ def check_surround(
                 fov_radius
             ):
                 fov.append([target.coords[0], target.coords[1], 1])
-
     for agent in agents:
         if(np.linalg.norm(agent.pos_virtual - current_agent.pos_virtual) < fov_radius) \
             and agent != current_agent:
