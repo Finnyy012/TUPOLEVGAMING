@@ -3,11 +3,11 @@ import numpy as np
 import settings
 import matplotlib.pyplot as plt
 
-import bullet
 from agent import Agent
 from team import Team
 import ground
 import utils
+import copy
 
 screen, font = None, None
 if settings.USE_GUI:
@@ -103,9 +103,9 @@ agent4 = Agent(
 
 )
 floor = ground.Ground(
-    height=50,
-    elevation=600,
-    coll_elevation=635,
+    height=settings.GROUND["HEIGHT"],
+    elevation=settings.GROUND["ELEVATION"],
+    coll_elevation=settings.GROUND["COLL_ELEVATION"],
 )
 if settings.USE_GUI:
     floor = ground.Ground(
@@ -130,13 +130,15 @@ if settings.USE_GUI:
 targets = []
 
 targets = utils.create_targets(targets, floor.coll_elevation)
+targetscoords = np.array([target.coords for target in targets])
 
 # agents = [agent1]
-agents = [agent1, agent2, agent3, agent4]
+agentsforteam = [agent1, agent2, agent3, agent4]
+agentsall = [agent1, agent2, agent3, agent4]
 
-team1 = Team(targets[:2], agents)
+team1 = Team(copy.deepcopy(targetscoords), agentsforteam)
 
-# teams = [team1]
+teams = [team1]
 while running and total_time <= settings.SIMULATION_RUNTIME:
     # if respawning needs to be disabled, place the following line
     # outside the while loop
@@ -145,232 +147,47 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            # elif event.type == pygame.KEYUP:
-            # # This block runs when a key is released
-            #     if event.key == pygame.K_SPACE:
-            #         agent1.shoot()
             
         screen.fill("white")
 
-        # keys = pygame.key.get_pressed()
-        # if keys[pygame.K_w]:
-        #     if agent1.throttle < 100:
-        #         agent1.throttle += dt*100
-        # if keys[pygame.K_s]:
-        #     if agent1.throttle > 0:
-        #         agent1.throttle -= dt*100
-        # if keys[pygame.K_a]:
-        #     agent1.adjust_pitch(dt)
-        # if keys[pygame.K_d]:
-        #     agent1.adjust_pitch(-dt)
-        # if keys[pygame.K_q]:
-        #     agent1.flip()
-        #     flip.play()
+    for team in teams:
+        fov_list = [utils.check_surround(agent, targets, agentsall, fov_radius) for agent in team.agents]
 
-        # if keys[pygame.K_j]:
-        #     agent1.pos_real[0] -= 200*dt
-        # if keys[pygame.K_l]:
-        #     agent1.pos_real[0] += 200*dt
-        # if keys[pygame.K_i]:
-        #     agent1.pos_real[1] -= 200*dt
-        # if keys[pygame.K_k]:
-        #     agent1.pos_real[1] += 200*dt
-        
+        for x, agent in enumerate(team.agents):
+            agent.tick(dt, np.array(fov_list[x]))
 
-    agent11_fov = utils.check_surround(
-        agent1,
-        targets,
-        agents,
-        fov_radius
-    )
-    agent2_fov = utils.check_surround(
-        agent2,
-        targets,
-        agents,
-        fov_radius
-    )
-    agent3_fov = utils.check_surround(
-        agent3,
-        targets,
-        agents,
-        fov_radius
-    )
-    agent14_fov = utils.check_surround(
-        agent4,
-        targets,
-        agents,
-        fov_radius
-    )
-
-    fov_list = [agent11_fov, agent2_fov, agent3_fov, agent14_fov]
-
-    agent1.target = targets[0].coords
-
-    for x, agent in enumerate(agents):
-        agent.tick(dt, np.array(fov_list[x]))
-
-    utils.hit_detection_agents(agents)
-    # No GUI needed for tick
+        utils.hit_detection_agents(agentsall)
 
     if settings.USE_GUI:
         # Draw (blit) background, agent1, ground,
         #  baloons, lines, and tekst
         screen.blit(background, (0, 0))
-
-        for agent in agents:
-            screen.blit(agent.rot_sprite, agent.rot_rect)
+        
+        for team in teams:
+            for agent in team.agents:
+                screen.blit(agent.rot_sprite, agent.rot_rect)
         screen.blit(floor.sprite, [0, floor.elevation])
 
-        # for plastic_orb in targets:
-        #     screen.blit(
-        #         plastic_orb.sprite, plastic_orb.coords
-        #     )
-        #     colour="black"
-        #     if (
-        #         np.linalg.norm(
-        #             plastic_orb.coords - agent1.pos_virtual
-        #         ) < fov_radius
-        #     ):
-        #         colour = "green"
-        #     screen.blit(
-        #         font.render(
-        #             str(
-        #                 np.linalg.norm(
-        #                     plastic_orb.coords -
-        #                     agent1.pos_virtual
-        #                 )
-        #             ),
-        #             False,
-        #             colour
-        #         ),
-        #         plastic_orb.coords
-        #     )
-
-        center = np.array(
-            (screen.get_width() / 2, screen.get_height() / 2)
-        )
-
-        # pygame.draw.circle(
-        #     surface=screen,
-        #     color=0,
-        #     center=agent1.pos_virtual,
-        #     radius=fov_radius,
-        #     width=2
-        # )
-
-        # pygame.draw.line(screen, "black", center, center + agent1.v)
-        # pygame.draw.line(
-        #     screen, 
-        #     "red", 
-        #     center, 
-        #     center + (agent1.f_engine) / 100
-        # )
-        # pygame.draw.line(
-        #     screen, 
-        #     "green", 
-        #     center, 
-        #     center + (agent1.f_lift) / 100
-        # )
-        # pygame.draw.line(
-        #     screen, 
-        #     "blue", 
-        #     center, 
-        #     center + (agent1.f_drag) / 100
-        # )
-        # pygame.draw.line(
-        #     screen, 
-        #     "yellow", 
-        #     center, 
-        #     center + (agent1.f_gravity) / 100
-        # )
-        # screen.blit(
-        #     font.render(
-        #         "throttle: " + str(agent1.throttle),
-        #         False,
-        #         "black"
-        #     ),
-        #     (20, 20)
-        # )
-        # screen.blit(
-        #     font.render(
-        #         "pitch:    " + str(agent1.pitch),
-        #         False,
-        #         "black"
-        #     ),
-        #     (20, 40)
-        # )
-        # screen.blit(
-        #     font.render(
-        #         "IAS M/S: " + str(np.linalg.norm(agent1.v)),
-        #         False,
-        #         "black"
-        #     ),
-        #     (20, 60)
-        # )
-        # screen.blit(
-        #     font.render(
-        #         "IAS KPH: " + str(np.linalg.norm(agent1.v)*3.6),
-        #         False,
-        #         "black"
-        #     ),
-        #     (20, 80)
-        # )
-        # screen.blit(
-        #     font.render(
-        #         "altitude: " + str(agent1.pos_real[1]),
-        #         False,
-        #         "black"
-        #     ),
-        #     (20, 100)
-        # )
-        # screen.blit(
-        #     font.render(
-        #         "AoA: " + str(agent1.AoA_deg),
-        #         False,
-        #         "black"
-        #     ),
-        #     (20, 120)
-        # )
-        # screen.blit(
-        #     font.render(
-        #         "test: " + str(agent1.testv3),
-        #         False,
-        #         "black"
-        #     ),
-        #     (20, 140)
-        # )
-        # screen.blit(
-        #     font.render(
-        #         "test: " + str(agent1.testv2),
-        #         False,
-        #         "black"
-        #     ),
-        #     (20, 160)
-        # )
-        # screen.blit(
-        #     font.render(
-        #         "d: " + str(agent1.nearest_target_pos_abs),
-        #         False,
-        #         "black"
-        #     ),
-        #     (20, 180)
-        # )
         utils.display_targets(targets, screen)
-        utils.display_projectiles(agents, screen)
+        for team in teams:
+            utils.display_projectiles(team.agents, screen)
 
-        for agent in agents:
-            utils.hit_detection_and_move_projectiles(
-                targets,
-                agents,
-                agent,
-                dt
-            )
-            if utils.hit_collision_agents(targets, agent) or \
-                    agent.rot_rect.bottom >= floor.coll_elevation:
-                agents.remove(agent)
+        for team in teams:
+            for agent in team.agents:
+                print("--------------------------------")
+                print(len(team.targets))
+                utils.hit_detection_and_move_projectiles(
+                    targets,
+                    agentsall,
+                    agent,
+                    dt
+                )
+                print(len(team.targets))
+                if utils.hit_collision_agents(targets, agent) or \
+                        agent.rot_rect.bottom >= floor.coll_elevation:
+                    team.agents.remove(agent)
+                    agentsall.remove(agent)
 
-        if not agents:
-            running = False
         # Update display with current information
         pygame.display.flip()
 
@@ -402,22 +219,4 @@ if settings.USE_GUI:
     pygame.time.wait(2000)
 
 pygame.quit()
-
-# plt.imshow(agent1.history[0].T)
-# plt.show()
-
-# appels = (np.where(agent1.history[1]==1))
-# for i in range(len(appels[0])):
-#     for x in range(3):
-#         for y in range(3):
-#             agent1.history[1][appels[0][i]-1+x][appels[1][i]-1+y] = 1
-
-
-# plt.imshow(agent1.history[1].astype(bool))
-# plt.show()
-
-# plt.imshow(agent1.history[0].T + (agent1.history[1].T * 60))
-# plt.show()
-
-
 

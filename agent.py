@@ -138,8 +138,6 @@ class Agent(aircraft.Aircraft):
             plane_size
         )
 
-        self.target = (0, 0)
-
         # dangerzone
         self.radius_fov = 150
         self.perception_front_dims = evade_zone
@@ -190,6 +188,20 @@ class Agent(aircraft.Aircraft):
         circle_coords = np.concatenate([c_temp, circle_coords], 0)
         self.circle_coords = np.concatenate([-circle_coords, circle_coords], 0)
 
+    def dangerzone(self, fov):
+        rotation_matrix = np.array([[
+            math.cos((-self.pitch) * math.pi / 180),
+            -math.sin((-self.pitch) * math.pi / 180)
+        ], [
+            math.sin((-self.pitch) * math.pi / 180),
+            math.cos((-self.pitch) * math.pi / 180)
+        ]])
+
+        for target in fov:
+            d = np.matmul((target[:2]-self.rot_rect.center), rotation_matrix)
+            if (0 < d[0] < 150) and (abs(d[1]) < 10) and target[2]!=2:
+                self.shoot()
+
     def tick(self, dt: float, fov: np.ndarray) -> None:
         """
         'tick' function; updates internal state
@@ -199,7 +211,9 @@ class Agent(aircraft.Aircraft):
         :return: None
         """
         super().tick(dt, fov)
-        self.kill_target(dt)
+        self.dangerzone(fov)
+        if self.target is not None:
+            self.kill_target(dt)
 
     def explore(self, dt, fov_evade):
         """
