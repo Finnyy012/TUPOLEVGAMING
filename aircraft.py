@@ -163,7 +163,7 @@ class Aircraft:
         Update internal state of aircraft over given time interval.
 
         :param dt: time since last frame (s) (float)
-        :param fov: array containing objects within fov radius (np.ndarray)
+        :param fov: array containing objects within fov_evade radius (np.ndarray)
         :return: None
         """
 

@@ -46,9 +46,9 @@ PLANE_MESSERSCHMIDT_109E = {
 }
 
 TARGET = {
-    "SPRITE" : "assets/apple.gif",
+    "SPRITE" : "assets/target.png",
     "SPRITES" : [
-        "assets/apple.gif"
+        "assets/target.png"
     ],
     "SIZE" : 20,
     "TARGET_COUNT" : 10
@@ -62,8 +62,8 @@ BULLET = {
 }
 
 GROUND = {
-    "SPRITE" : "assets/environment.png",
+    "SPRITE" : "assets/floor.png",
     "HEIGHT" : 50,
-    "ELEVATION" : 600,
-    "COLL_ELEVATION" : 635,
+    "ELEVATION" : 670,
+    "COLL_ELEVATION" : 670,
 }

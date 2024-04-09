@@ -137,6 +137,8 @@ class Agent(aircraft.Aircraft):
             plane_size
         )
 
+        self.target = (0, 0)
+
         # dangerzone
         self.radius_fov = 150
         self.perception_front_dims = evade_zone
