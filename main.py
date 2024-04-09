@@ -128,7 +128,7 @@ if settings.USE_GUI:
 
 targets = []
 # agents = [agent1]
-agents = [agent1, agent2, agent3, agent4]
+agents = [agent1]
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
     #if respawning needs to be disabled, place the following line 

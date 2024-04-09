@@ -164,8 +164,46 @@ def check_surround(
     """
     fov = []
     for target in targets:
-        if(np.linalg.norm(target.coords - current_agent.pos_virtual) < fov_radius):
+        if(
+            np.linalg.norm(target.coords - current_agent.pos_virtual) < 
+            fov_radius
+        ):
             fov.append([target.coords[0], target.coords[1], 1])
+        # check if fov_radius circle moves 
+        #  out of frame on the right side of the screen
+        elif(
+            current_agent.pos_virtual[0] + fov_radius > 
+            settings.SCREEN_WIDTH
+        ):
+            # place circle outside of the screen on the left
+            if(
+                np.linalg.norm(
+                    target.coords - (
+                        settings.SCREEN_WIDTH - 
+                        current_agent.pos_virtual[0] + 
+                        fov_radius, 
+                        current_agent.pos_virtual[1]
+                    )
+                ) < 
+                fov_radius
+            ):
+                fov.append([target.coords[0], target.coords[1], 1])
+        # check if fov_radius circle moves 
+        #  out of frame on the left side of the screen
+        elif(current_agent.pos_virtual[0] - fov_radius < 0):
+            # place circle outside of the screen on the right
+            if(
+                np.linalg.norm(
+                    target.coords - (
+                        settings.SCREEN_WIDTH + 
+                        current_agent.pos_virtual[0],
+                        current_agent.pos_virtual[1]
+                    )
+                ) < 
+                fov_radius
+            ):
+                fov.append([target.coords[0], target.coords[1], 1])
+
     for agent in agents:
         if(np.linalg.norm(agent.pos_virtual - current_agent.pos_virtual) < fov_radius) \
             and agent != current_agent:
