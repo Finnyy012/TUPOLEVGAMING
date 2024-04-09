@@ -62,45 +62,6 @@ agent2 = Agent(
     plane_2_data["INIT_V"],
     (1280 / 8, 250),
 )
-
-agent3 = Agent(
-    settings.SCREEN_RESOLUTION,
-    plane_1_data["SPRITE"],
-    plane_1_data["SPRITE_TOP"],
-    plane_1_data["MASS"],
-    plane_1_data["ENGINE_FORCE"],
-    plane_1_data["AGILITY"],
-    plane_1_data["C_DRAG"],
-    plane_1_data["C_LIFT"],
-    plane_1_data["AOA_CRIT_LOW"],
-    plane_1_data["AOA_CRIT_HIGH"],
-    plane_1_data["CL0"],
-    plane_1_data["CD_MIN"],
-    plane_1_data["INIT_THROTTLE"],
-    plane_1_data["INIT_PITCH"],
-    plane_1_data["INIT_V"],
-    (1280 / 4, 250),
-)
-
-agent4 = Agent(
-    settings.SCREEN_RESOLUTION,
-    plane_1_data["SPRITE"],
-    plane_1_data["SPRITE_TOP"],
-    plane_1_data["MASS"],
-    plane_1_data["ENGINE_FORCE"],
-    plane_1_data["AGILITY"],
-    plane_1_data["C_DRAG"],
-    plane_1_data["C_LIFT"],
-    plane_1_data["AOA_CRIT_LOW"],
-    plane_1_data["AOA_CRIT_HIGH"],
-    plane_1_data["CL0"],
-    plane_1_data["CD_MIN"],
-    plane_1_data["INIT_THROTTLE"],
-    plane_1_data["INIT_PITCH"],
-    plane_1_data["INIT_V"],
-    (1280 / 2, 250),
-
-)
 floor = ground.Ground(
     height=50,
     elevation=600,
@@ -115,8 +76,8 @@ if settings.USE_GUI:
         resolution=settings.SCREEN_RESOLUTION
     )
 
-    # pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
-    # pygame.mixer.music.play(-1)
+    pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
+    pygame.mixer.music.play(-1)
     flip = pygame.mixer.Sound(
         "assets/Flip de beer intro-[AudioTrimmer.com].mp3"
     )
@@ -128,12 +89,12 @@ if settings.USE_GUI:
 
 targets = []
 # agents = [agent1]
-agents = [agent1, agent2, agent3, agent4]
+agents = [agent1, agent2]
+targets = utils.create_targets(targets, floor.coll_elevation)
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
     # if respawning needs to be disabled, place the following line
     # outside the while loop
-    targets = utils.create_targets(targets, floor.coll_elevation)
 
     if settings.USE_GUI:
         for event in pygame.event.get():
@@ -180,24 +141,19 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         agent2,
         targets,
         agents,
-        fov_radius
-    )
-    agent3_fov = utils.check_surround(
-        agent3,
-        targets,
-        agents,
-        fov_radius
-    )
-    agent14_fov = utils.check_surround(
-        agent4,
-        targets,
-        agents,
-        fov_radius
-    )
+        fov_radius)
 
-    fov_list = [agent11_fov, agent2_fov, agent3_fov, agent14_fov]
+    fov_list = [agent11_fov, agent2_fov]
 
-    agent1.target = targets[0].coords
+    if len(targets) > 1:
+        agent1.target = targets[0].coords
+        agent2.target = targets[1].coords
+    elif len(targets) == 1:
+        agent1.target = targets[0].coords
+        agent2.target = targets[0].coords
+    else:
+        agent1.target = None
+        agent2.target = None
 
     for x, agent in enumerate(agents):
         agent.tick(dt, np.array(fov_list[x]))
@@ -243,39 +199,6 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
             (screen.get_width() / 2, screen.get_height() / 2)
         )
 
-        pygame.draw.circle(
-            surface=screen,
-            color=0,
-            center=agent1.pos_virtual,
-            radius=fov_radius,
-            width=2
-        )
-
-        pygame.draw.line(screen, "black", center, center + agent1.v)
-        pygame.draw.line(
-            screen,
-            "red",
-            center,
-            center + (agent1.f_engine) / 100
-        )
-        pygame.draw.line(
-            screen,
-            "green",
-            center,
-            center + (agent1.f_lift) / 100
-        )
-        pygame.draw.line(
-            screen,
-            "blue",
-            center,
-            center + (agent1.f_drag) / 100
-        )
-        pygame.draw.line(
-            screen,
-            "yellow",
-            center,
-            center + (agent1.f_gravity) / 100
-        )
         screen.blit(
             font.render(
                 "throttle: " + str(agent1.throttle),
@@ -362,6 +285,11 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                     agent.rot_rect.bottom >= floor.coll_elevation:
                 agents.remove(agent)
 
+        won = False
+        if len(targets) == 0:
+            won = True
+            running = False
+
         if not agents:
             running = False
         # Update display with current information
@@ -371,28 +299,41 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
     total_time += dt
 
 if settings.USE_GUI:
-    screen.fill((255, 255, 255))
-    gameover = pygame.image.load("assets/gameover.png")
-    r = gameover.get_rect()
-    r.centerx = screen.get_width() / 2
-    r.centery = screen.get_height() / 2
-    screen.blit(gameover, r)
-
-    explosion = pygame.transform.scale(
-        pygame.image.load("assets/explosion2.png"),
-        (64, 64)
+    background = pygame.image.load("assets/background.png")
+    background = pygame.transform.scale(
+        background,
+        settings.SCREEN_RESOLUTION
     )
-    explosion_rect = explosion.get_rect()
-    explosion_rect.centerx = agent1.rot_rect.centerx
-    explosion_rect.bottom = agent1.rot_rect.bottom
-    screen.blit(explosion, explosion_rect)
-    screen.blit(source=floor.sprite, dest=[0, floor.elevation])
 
+    if not won:
+        gameover = pygame.image.load("assets/gameover.png")
+        r = gameover.get_rect()
+        r.centerx = screen.get_width() / 2
+        r.centery = screen.get_height() / 2
+        screen.blit(gameover, r)
+
+        explosion = pygame.transform.scale(
+            pygame.image.load("assets/explosion2.png"),
+            (64, 64)
+        )
+        explosion_rect = explosion.get_rect()
+        explosion_rect.centerx = agent1.rot_rect.centerx
+        explosion_rect.bottom = agent1.rot_rect.bottom
+        screen.blit(explosion, explosion_rect)
+        screen.blit(source=floor.sprite, dest=[0, floor.elevation])
+    else:
+        gameover = pygame.image.load("assets/gamecomplete.png")
+        r = gameover.get_rect()
+        r.centerx = screen.get_width() / 2
+        r.centery = screen.get_height() / 2
+        screen.blit(gameover, r)
+
+        screen.blit(source=floor.sprite, dest=[0, floor.elevation])
     # Update display with current information
     pygame.display.flip()
 
     # Let the user enjoy the gameover screen for a second
-    pygame.time.wait(2000)
+    pygame.time.wait(5000)
 
 pygame.quit()
 

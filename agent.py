@@ -197,7 +197,8 @@ class Agent(aircraft.Aircraft):
         :return: None
         """
         super().tick(dt, fov)
-        self.kill_target(dt)
+        if self.target is not None:
+            self.kill_target(dt)
 
     def explore(self, dt, fov_evade):
         """
