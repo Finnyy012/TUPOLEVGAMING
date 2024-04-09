@@ -96,6 +96,14 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
     # if respawning needs to be disabled, place the following line
     # outside the while loop
 
+    won = False
+    if len(targets) == 0:
+        won = True
+        running = False
+
+    if not agents:
+        running = False
+
     if settings.USE_GUI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -201,13 +209,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                     agent.rot_rect.bottom >= floor.coll_elevation:
                 agents.remove(agent)
 
-        won = False
-        if len(targets) == 0:
-            won = True
-            running = False
-
-        if not agents:
-            running = False
+        
         # Update display with current information
         pygame.display.flip()
 
