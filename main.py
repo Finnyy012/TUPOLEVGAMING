@@ -69,10 +69,10 @@ floor = ground.Ground(
 )
 if settings.USE_GUI:
     floor = ground.Ground(
-        height=50,
-        elevation=600,
-        coll_elevation=635,
-        sprite="assets/environment.png",
+        height=settings.GROUND["HEIGHT"], 
+        elevation=settings.GROUND["ELEVATION"],
+        coll_elevation=settings.GROUND["COLL_ELEVATION"],
+        sprite=settings.GROUND["SPRITE"],
         resolution=settings.SCREEN_RESOLUTION
     )
 
