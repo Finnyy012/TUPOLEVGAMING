@@ -2,6 +2,7 @@ import numpy as np
 from munkres import Munkres
 
 import team
+import settings
 
 
 class AbsolteDistanceTeam(team.Team):
@@ -22,10 +23,12 @@ class AbsolteDistanceTeam(team.Team):
         self.assign_targets()
     
     def calculate_distance(self, agent, target):
-        return np.sqrt(
-            (agent.rot_rect.center[0] - target[0]) ** 2 + 
-            (agent.rot_rect.center[1] - target[1]) ** 2
+        dx = min(
+            abs(agent.rot_rect.center[0] - target[0]), 
+            settings.SCREEN_WIDTH - abs(agent.rot_rect.center[0] - target[0])
         )
+        dy = abs(self.y - target.y)
+        return np.sqrt(dx**2 + dy**2)
         
     def assign_targets(self) -> None:
         afstanden = np.zeros((len(self.agents), len(self.targets)))
