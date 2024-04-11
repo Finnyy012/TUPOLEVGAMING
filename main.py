@@ -136,9 +136,21 @@ targetscoords = np.array([target.coords for target in targets])
 agentsforteam = [agent1, agent2, agent3, agent4]
 agentsall = [agent1, agent2, agent3, agent4]
 
-team1 = Team(copy.deepcopy(targetscoords), agentsforteam)
+team1 = Team(
+    copy.deepcopy(targetscoords),
+    2, 
+    settings.PLANE_POLIKARPOV_I_16, 
+    0
+)
 
-teams = [team1]
+team2 = Team(
+    copy.deepcopy(targetscoords),
+    4, 
+    settings.PLANE_POLIKARPOV_I_16, 
+    1
+)
+
+teams = [team1, team2]
 while running and total_time <= settings.SIMULATION_RUNTIME:
     # if respawning needs to be disabled, place the following line
     # outside the while loop
