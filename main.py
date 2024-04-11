@@ -152,7 +152,7 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
 
     for team in teams:
         fov_list = [utils.check_surround(agent, targets, agentsall, fov_radius) for agent in team.agents]
-
+        team.assign_targets()
         for x, agent in enumerate(team.agents):
             agent.tick(dt, np.array(fov_list[x]))
 
@@ -174,15 +174,15 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
 
         for team in teams:
             for agent in team.agents:
-                print("--------------------------------")
-                print(len(team.targets))
+                # print("--------------------------------")
+                # print(len(team.targets))
                 utils.hit_detection_and_move_projectiles(
                     targets,
                     agentsall,
                     agent,
                     dt
                 )
-                print(len(team.targets))
+                # print(len(team.targets))
                 if utils.hit_collision_agents(targets, agent) or \
                         agent.rot_rect.bottom >= floor.coll_elevation:
                     team.agents.remove(agent)

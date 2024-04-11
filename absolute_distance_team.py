@@ -1,17 +1,17 @@
 import numpy as np
 from munkres import Munkres
 
+import team
 
-class Team:
-    def __init__(self, 
-                 targets,
-                 agents
-                 ) -> None:
+
+class Absolte_distance_team(team.Team):
+    def __init__(self, targets, agents):
+        super.__init__(targets, agents)
         self.targets = targets
         self.agents = agents
 
         self.assign_targets()
-
+    
     def calculate_distance(self, agent, target):
         return np.sqrt(
             (agent.rot_rect.center[0] - target[0]) ** 2 + 
