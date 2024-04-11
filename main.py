@@ -4,8 +4,7 @@ import numpy as np
 import settings
 import matplotlib.pyplot as plt
 
-from agent import Agent
-from team import Team
+from absolute_distance_team import Absolte_distance_team
 import ground
 import utils
 import copy
@@ -55,14 +54,14 @@ targets = []
 targets = utils.create_targets(targets, floor.coll_elevation)
 targetscoords = np.array([target.coords for target in targets])
 
-team1 = Team(
+team1 = Absolte_distance_team(
     copy.deepcopy(targetscoords),
     2, 
     settings.PLANE_POLIKARPOV_I_16, 
     0
 )
 
-team2 = Team(
+team2 = Absolte_distance_team(
     copy.deepcopy(targetscoords),
     4, 
     settings.PLANE_POLIKARPOV_I_16, 
@@ -73,8 +72,6 @@ teams = [team1, team2]
 agents_all = list(chain(*[team.agents for team in teams]))
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
-    # if respawning needs to be disabled, place the following line
-    # outside the while loop
     
     if settings.USE_GUI:
         for event in pygame.event.get():
