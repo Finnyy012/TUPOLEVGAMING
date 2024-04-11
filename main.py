@@ -362,6 +362,15 @@ for _ in range(settings.BATCH_SIZE):
                 ),
                 (20, 180)
             )
+
+            screen.blit(
+                font.render(
+                    "score: " + str(agent1.score),
+                    False,
+                    "black"
+                ),
+                (20, 200)
+            )
             # utils.display_targets(targets, screen)
             utils.display_projectiles(agents, screen)
             pygame.display.flip()

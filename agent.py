@@ -187,6 +187,7 @@ class Agent(aircraft.Aircraft):
         c_temp[:, 0] = -c_temp[:, 0]
         circle_coords = np.concatenate([c_temp, circle_coords], 0)
         self.circle_coords = np.concatenate([-circle_coords, circle_coords], 0)
+        self.score = 0
 
     def tick(self, dt: float, fov: np.ndarray) -> None:
         """

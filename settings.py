@@ -52,7 +52,7 @@ TARGET = {
         "assets/target.png"
     ],
     "SIZE" : 20,
-    "TARGET_COUNT" : 1
+    "TARGET_COUNT" : 10
 }
 
 BULLET = {

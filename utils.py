@@ -40,6 +40,7 @@ def hit_detection_and_move_projectiles(
             if projectile.rect.colliderect(target.rect):
                 current_agent.bullets.remove(projectile)
                 targets.remove(target)
+                current_agent.score += 1
                 print("target got shot")
                 continue
     
