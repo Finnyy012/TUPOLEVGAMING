@@ -4,18 +4,20 @@ from munkres import Munkres
 import team
 
 
-class Absolte_distance_team(team.Team):
-    def __init__(self, 
-                 targets,
-                 n_agents,
-                 agent_description: dict,
-                 team_number: int
-                 ) -> None:
-        super().__init__(targets,
-                        n_agents,
-                        agent_description,
-                        team_number
-                        )
+class AbsolteDistanceTeam(team.Team):
+    def __init__(
+        self, 
+        targets,
+        n_agents,
+        agent_description: dict,
+        team_number: int
+    ) -> None:
+        super().__init__(
+            targets,
+            n_agents,
+            agent_description,
+            team_number
+        )
         
         self.assign_targets()
     

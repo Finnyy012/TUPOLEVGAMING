@@ -5,12 +5,13 @@ import settings
 
 
 class Team:
-    def __init__(self, 
-                 targets,
-                 n_agents,
-                 agent_description: dict,
-                 team_number: int
-                 ) -> None:
+    def __init__(
+        self, 
+        targets,
+        n_agents,
+        agent_description: dict,
+        team_number: int
+    ) -> None:
         self.targets = targets
 
         self.agents = []
