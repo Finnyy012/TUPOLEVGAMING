@@ -5,6 +5,7 @@ import settings
 import matplotlib.pyplot as plt
 
 from absolute_distance_team import AbsolteDistanceTeam
+from target import Target
 import ground
 import utils
 import copy
@@ -68,7 +69,7 @@ team2 = AbsolteDistanceTeam(
     1
 )
 
-teams = [team1, team2]
+teams = [team1]
 agents_all = list(chain(*[team.agents for team in teams]))
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
@@ -79,11 +80,19 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
                 running = False
             
         screen.fill("white")
-
+    
     for team in teams:
         fov_list = [utils.check_surround(agent, targets, agents_all, fov_radius) for agent in team.agents]
+        
         team.assign_targets()
         for x, agent in enumerate(team.agents):
+            agent_target = Target(floor.coll_elevation, settings.TARGET["SPRITE"])
+            agent_target.coords = np.array(agent.target)
+            if agent.target is not None:
+                if utils.check_surround(agent, [agent_target], [], fov_radius) != []:
+                    if np.append(agent.target, 1).tolist() not in utils.check_surround(agent, targets, agents_all, fov_radius):
+                        indices_to_remove = np.where(np.all(team.targets == agent.target, axis=1))
+                        team.targets = np.delete(team.targets, indices_to_remove, axis=0)
             agent.tick(dt, np.array(fov_list[x]))
 
         utils.hit_detection_agents(agents_all)
@@ -104,19 +113,16 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
 
         for team in teams:
             for agent in team.agents:
-                # print("--------------------------------")
-                # print(len(team.targets))
                 utils.hit_detection_and_move_projectiles(
                     targets,
                     agents_all,
                     agent,
                     dt
                 )
-                # print(len(team.targets))
+                
                 if utils.hit_collision_agents(targets, agent) or \
                         agent.rot_rect.bottom >= floor.coll_elevation:
                     team.agents.remove(agent)
-                    agents_all.remove(agent)
 
         # Update display with current information
         pygame.display.flip()
@@ -146,7 +152,7 @@ if settings.USE_GUI:
     pygame.display.flip()
 
     # Let the user enjoy the gameover screen for a second
-    pygame.time.wait(2000)
+    # pygame.time.wait(2000)
 
 pygame.quit()
 

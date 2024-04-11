@@ -27,7 +27,7 @@ class AbsolteDistanceTeam(team.Team):
             abs(agent.rot_rect.center[0] - target[0]), 
             settings.SCREEN_WIDTH - abs(agent.rot_rect.center[0] - target[0])
         )
-        dy = abs(self.y - target.y)
+        dy = abs(agent.rot_rect.center[1] - target[1])
         return np.sqrt(dx**2 + dy**2)
         
     def assign_targets(self) -> None:
