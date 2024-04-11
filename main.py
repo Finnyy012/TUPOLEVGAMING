@@ -71,7 +71,6 @@ team2 = Team(
 
 teams = [team1, team2]
 agents_all = list(chain(*[team.agents for team in teams]))
-print(agents_all)
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
     # if respawning needs to be disabled, place the following line
