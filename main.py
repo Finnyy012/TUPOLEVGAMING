@@ -83,14 +83,14 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
     
     for team in teams:
         fov_list = [utils.check_surround(agent, targets, agents_all, fov_radius) for agent in team.agents]
-        
+
         team.assign_targets()
         for x, agent in enumerate(team.agents):
             agent_target = Target(floor.coll_elevation, settings.TARGET["SPRITE"])
             agent_target.coords = np.array(agent.target)
             if agent.target is not None:
                 if utils.check_surround(agent, [agent_target], [], fov_radius) != []:
-                    if np.append(agent.target, 1).tolist() not in utils.check_surround(agent, targets, agents_all, fov_radius):
+                    if np.append(agent.target, 1).tolist() not in utils.check_surround(agent, targets, [], fov_radius):
                         indices_to_remove = np.where(np.all(team.targets == agent.target, axis=1))
                         team.targets = np.delete(team.targets, indices_to_remove, axis=0)
             agent.tick(dt, np.array(fov_list[x]))
