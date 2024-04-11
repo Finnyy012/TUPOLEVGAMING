@@ -31,10 +31,6 @@ class Team:
             )
 
         for i in range(n_agents):
-            print(f"{settings.SCREEN_HEIGHT = }")
-            print(
-                float((((settings.SCREEN_HEIGHT - (settings.SCREEN_HEIGHT // (n_agents+1)) - (settings.SCREEN_HEIGHT - settings.GROUND["HEIGHT"])) // (n_agents+1)) * i) + (settings.SCREEN_HEIGHT // n_agents))
-            )
             self.agents.append(Agent(
                 settings.SCREEN_RESOLUTION,
                 agent_description["SPRITE"],
