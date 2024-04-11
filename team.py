@@ -2,7 +2,6 @@ import numpy as np
 
 from agent import Agent
 import settings
-from munkres import Munkres
 
 
 class Team:
@@ -57,3 +56,5 @@ class Team:
                 agent_description["SIZE"]
             ))
 
+    def assign_targets(self) -> None:
+        pass
