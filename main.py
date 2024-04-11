@@ -23,8 +23,8 @@ dt = 0
 total_time = 0
 fov_radius = 150
 
-plane_1_data = settings.PLANE_MESSERSCHMIDT_109E
-plane_2_data = settings.PLANE_POLIKARPOV_I_16
+plane_1_data = settings.PLANE_I_16_FALANGIST
+plane_2_data = settings.PLANE_I_16_REPUBLICAN
 agent1 = Agent(
     settings.SCREEN_RESOLUTION,
     plane_2_data["SPRITE"],
