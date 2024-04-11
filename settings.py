@@ -5,6 +5,7 @@ SCREEN_RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 FPS = 60
 SIMULATION_RUNTIME = 1000000 # in seconds
 USE_GUI = True
+BATCH_SIZE = 2
 PLANE_POS_SCALE = 2
 
 PLANE_POLIKARPOV_I_16 = {
@@ -51,7 +52,7 @@ TARGET = {
         "assets/target.png"
     ],
     "SIZE" : 20,
-    "TARGET_COUNT" : 10
+    "TARGET_COUNT" : 1
 }
 
 BULLET = {

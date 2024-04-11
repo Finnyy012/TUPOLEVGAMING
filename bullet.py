@@ -50,7 +50,7 @@ class Bullet:
             self.size
         )
 
-        if sprite:
+        if settings.USE_GUI:
             self.sprite = pygame.image.load(sprite)
             self.sprite = pygame.transform.scale(
                 self.sprite,

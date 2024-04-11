@@ -23,8 +23,6 @@ def hit_detection_and_move_projectiles(
     :param dt: time step (float)
     :return: None
     """
-
-
     for projectile in current_agent.bullets:
         if projectile.move_bullet(dt):
             current_agent.bullets.remove(projectile)
@@ -35,12 +33,14 @@ def hit_detection_and_move_projectiles(
                agent != current_agent:
                 current_agent.bullets.remove(projectile)
                 agents.remove(agent)
+                print("agent got shot")
                 continue
 
-        for orb in targets:
-            if projectile.rect.colliderect(orb.rect):
+        for target in targets:
+            if projectile.rect.colliderect(target.rect):
                 current_agent.bullets.remove(projectile)
-                targets.remove(orb)
+                targets.remove(target)
+                print("target got shot")
                 continue
     
 def hit_detection_agents(
@@ -60,6 +60,7 @@ def hit_detection_agents(
                 ) < 24:
                     agents.remove(agent1)
                     agents.remove(agent2)
+                    print("agents collided")
                 
                 
 def hit_collision_agents(
@@ -78,6 +79,7 @@ def hit_collision_agents(
         if np.linalg.norm(
             np.array(player.rot_rect.center) - target.rect.center
         ) < 10:
+            print("agent hit target")
             return True
     return False
      
