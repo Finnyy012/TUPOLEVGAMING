@@ -209,3 +209,4 @@ def check_surround(
             and agent != current_agent:
             fov.append([agent.pos_virtual[0], agent.pos_virtual[1], 1])
     return fov
+
