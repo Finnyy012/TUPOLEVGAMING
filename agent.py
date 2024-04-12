@@ -4,12 +4,12 @@ import sys
 import time
 import numpy as np
 
-import aircraft
+from aircraft import Aircraft
 import settings
 import bullet
 
 
-class Agent(aircraft.Aircraft):
+class Agent(Aircraft):
     """
     Agent class.
 

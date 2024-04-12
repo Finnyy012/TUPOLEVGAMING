@@ -1,18 +1,51 @@
 import numpy as np
 from munkres import Munkres
 
-import team
+from team import Team
+from agent import Agent
 import settings
 
 
-class AbsoluteDistanceTeam(team.Team):
+class AbsoluteDistanceTeam(Team):
+    """
+    Team class that bids using the absolute distance to the targets.
+
+    + targets (list[tuple[float, float]]) all targets xy coords
+    + agents (list[Agent]) list with all existing agents for team
+    """
     def __init__(
         self, 
-        targets,
-        n_agents,
+        targets: list[tuple[float, float]],
+        n_agents: int,
         agent_description: dict,
         team_number: int
     ) -> None:
+        """
+        Constructor for AbsoluteDistanceTeam.
+        Creates member variables using super Team class.
+        Assigns starting targets to agents
+
+        :param targets: (list[tuple[float, float]]) 
+        all targets xy coords
+        :param n_agents: (int) number of agents to construct
+        :param agent_description: (dict) a dict used for creating agents
+        must contain at minimum the following keys:
+        - SPRITE
+        - SPRITE_TOP
+        - MASS
+        - ENGINE_FORCE
+        - AGILITY
+        - C_DRAG
+        - C_LIFT
+        - AOA_CRIT_LOW
+        - AOA_CRIT_HIGH
+        - CL0
+        - CD_MIN
+        - INIT_THROTTLE
+        - INIT_V
+        :param team_number: (int) number of team, 
+        1 starts on the left, 2 starts on the right (facing left)
+        """
         super().__init__(
             targets,
             n_agents,
@@ -22,7 +55,20 @@ class AbsoluteDistanceTeam(team.Team):
         
         self.assign_targets()
     
-    def calculate_distance(self, agent, target):
+    def _calculate_distance(
+        self, 
+        agent: Agent, 
+        target: tuple[float, float]
+    )-> float:
+        """
+        Calculate absolute distance between agent and target.
+        It also wraps around the doughnut that is our world.
+
+        :param agent: (Agent) current agent to analyse.
+        :param target: (tuple[float, float]) current target to measure.
+
+        :return: (float) absolute distance to `target` from `agent`.
+        """
         dx = min(
             abs(agent.rot_rect.center[0] - target[0]), 
             settings.SCREEN_WIDTH - abs(agent.rot_rect.center[0] - target[0])
@@ -31,23 +77,23 @@ class AbsoluteDistanceTeam(team.Team):
         return np.sqrt(dx**2 + dy**2)
         
     def assign_targets(self) -> None:
-        afstanden = np.zeros((len(self.agents), len(self.targets)))
+        """
+        Bidding function for team. 
+        This function uses the absolute distance from an agent to a target
+        to bid for one. 
+        """
+        distances = np.zeros((len(self.agents), len(self.targets)))
         
+        # calculate distances for bidding for agents.
         for i, agent in enumerate(self.agents):
             agent.target = None
             for j, target in enumerate(self.targets):
-                afstanden[i, j] = self.calculate_distance(agent, target)
+                distances[i, j] = self._calculate_distance(agent, target)
 
-        m = Munkres()
-        toewijzingen = m.compute(afstanden.tolist())
+        # calculate targets
+        mukres = Munkres()
+        assigned_info = mukres.compute(distances.tolist())
 
-        for i, j in toewijzingen:
+        # assign targets
+        for i, j in assigned_info:
             self.agents[i].target = self.targets[j]
-
-        # Print resultaten
-        # for vliegtuig in self.agents:
-        #     if vliegtuig.target is not None:
-        #         print(f"Vliegtuig op ({vliegtuig.rot_rect.center[0]}, {vliegtuig.rot_rect.center[1]}) heeft target op ({vliegtuig.target})")
-        #     else:
-        #         print(f"Vliegtuig op ({vliegtuig.rot_rect.center[0]}, {vliegtuig.rot_rect.center[1]}) heeft geen target.")    
-
