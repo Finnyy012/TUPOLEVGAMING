@@ -2,7 +2,6 @@ from itertools import chain
 import pygame
 import numpy as np
 import settings
-import matplotlib.pyplot as plt
 
 from absolute_distance_team import AbsolteDistanceTeam
 from target import Target
@@ -152,7 +151,7 @@ if settings.USE_GUI:
     pygame.display.flip()
 
     # Let the user enjoy the gameover screen for a second
-    # pygame.time.wait(2000)
+    pygame.time.wait(2000)
 
 pygame.quit()
 
