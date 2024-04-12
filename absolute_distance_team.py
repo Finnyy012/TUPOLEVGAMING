@@ -5,7 +5,7 @@ import team
 import settings
 
 
-class AbsolteDistanceTeam(team.Team):
+class AbsoluteDistanceTeam(team.Team):
     def __init__(
         self, 
         targets,

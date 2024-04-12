@@ -3,7 +3,7 @@ import pygame
 import numpy as np
 import settings
 
-from absolute_distance_team import AbsolteDistanceTeam
+from absolute_distance_team import AbsoluteDistanceTeam
 from target import Target
 import ground
 import utils
@@ -57,14 +57,14 @@ targets = []
 targets = utils.create_targets(targets, floor.coll_elevation)
 targetscoords = np.array([target.coords for target in targets])
 
-team1 = AbsolteDistanceTeam(
+team1 = AbsoluteDistanceTeam(
     copy.deepcopy(targetscoords),
     2, 
     settings.PLANE_POLIKARPOV_I_16, 
     0
 )
 
-team2 = AbsolteDistanceTeam(
+team2 = AbsoluteDistanceTeam(
     copy.deepcopy(targetscoords),
     4, 
     settings.PLANE_POLIKARPOV_I_16, 
