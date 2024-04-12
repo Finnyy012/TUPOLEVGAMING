@@ -7,7 +7,7 @@ SIMULATION_RUNTIME = 1000000 # in seconds
 USE_GUI = True
 PLANE_POS_SCALE = 2
 
-PLANE_POLIKARPOV_I_16 = {
+PLANE_I_16_REPUBLICAN = {
     "SPRITE" : "assets/facing_right.png",
     "SPRITE_TOP" : "assets/top_view.png",
     "MASS" : 1200,
@@ -23,7 +23,26 @@ PLANE_POLIKARPOV_I_16 = {
     "INIT_PITCH" : 0, 
     "INIT_V" : (100.0, 0.0),
     "INIT_POS" : (SCREEN_WIDTH / 2, 200),
-    "SIZE" : (24, 17)  # 6.13 : 3.25 irl
+    "SIZE" : (24, 12)  # 6.13 : 3.25 irl
+}
+
+PLANE_I_16_FALANGIST = {
+    "SPRITE" : "assets/i16_falangist.png",
+    "SPRITE_TOP" : "assets/i16_falangist_top.png",
+    "MASS" : 1200,
+    "ENGINE_FORCE" : 300,
+    "AGILITY" : 100,
+    "C_DRAG" : 0.6,
+    "C_LIFT" : 100,
+    "AOA_CRIT_LOW" : (-15.0, -0.95),
+    "AOA_CRIT_HIGH" : (19.0, 1.4),
+    "CL0" : 0.32,
+    "CD_MIN" : 0.5,
+    "INIT_THROTTLE" : 100,
+    "INIT_PITCH" : 0,
+    "INIT_V" : (100.0, 0.0),
+    "INIT_POS" : (SCREEN_WIDTH / 2, 200),
+    "SIZE" : (24, 12)  # 6.13 : 3.25 irl
 }
 
 PLANE_MESSERSCHMIDT_109E = {
