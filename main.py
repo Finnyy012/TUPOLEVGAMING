@@ -127,8 +127,8 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         # Update display with current information
         pygame.display.flip()
 
-        dt = clock.tick(settings.FPS) / 1000
-        total_time += dt
+    dt = clock.tick(settings.FPS) / 1000
+    total_time += dt
 
 if settings.USE_GUI:
     screen.fill((255, 255, 255))
