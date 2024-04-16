@@ -20,7 +20,7 @@ if settings.USE_GUI:
     )
     font = pygame.font.SysFont(None, 24)
 
-totalscores = [0, 0]
+total_scores = [0, 0]
 
 for _ in range(settings.BATCH_SIZE):
     clock = pygame.time.Clock()
@@ -182,22 +182,22 @@ for _ in range(settings.BATCH_SIZE):
         pygame.time.wait(2000)
     else:
         for i, team in enumerate(teams):
-            totalscores[i] += team.score
+            total_scores[i] += team.score
             print(team)
 print(teams[0].__class__.__name__) 
-print(f"\tThe first team scored {totalscores[0]} points \
+print(f"\tThe first team scored {total_scores[0]} points \
 over {settings.BATCH_SIZE} runs\n\tOn average they scored \
-{totalscores[0] / settings.BATCH_SIZE} points per run\n"
+{total_scores[0] / settings.BATCH_SIZE} points per run\n"
 )
 
 print(teams[0].__class__.__name__)    
-print(f"\tThe first team scored {totalscores[1]} points \
+print(f"\tThe first team scored {total_scores[1]} points \
 over {settings.BATCH_SIZE} runs\n\tOn average they scored \
-{totalscores[1] / settings.BATCH_SIZE} points per run\n"
+{total_scores[1] / settings.BATCH_SIZE} points per run\n"
 )
 
-print(f"{totalscores[0] / settings.BATCH_SIZE}/\
-{totalscores[1] / settings.BATCH_SIZE}"
+print(f"{total_scores[0] / settings.BATCH_SIZE}/\
+{total_scores[1] / settings.BATCH_SIZE}"
 )
 pygame.quit()
 
