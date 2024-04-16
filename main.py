@@ -4,6 +4,7 @@ import numpy as np
 import settings
 
 from absolute_distance_team import AbsoluteDistanceTeam
+from two_targets_distance_team import TwoTargetsTeam
 from target import Target
 import ground
 import utils
@@ -57,21 +58,21 @@ targets = []
 targets = utils.create_targets(targets, floor.coll_elevation)
 targetscoords = np.array([target.coords for target in targets])
 
-team1 = AbsoluteDistanceTeam(
+team1 = TwoTargetsTeam(
     copy.deepcopy(targetscoords),
     2, 
     settings.PLANE_POLIKARPOV_I_16, 
     0
 )
 
-team2 = AbsoluteDistanceTeam(
+team2 = TwoTargetsTeam(
     copy.deepcopy(targetscoords),
-    4, 
+    2, 
     settings.PLANE_POLIKARPOV_I_16, 
     1
 )
 
-teams = [team1]
+teams = [team1, team2]
 agents_all = list(chain(*[team.agents for team in teams]))
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
@@ -84,7 +85,14 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         screen.fill("white")
     
     for team in teams:
-        fov_list = [utils.check_surround(agent, targets, agents_all, fov_radius) for agent in team.agents]
+        fov_list = [
+            utils.check_surround(
+                agent, 
+                targets, 
+                agents_all, 
+                fov_radius
+            ) for agent in team.agents
+        ]
 
         team.assign_targets()
         for x, agent in enumerate(team.agents):
