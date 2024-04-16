@@ -14,7 +14,7 @@ class Team:
     """
     def __init__(
         self, 
-        targets: list[tuple[float, float]],
+        targets: np.ndarray,
         n_agents: int,
         agent_description: dict,
         team_number: int
