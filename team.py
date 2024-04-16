@@ -87,6 +87,8 @@ class Team:
                 )) / settings.PLANE_POS_SCALE % settings.SCREEN_RESOLUTION,
                 agent_description["SIZE"]
             ))
+            # if team_number == 1:
+            #     self.agents[-1].flipstart = 1
 
     def assign_targets(self) -> None:
         """

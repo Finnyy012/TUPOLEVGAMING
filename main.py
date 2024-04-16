@@ -60,18 +60,18 @@ targetscoords = np.array([target.coords for target in targets])
 team1 = AbsoluteDistanceTeam(
     copy.deepcopy(targetscoords),
     2, 
-    settings.PLANE_POLIKARPOV_I_16, 
+    settings.PLANE_I_16_REPUBLICAN, 
     0
 )
 
 team2 = AbsoluteDistanceTeam(
     copy.deepcopy(targetscoords),
-    4, 
-    settings.PLANE_POLIKARPOV_I_16, 
+    2, 
+    settings.PLANE_I_16_FALANGIST, 
     1
 )
 
-teams = [team1]
+teams = [team1, team2]
 agents_all = list(chain(*[team.agents for team in teams]))
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
@@ -100,8 +100,6 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         utils.hit_detection_agents(agents_all)
 
     if settings.USE_GUI:
-        # Draw (blit) background, agent1, ground,
-        #  baloons, lines, and tekst
         screen.blit(background, (0, 0))
         
         for team in teams:
@@ -129,8 +127,8 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         # Update display with current information
         pygame.display.flip()
 
-    dt = clock.tick(settings.FPS) / 1000
-    total_time += dt
+        # dt = clock.tick(settings.FPS) / 1000
+        # total_time += dt
 
 if settings.USE_GUI:
     screen.fill((255, 255, 255))
