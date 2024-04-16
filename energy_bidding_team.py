@@ -23,17 +23,16 @@ class EnergyBiddingTeam(AbsoluteDistanceTeam):
     def _calculate_distance(
         self,
         agent: Agent,
-        target: np.array
+        target: np.ndarray
     ) -> float:
         """
-                Approximates the energy required for displacement to `target`
+        Approximates the energy required for displacement to `target`
 
-                :param target: (np.ndarray) target vector
-                :return: (Tuple[float, int])
-                - approximation of required energy
-                - wrap check: -1 for left wrap, 1 for right wrap, 0 for no wrap
-                """
-        E_min = 99999999999999
+        :param target: (np.ndarray) target vector
+        :return: (Tuple[float, int])
+        - approximation of required energy
+        """
+        E_min = float("inf")
         offset = np.array([settings.SCREEN_WIDTH, 0])
         i_min = 0
 

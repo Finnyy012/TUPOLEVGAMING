@@ -25,7 +25,7 @@ class AbsoluteDistanceTeam(Team):
         Creates member variables using super Team class.
         Assigns starting targets to agents
 
-        :param targets: (list[tuple[float, float]]) 
+        :param targets: (np.array)
         all targets xy coords
         :param n_agents: (int) number of agents to construct
         :param agent_description: (dict) a dict used for creating agents
@@ -65,7 +65,7 @@ class AbsoluteDistanceTeam(Team):
         It also wraps around the doughnut that is our world.
 
         :param agent: (Agent) current agent to analyse.
-        :param target: (tuple[float, float]) current target to measure.
+        :param target: (np.array) current target to measure.
 
         :return: (float) absolute distance to `target` from `agent`.
         """
