@@ -7,7 +7,7 @@ from agent import Agent
 import settings
 
 
-class TwoTargetsDistance(Team):
+class TwoTargetsTeam(Team):
     """
     Team class that bids using the absolute distance to the targets.
 
@@ -22,7 +22,7 @@ class TwoTargetsDistance(Team):
         team_number: int
     ) -> None:
         """
-        Constructor for AbsoluteDistanceTeam.
+        Constructor for TwoTargetsTeam.
         Creates member variables using super Team class.
         Assigns starting targets to agents
 
@@ -58,37 +58,38 @@ class TwoTargetsDistance(Team):
     
     def _calculate_distance(
         self, 
-        coords1: tuple[float, float], 
-        coords2: tuple[float, float]
+        startpoint: tuple[float, float], 
+        target: tuple[float, float]
     )-> float:
         """
         Calculate absolute distance between agent and target.
         It also wraps around the doughnut that is our world.
 
-        :param agent: (Agent) current agent to analyse.
+        :param startpoint: (tuple[float, float]) current starting 
+        point to analyse.
         :param target: (tuple[float, float]) current target to measure.
 
         :return: (float) absolute distance to `target` from `agent`.
         """
         dx = min(
-                abs(coords2[0] - coords1[0]), 
-                settings.SCREEN_WIDTH - abs(coords2[0] - coords1[0])
+                abs(target[0] - startpoint[0]), 
+                settings.SCREEN_WIDTH - abs(target[0] - startpoint[0])
             )
-        dy = abs(coords2[1] - coords2[1])
+        dy = abs(target[1] - startpoint[1])
         return np.sqrt(dx**2 + dy**2)
         
 
     def _calculate_path(
             self, 
-            target1 : tuple[float, float], 
+            target : tuple[float, float], 
             agent : Agent, 
-            targets :list[tuple[float,float]]
+            targets :list[tuple[float, float]]
         ) -> float:
         """
         This function bets on a target by calculating the shortest distance 
         between the agent and two targets.
 
-        :param target1: target to be bet on (target.Target)
+        :param target: target to be bet on (target.Target)
         :param agent: agent that bets on the target (agent.Agent)
         :param targets: list of targets (list[target.Target])
 
@@ -96,27 +97,25 @@ class TwoTargetsDistance(Team):
         """
         distance_dict = {}
         agent_pos = agent.rot_rect.center 
-        agent_to_target_distance = self._calculate_distance(agent_pos, target1)
+        agent_to_target_distance = self._calculate_distance(agent_pos, target)
         if len(targets) == 1:
             return agent_to_target_distance
         if len(targets) == 0:
-            return None #change to whatever needed to show that all targets are gone
+            # When there are no targets there is no need to calculate a distance
+            return 0
 
         for target2 in targets:
-            if target1[0] != target2[0] or target1[1] != target2[1]:
-                distance = self._calculate_distance(target1, target2)
+            if target[0] != target2[0] or target[1] != target2[1]:
+                distance = self._calculate_distance(target, target2)
                 total_distance = agent_to_target_distance + distance 
-                distance_dict[total_distance] = (target1, target2)    
-                #this is dict is unused atm, but if we want to expand
-                # the function so it can tell the other agent to fuck
-                # off, we can **expand**
+                distance_dict[total_distance] = (target, target2)
         return min(distance_dict.keys())
 
     def assign_targets(self) -> None:
         """
         Bidding function for team. 
         This function uses the absolute distance from an agent to a target
-        to bid for one. 
+        to another target to bid for one. 
         """
         distances = np.zeros((len(self.agents), len(self.targets)))
         
