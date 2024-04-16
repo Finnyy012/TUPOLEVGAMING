@@ -175,7 +175,6 @@ def check_surround(
             current_agent.pos_virtual[0] + fov_radius > 
             settings.SCREEN_WIDTH
         ):
-            print(f"circle moves out of the screen on the right side,\n\t{fov_radius = },\n\t{target.coords = }, \n\t{current_agent.pos_virtual = }\n\t{(settings.SCREEN_WIDTH -  current_agent.pos_virtual[0] + fov_radius, current_agent.pos_virtual[1]) = }\n\t{np.linalg.norm(target.coords - (settings.SCREEN_WIDTH -  current_agent.pos_virtual[0] + fov_radius, current_agent.pos_virtual[1])) = }")
             # place circle outside of the screen on the left
             if(
                 np.linalg.norm(
@@ -194,7 +193,6 @@ def check_surround(
         #  out of frame on the left side of the screen
         elif(current_agent.pos_virtual[0] - fov_radius < 0):
             # place circle outside of the screen on the right
-            print(f"circle moves out of the screen on the left side,\n\t{target.coords = }, \n\t{current_agent.pos_virtual = }\n\t{(settings.SCREEN_WIDTH + current_agent.pos_virtual[0],current_agent.pos_virtual[1]) = }\n\t{np.linalg.norm(target.coords - (settings.SCREEN_WIDTH + current_agent.pos_virtual[0],current_agent.pos_virtual[1])) = }")
             if(
                 np.linalg.norm(
                     target.coords - (
