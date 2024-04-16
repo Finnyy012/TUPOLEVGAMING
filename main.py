@@ -3,6 +3,7 @@ from itertools import chain
 import pygame
 import numpy as np
 import settings
+
 from absolute_distance_team import AbsoluteDistanceTeam
 from energy_bidding_team import EnergyBiddingTeam
 from two_targets_distance_team import TwoTargetsTeam
