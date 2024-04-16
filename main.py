@@ -24,9 +24,12 @@ if settings.USE_GUI:
     font = pygame.font.SysFont(None, 24)
 
 for _ in range(settings.BATCH_SIZE):
-    # clock = pygame.time.Clock()
+    if settings.USE_GUI:
+        clock = pygame.time.Clock()
+        dt = 0
+    else:
+        dt = 1 / 60
     running = True
-    dt = 1/60
     total_time = 0
     fov_radius = 150
 
@@ -112,8 +115,9 @@ for _ in range(settings.BATCH_SIZE):
                             team.targets = np.delete(team.targets, indices_to_remove, axis=0)
                 agent.tick(dt, np.array(fov_list[x]))
 
-        # utils.hit_detection_agents(agents_all)
-        dead_agents = []
+        if settings.COLLISION:
+            utils.hit_detection_agents(agents_all)
+            dead_agents = []
 
         for team in teams:
             for agent in team.agents:
@@ -124,10 +128,11 @@ for _ in range(settings.BATCH_SIZE):
                         dt
                     )
                 )
-                
-                if agent.rot_rect.bottom >= floor.coll_elevation:
-                        # utils.hit_collision_agents(targets, agent):
-                    team.agents.remove(agent)
+
+                if settings.COLLISION:
+                    if agent.rot_rect.bottom >= floor.coll_elevation or \
+                            utils.hit_collision_agents(targets, agent):
+                        team.agents.remove(agent)
 
         if settings.USE_GUI:
             screen.blit(background, (0, 0))
@@ -154,7 +159,9 @@ for _ in range(settings.BATCH_SIZE):
                 # Update display with current information
             pygame.display.flip()
 
-        # dt = clock.tick(settings.FPS) / 1000
+        if settings.USE_GUI:
+            dt = clock.tick(settings.FPS) / 1000
+
         total_time += dt
 
     if settings.USE_GUI:
@@ -185,5 +192,4 @@ for _ in range(settings.BATCH_SIZE):
             print(team)
 pygame.quit()
 
-print(time.time()-start)
-
+print(f"The program took {round(time.time()-start, 2)} seconds to run.")

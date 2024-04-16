@@ -29,14 +29,15 @@ def hit_detection_and_move_projectiles(
         if projectile.move_bullet(dt):
             current_agent.bullets.remove(projectile)
             continue
-        # for agent in agents:
-        #     if np.linalg.norm(np.array(agent.rot_rect.center) - \
-        #        np.array(projectile.rect.center)) <= 5 and \
-        #        agent != current_agent:
-        #         current_agent.bullets.remove(projectile)
-        #         dead_agents.append(agent)
-        #         agents.remove(agent)
-        #         continue
+        if settings.COLLISION:
+            for agent in agents:
+                if np.linalg.norm(np.array(agent.rot_rect.center) - \
+                   np.array(projectile.rect.center)) <= 5 and \
+                   agent != current_agent:
+                    current_agent.bullets.remove(projectile)
+                    dead_agents.append(agent)
+                    agents.remove(agent)
+                    continue
         for target in targets:
             if projectile.rect.colliderect(target.rect):
                 current_agent.bullets.remove(projectile)
@@ -212,4 +213,3 @@ def check_surround(
             and agent != current_agent:
             fov.append([agent.pos_virtual[0], agent.pos_virtual[1], 1])
     return fov
-
