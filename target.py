@@ -18,8 +18,8 @@ class Target:
         Initaliser of the Target class
 
         :param ground_height: height of the ground (int)
-        :param sprite: path of the image used for the sprite of the (str)
-         target (Default = False)
+        :param sprite: path of the image used for the sprite of the
+         target (Default = False) (str)
         """
         size = settings.TARGET["SIZE"]
         self.coords = np.array((
@@ -32,13 +32,13 @@ class Target:
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)
         self.rect.center = self.coords + (np.array([size, size]) / 2)
 
-        pygame.draw.rect(
-            surface=pygame.display.get_surface(),
-            color="black",
-            rect=self.rect
-        )
 
-        if sprite:
+        if settings.USE_GUI:
+            pygame.draw.rect(
+                surface=pygame.display.get_surface(),
+                color="black",
+                rect=self.rect
+            )
             self.sprite = pygame.image.load(sprite)        
             self.sprite = pygame.transform.scale(self.sprite, (size, size))
 

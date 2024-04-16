@@ -62,6 +62,7 @@ class Agent(Aircraft):
     + action: (str) current action, for debug
     + circle_coords: (np.ndarray) coordinates of circle for
      `diff_overlap_circle`
+    + score: (int) score of the agent
     """
     def __init__(
         self,
@@ -187,6 +188,8 @@ class Agent(Aircraft):
         c_temp[:, 0] = -c_temp[:, 0]
         circle_coords = np.concatenate([c_temp, circle_coords], 0)
         self.circle_coords = np.concatenate([-circle_coords, circle_coords], 0)
+
+        self.score = 0
 
     def dangerzone(self, fov):
         rotation_matrix = np.array([[

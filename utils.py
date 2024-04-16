@@ -37,11 +37,11 @@ def hit_detection_and_move_projectiles(
                 dead_agents.append(agent)
                 agents.remove(agent)
                 continue
-
         for target in targets:
             if projectile.rect.colliderect(target.rect):
                 current_agent.bullets.remove(projectile)
                 targets.remove(target)
+                current_agent.score += 1
                 continue
     return dead_agents
     

@@ -6,6 +6,7 @@ FPS = 60
 SIMULATION_RUNTIME = 1000000 # in seconds
 USE_GUI = True
 PLANE_POS_SCALE = 2
+BATCH_SIZE = 10
 
 PLANE_I_16_REPUBLICAN = {
     "SPRITE" : "assets/facing_right.png",
@@ -70,7 +71,7 @@ TARGET = {
         "assets/target.png"
     ],
     "SIZE" : 20,
-    "TARGET_COUNT" : 10
+    "TARGET_COUNT" : 3
 }
 
 BULLET = {
@@ -85,4 +86,9 @@ GROUND = {
     "HEIGHT" : 50,
     "ELEVATION" : 670,
     "COLL_ELEVATION" : 670,
+}
+
+END_SCREEN= {
+    "EXPLOSION": "assets/explosion2.png",
+    "GAMEOVER": "assets/gameover.png"
 }

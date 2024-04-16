@@ -11,6 +11,7 @@ class Team:
 
     + targets (list[tuple[float, float]]) all targets xy coords
     + agents (list[Agent]) list with all existing agents for team
+    + score (int) team score
     """
     def __init__(
         self, 
@@ -44,7 +45,7 @@ class Team:
         1 starts on the left, 2 starts on the right (facing left)
         """
         self.targets = targets
-
+        self.score = 0
         self.agents = []
         if team_number not in [0, 1]:
             raise NotImplementedError(
@@ -106,6 +107,14 @@ class Team:
                     agent_description["SIZE"]
                 ))
 
+    def calculate_score(self)-> None:
+        """
+        calculate the team score by summing all agents scores
+        """
+        for agent in self.agents:
+            if agent.score != 0:
+                self.score += agent.score
+                agent.score = 0 
 
     def assign_targets(self) -> None:
         """
@@ -129,4 +138,4 @@ class Team:
         """
         return f"Team:\n\tContains {len(self.agents)} agents.\
         \n\tCurrently thinks there are {len(self.targets)} targets.\
-        \n\tScore: TO_BE_IMPLEMENTED."
+        \n\tScore: {self.score}."
