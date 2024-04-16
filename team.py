@@ -106,7 +106,7 @@ class Team:
                     agent_description["SIZE"]
                 ))
 
-    def calculate_score(self):
+    def calculate_score(self)-> None:
         """
         calculate the team score by summing all agents scores
         """
