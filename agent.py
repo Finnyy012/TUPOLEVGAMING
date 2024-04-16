@@ -188,6 +188,8 @@ class Agent(Aircraft):
         circle_coords = np.concatenate([c_temp, circle_coords], 0)
         self.circle_coords = np.concatenate([-circle_coords, circle_coords], 0)
 
+        self.score = 0
+
     def dangerzone(self, fov):
         rotation_matrix = np.array([[
             math.cos((-self.pitch) * math.pi / 180),

@@ -97,6 +97,7 @@ for _ in range(settings.BATCH_SIZE):
             ]
 
             team.assign_targets()
+            team.calculate_team_score()
             for x, agent in enumerate(team.agents):
                 agent_target = Target(floor.coll_elevation, settings.TARGET["SPRITE"])
                 agent_target.coords = np.array(agent.target)
@@ -160,9 +161,12 @@ for _ in range(settings.BATCH_SIZE):
         pygame.display.flip()
 
         # Let the user enjoy the gameover screen for a second
-        # pygame.time.wait(2000)
+        pygame.time.wait(2000)
     else:
         print("run finished")
-
+        for x, team in enumerate(teams):
+            print(f"Team {x} has hit {team.team_score} targets.")
+            for agent in team.agents:
+                print(f"Agent has hit {agent.score} targets.")
 pygame.quit()
 

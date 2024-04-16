@@ -37,10 +37,11 @@ def hit_detection_and_move_projectiles(
                 agents.remove(agent)
                 continue
 
-        for orb in targets:
-            if projectile.rect.colliderect(orb.rect):
+        for target in targets:
+            if projectile.rect.colliderect(target.rect):
                 current_agent.bullets.remove(projectile)
-                targets.remove(orb)
+                targets.remove(target)
+                current_agent.score += 1
                 print("shot target")
                 continue
     
