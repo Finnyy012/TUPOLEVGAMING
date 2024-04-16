@@ -2,10 +2,6 @@
 By *Bas de Blok, Finn de Graaf, Max Visscher* & *Joris Heemskerk*
 
 Created for the [Autonomy By Design (ADB)](https://canvas.hu.nl/courses/39869/pages/kennisroute-ai) cursus.
- 
- # Demo video of branch
-
-Watch the demo video by clicking on the image below:
 
 ## Theory
 This simulation uses the multi agent theory from **MULTIAGENT SYSTEMS Algorithmic, Game-Theoretic, and Logical Foundations**, written by Yoav Shoham and Kevin Leyton-Brown. The theory from Chapter Two, Distributed Optimization has been implemented with the use of the Munkres library.
