@@ -163,7 +163,8 @@ class Aircraft:
         Update internal state of aircraft over given time interval.
 
         :param dt: time since last frame (s) (float)
-        :param fov: array containing objects within fov_evade radius (np.ndarray)
+        :param fov: array containing objects within fov_evade 
+         radius (np.ndarray)
         :return: None
         """
 
@@ -285,10 +286,10 @@ class Aircraft:
         :param AoA: angle of attack
         :return: lift coefficient at AoA
         """
-        if AoA < self.AoA_crit_low[0]-1:
+        if AoA < self.AoA_crit_low[0] - 1:
             return 0.0
-        elif self.AoA_crit_low[0]-1 <= AoA < self.AoA_crit_low[0]:
-            return self.AoA_crit_low[1] * abs(self.AoA_crit_low[0]-1 - AoA)
+        elif self.AoA_crit_low[0] - 1 <= AoA < self.AoA_crit_low[0]:
+            return self.AoA_crit_low[1] * abs(self.AoA_crit_low[0] - 1 - AoA)
         elif self.AoA_crit_low[0] <= AoA < 0.0:
             b = self.cl0 - self.AoA_crit_low[1]
             c = AoA / self.AoA_crit_low[0]
@@ -297,8 +298,8 @@ class Aircraft:
             b = self.AoA_crit_high[1] - self.cl0
             c = AoA / self.AoA_crit_high[0]
             return self.cl0 + b * c
-        elif self.AoA_crit_high[0] <= AoA < self.AoA_crit_high[0]+1:
-            return self.AoA_crit_high[1] * abs(self.AoA_crit_high[0]-1 - AoA)
+        elif self.AoA_crit_high[0] <= AoA < self.AoA_crit_high[0] + 1:
+            return self.AoA_crit_high[1] * abs(self.AoA_crit_high[0] - 1 - AoA)
         else:
             return 0
 

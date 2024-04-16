@@ -68,16 +68,16 @@ for _ in range(settings.BATCH_SIZE):
     targets = utils.create_targets(targets, floor.coll_elevation)
     targetscoords = np.array([target.coords for target in targets])
 
-    team1 = EnergyBiddingTeam(
+    team1 = AbsoluteDistanceTeam(
         copy.deepcopy(targetscoords),
         2, 
         settings.PLANE_I_16_REPUBLICAN,
         0
     )
 
-    team2 = EnergyBiddingTeam(
+    team2 = AbsoluteDistanceTeam(
         copy.deepcopy(targetscoords),
-        2,
+        1,
         settings.PLANE_I_16_FALANGIST,
         1
     )
@@ -228,7 +228,7 @@ over {settings.BATCH_SIZE} runs\n\tOn average they scored \
 {total_scores[0] / settings.BATCH_SIZE} points per run\n"
 )
 
-print(teams[0].__class__.__name__)    
+print(teams[1].__class__.__name__)    
 print(f"\tThe first team scored {total_scores[1]} points \
 over {settings.BATCH_SIZE} runs\n\tOn average they scored \
 {total_scores[1] / settings.BATCH_SIZE} points per run\n"

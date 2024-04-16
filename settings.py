@@ -4,11 +4,12 @@ SCREEN_RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 FPS = 60
 SIMULATION_RUNTIME = 1000000 # in seconds
-USE_GUI = False
-COLLISION = False
+USE_GUI = True
+COLLISION = True
 PLANE_POS_SCALE = 2
 BATCH_SIZE = 10
 FIRE_RATE = 0.08 #fire per x seconds
+
 PLANE_I_16_REPUBLICAN = {
     "SPRITE" : "assets/facing_right.png",
     "SPRITE_TOP" : "assets/top_view.png",

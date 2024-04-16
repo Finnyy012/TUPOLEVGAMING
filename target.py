@@ -47,7 +47,8 @@ def load_single_type_targets(
         ground_height: int, target_count: int
 ) -> list[Target]:
     """
-    This function loads a list of target with the same sprite.
+    This function loads a list of target with the same sprite, the
+     targets cannot overlap.
     
     :param ground_height: height of the ground (int)
     :param target_count: number of target to be loaded (int)

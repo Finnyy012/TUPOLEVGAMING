@@ -7,7 +7,8 @@ class Ground:
 
     + sprite: (pygame.Surface) ground sprite
     + elevation: (int) pixels from top of screen to top of ground sprite
-    + coll_elevation: (int) pixels from top of screen to in-sprite ground
+    + coll_elevation: (int) pixels from top of screen to in-sprite
+       ground
     """
     def __init__(
             self, 
