@@ -119,18 +119,26 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         for team in teams:
             utils.display_projectiles(team.agents, screen)
 
+        dead_agents = []
+
         for team in teams:
             for agent in team.agents:
-                utils.hit_detection_and_move_projectiles(
-                    targets,
-                    agents_all,
-                    agent,
-                    dt
+                dead_agents.append(utils.hit_detection_and_move_projectiles(
+                        targets,
+                        agents_all,
+                        agent,
+                        dt
+                    )
                 )
                 
                 if utils.hit_collision_agents(targets, agent) or \
                         agent.rot_rect.bottom >= floor.coll_elevation:
                     team.agents.remove(agent)
+
+        for team in teams:
+            team.agents = [
+                agent for agent in team.agents if agent not in dead_agents
+            ]
 
         # Update display with current information
         pygame.display.flip()
