@@ -127,6 +127,6 @@ class Team:
             Currently thinks there are `n` targets.
             Score: `n`.
         """
-        return f"Team:\n\tContains {len(self.agents)} agents.\n \
-        \tCurrently thinks there are {len(self.targets)} targets.\n \
-        \tScore: TO_BE_IMPLEMENTED."
+        return f"Team:\n\tContains {len(self.agents)} agents.\
+        \n\tCurrently thinks there are {len(self.targets)} targets.\
+        \n\tScore: TO_BE_IMPLEMENTED."
