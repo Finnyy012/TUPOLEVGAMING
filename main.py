@@ -67,7 +67,7 @@ team1 = TwoTargetsTeam(
 
 team2 = TwoTargetsTeam(
     copy.deepcopy(targetscoords),
-    4, 
+    2, 
     settings.PLANE_POLIKARPOV_I_16, 
     1
 )
