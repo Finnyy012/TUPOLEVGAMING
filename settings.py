@@ -4,7 +4,8 @@ SCREEN_RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 FPS = 60
 SIMULATION_RUNTIME = 1000000 # in seconds
-USE_GUI = True
+USE_GUI = False
+COLLISION = False
 PLANE_POS_SCALE = 2
 BATCH_SIZE = 10
 FIRE_RATE = 0.08 #fire per x seconds
@@ -71,7 +72,7 @@ TARGET = {
         "assets/target.png"
     ],
     "SIZE" : 20,
-    "TARGET_COUNT" : 40
+    "TARGET_COUNT" : 10
 }
 
 BULLET = {

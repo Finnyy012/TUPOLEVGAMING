@@ -1,3 +1,4 @@
+import time
 from itertools import chain
 import pygame
 import numpy as np
@@ -10,7 +11,8 @@ import ground
 import utils
 import copy
 
-import time
+start = time.time()
+
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
@@ -20,10 +22,15 @@ if settings.USE_GUI:
     )
     font = pygame.font.SysFont(None, 24)
 
+total_scores = [0, 0]
+
 for _ in range(settings.BATCH_SIZE):
-    clock = pygame.time.Clock()
+    if settings.USE_GUI:
+        clock = pygame.time.Clock()
+        dt = 0
+    else:
+        dt = 1 / 60
     running = True
-    dt = 0
     total_time = 0
     fov_radius = 150
 
@@ -75,13 +82,13 @@ for _ in range(settings.BATCH_SIZE):
     )
 
     teams = [team1, team2]
+
     agents_all = list(chain(*[team.agents for team in teams]))
 
     while running and total_time <= settings.SIMULATION_RUNTIME:
         if len(targets) == 0 or len(agents_all) == 0:
             running = False
-            print(f"targets: {len(targets)} \nagents: {len(agents_all)}")
-            time.sleep(1000000)
+  
         if settings.USE_GUI:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -136,6 +143,8 @@ for _ in range(settings.BATCH_SIZE):
                             )
                 agent.tick(dt, np.array(fov_list[x]))
 
+        if settings.COLLISION:
+            utils.hit_detection_agents(agents_all)
         dead_agents = []
 
         for team in teams:
@@ -147,10 +156,11 @@ for _ in range(settings.BATCH_SIZE):
                         dt
                     )
                 )
-                
-                # if utils.hit_collision_agents(targets, agent) or \
-                #         agent.rot_rect.bottom >= floor.coll_elevation:
-                #     team.agents.remove(agent)
+
+                if settings.COLLISION:
+                    if agent.rot_rect.bottom >= floor.coll_elevation or \
+                            utils.hit_collision_agents(targets, agent):
+                        team.agents.remove(agent)
 
         if settings.USE_GUI:
             screen.blit(background, (0, 0))
@@ -177,7 +187,9 @@ for _ in range(settings.BATCH_SIZE):
                 # Update display with current information
             pygame.display.flip()
 
-        dt = clock.tick(settings.FPS) / 1000
+        if settings.USE_GUI:
+            dt = clock.tick(settings.FPS) / 1000
+
         total_time += dt
 
     if settings.USE_GUI:
@@ -206,7 +218,24 @@ for _ in range(settings.BATCH_SIZE):
         # Let the user enjoy the gameover screen for 2 seconds
         pygame.time.wait(2000)
     else:
-        for team in teams:
+        for i, team in enumerate(teams):
+            total_scores[i] += team.score
             print(team)
+print(teams[0].__class__.__name__) 
+print(f"\tThe first team scored {total_scores[0]} points \
+over {settings.BATCH_SIZE} runs\n\tOn average they scored \
+{total_scores[0] / settings.BATCH_SIZE} points per run\n"
+)
+
+print(teams[0].__class__.__name__)    
+print(f"\tThe first team scored {total_scores[1]} points \
+over {settings.BATCH_SIZE} runs\n\tOn average they scored \
+{total_scores[1] / settings.BATCH_SIZE} points per run\n"
+)
+
+print(f"{total_scores[0] / settings.BATCH_SIZE}/\
+{total_scores[1] / settings.BATCH_SIZE}"
+)
 pygame.quit()
 
+print(f"The program took {round(time.time()-start, 2)} seconds to run.")
