@@ -62,6 +62,7 @@ class Agent(Aircraft):
     + action: (str) current action, for debug
     + circle_coords: (np.ndarray) coordinates of circle for
      `diff_overlap_circle`
+    + score: (int) score of the agent
     """
     def __init__(
         self,

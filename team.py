@@ -11,6 +11,7 @@ class Team:
 
     + targets (list[tuple[float, float]]) all targets xy coords
     + agents (list[Agent]) list with all existing agents for team
+    + score (int) team score
     """
     def __init__(
         self, 

@@ -18,8 +18,8 @@ class Target:
         Initaliser of the Target class
 
         :param ground_height: height of the ground (int)
-        :param sprite: path of the image used for the sprite of the (str)
-         target (Default = False)
+        :param sprite: path of the image used for the sprite of the
+         target (Default = False) (str)
         """
         size = settings.TARGET["SIZE"]
         self.coords = np.array((

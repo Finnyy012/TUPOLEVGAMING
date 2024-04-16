@@ -4,7 +4,7 @@ SCREEN_RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 FPS = 60
 SIMULATION_RUNTIME = 1000000 # in seconds
-USE_GUI = False
+USE_GUI = True
 PLANE_POS_SCALE = 2
 BATCH_SIZE = 10
 
@@ -86,4 +86,9 @@ GROUND = {
     "HEIGHT" : 50,
     "ELEVATION" : 670,
     "COLL_ELEVATION" : 670,
+}
+
+END_SCREEN= {
+    "EXPLOSION": "assets/explosion2.png",
+    "GAMEOVER": "assets/gameover.png"
 }

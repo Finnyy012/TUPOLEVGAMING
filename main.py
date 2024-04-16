@@ -156,14 +156,14 @@ for _ in range(settings.BATCH_SIZE):
 
     if settings.USE_GUI:
         screen.fill((255, 255, 255))
-        gameover = pygame.image.load("assets/gameover.png")
+        gameover = pygame.image.load(settings.END_SCREEN["GAMEOVER"])
         r = gameover.get_rect()
         r.centerx = screen.get_width() / 2
         r.centery = screen.get_height() / 2
         screen.blit(gameover, r)
 
         explosion = pygame.transform.scale(
-            pygame.image.load("assets/explosion2.png"),
+            pygame.image.load(settings.END_SCREEN["EXPLOSION"]),
             (64, 64)
         )
         explosion_rect = explosion.get_rect()
