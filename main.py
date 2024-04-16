@@ -175,7 +175,7 @@ for _ in range(settings.BATCH_SIZE):
         # Update display with current information
         pygame.display.flip()
 
-        # Let the user enjoy the gameover screen for a second
+        # Let the user enjoy the gameover screen for 2 seconds
         pygame.time.wait(2000)
     else:
         for team in teams:
