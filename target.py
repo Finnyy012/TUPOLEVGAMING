@@ -32,13 +32,13 @@ class Target:
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)
         self.rect.center = self.coords
 
-        pygame.draw.rect(
-            surface=pygame.display.get_surface(),
-            color="black",
-            rect=self.rect
-        )
 
-        if sprite:
+        if settings.USE_GUI:
+            pygame.draw.rect(
+                surface=pygame.display.get_surface(),
+                color="black",
+                rect=self.rect
+            )
             self.sprite = pygame.image.load(sprite)        
             self.sprite = pygame.transform.scale(self.sprite, (size, size))
 

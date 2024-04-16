@@ -83,7 +83,8 @@ class AbsoluteDistanceTeam(Team):
         to bid for one. 
         """
         distances = np.zeros((len(self.agents), len(self.targets)))
-        
+        if len(self.targets) == 0:
+            return
         # calculate distances for bidding for agents.
         for i, agent in enumerate(self.agents):
             agent.target = None
