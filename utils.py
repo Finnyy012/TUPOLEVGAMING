@@ -29,14 +29,14 @@ def hit_detection_and_move_projectiles(
         if projectile.move_bullet(dt):
             current_agent.bullets.remove(projectile)
             continue
-        for agent in agents:
-            if np.linalg.norm(np.array(agent.rot_rect.center) - \
-               np.array(projectile.rect.center)) <= 5 and \
-               agent != current_agent:
-                current_agent.bullets.remove(projectile)
-                dead_agents.append(agent)
-                agents.remove(agent)
-                continue
+        # for agent in agents:
+        #     if np.linalg.norm(np.array(agent.rot_rect.center) - \
+        #        np.array(projectile.rect.center)) <= 5 and \
+        #        agent != current_agent:
+        #         current_agent.bullets.remove(projectile)
+        #         dead_agents.append(agent)
+        #         agents.remove(agent)
+        #         continue
         for target in targets:
             if projectile.rect.colliderect(target.rect):
                 current_agent.bullets.remove(projectile)
@@ -44,7 +44,8 @@ def hit_detection_and_move_projectiles(
                 current_agent.score += 1
                 continue
     return dead_agents
-    
+
+
 def hit_detection_agents(
         agents: list[agent.Agent],
     ) -> None:

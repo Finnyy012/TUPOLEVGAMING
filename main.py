@@ -1,3 +1,4 @@
+import time
 from itertools import chain
 import pygame
 import numpy as np
@@ -10,6 +11,8 @@ from target import Target
 import ground
 import utils
 import copy
+
+start = time.time()
 
 screen, font = None, None
 if settings.USE_GUI:
@@ -109,7 +112,7 @@ for _ in range(settings.BATCH_SIZE):
                             team.targets = np.delete(team.targets, indices_to_remove, axis=0)
                 agent.tick(dt, np.array(fov_list[x]))
 
-        utils.hit_detection_agents(agents_all)
+        # utils.hit_detection_agents(agents_all)
         dead_agents = []
 
         for team in teams:
@@ -122,8 +125,8 @@ for _ in range(settings.BATCH_SIZE):
                     )
                 )
                 
-                if utils.hit_collision_agents(targets, agent) or \
-                        agent.rot_rect.bottom >= floor.coll_elevation:
+                if agent.rot_rect.bottom >= floor.coll_elevation:
+                        # utils.hit_collision_agents(targets, agent):
                     team.agents.remove(agent)
 
         if settings.USE_GUI:
@@ -181,4 +184,6 @@ for _ in range(settings.BATCH_SIZE):
         for team in teams:
             print(team)
 pygame.quit()
+
+print(time.time()-start)
 
