@@ -23,6 +23,8 @@ if settings.USE_GUI:
     )
     font = pygame.font.SysFont(None, 24)
 
+total_scores = [0, 0]
+
 for _ in range(settings.BATCH_SIZE):
     if settings.USE_GUI:
         clock = pygame.time.Clock()
@@ -81,6 +83,7 @@ for _ in range(settings.BATCH_SIZE):
     )
 
     teams = [team1, team2]
+
     agents_all = list(chain(*[team.agents for team in teams]))
 
     while running and total_time <= settings.SIMULATION_RUNTIME:
@@ -188,8 +191,24 @@ for _ in range(settings.BATCH_SIZE):
         # Let the user enjoy the gameover screen for 2 seconds
         pygame.time.wait(2000)
     else:
-        for team in teams:
+        for i, team in enumerate(teams):
+            total_scores[i] += team.score
             print(team)
+print(teams[0].__class__.__name__) 
+print(f"\tThe first team scored {total_scores[0]} points \
+over {settings.BATCH_SIZE} runs\n\tOn average they scored \
+{total_scores[0] / settings.BATCH_SIZE} points per run\n"
+)
+
+print(teams[0].__class__.__name__)    
+print(f"\tThe first team scored {total_scores[1]} points \
+over {settings.BATCH_SIZE} runs\n\tOn average they scored \
+{total_scores[1] / settings.BATCH_SIZE} points per run\n"
+)
+
+print(f"{total_scores[0] / settings.BATCH_SIZE}/\
+{total_scores[1] / settings.BATCH_SIZE}"
+)
 pygame.quit()
 
 print(f"The program took {round(time.time()-start, 2)} seconds to run.")
