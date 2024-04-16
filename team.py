@@ -46,7 +46,7 @@ class Team:
         self.targets = targets
 
         self.agents = []
-        if team_number not in [0,1]:
+        if team_number not in [0, 1]:
             raise NotImplementedError(
                 "Simulation does not support more\
                  than 2 teams at this point in time."
