@@ -120,9 +120,11 @@ class TwoTargetsTeam(Team):
         Bidding function for team. 
         This function uses the absolute distance from an agent 
         to a target to another target to bid for one. 
+        
+        if there are no targets or agents, the function returns.
         """
         distances = np.zeros((len(self.agents), len(self.targets)))
-        if len(self.targets) == 0:
+        if len(self.targets) == 0 or len(self.agents) == 0:
             return
         # calculate distances for bidding for agents.
         for i, agent in enumerate(self.agents):

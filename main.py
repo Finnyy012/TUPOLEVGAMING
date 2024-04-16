@@ -2,7 +2,6 @@ from itertools import chain
 import pygame
 import numpy as np
 import settings
-
 from absolute_distance_team import AbsoluteDistanceTeam
 from energy_bidding_team import EnergyBiddingTeam
 from two_targets_distance_team import TwoTargetsTeam
@@ -11,6 +10,7 @@ import ground
 import utils
 import copy
 
+import time
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
@@ -80,6 +80,8 @@ for _ in range(settings.BATCH_SIZE):
     while running and total_time <= settings.SIMULATION_RUNTIME:
         if len(targets) == 0 or len(agents_all) == 0:
             running = False
+            print(f"targets: {len(targets)} \nagents: {len(agents_all)}")
+            time.sleep(1000000)
         if settings.USE_GUI:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -100,16 +102,40 @@ for _ in range(settings.BATCH_SIZE):
             team.assign_targets()
             team.calculate_score()
             for x, agent in enumerate(team.agents):
-                agent_target = Target(floor.coll_elevation, settings.TARGET["SPRITE"])
+                agent_target = Target(
+                    floor.coll_elevation,
+                    settings.TARGET["SPRITE"]
+                )
                 agent_target.coords = np.array(agent.target)
                 if agent.target is not None:
-                    if utils.check_surround(agent, [agent_target], [], fov_radius) != []:
-                        if np.append(agent.target, 1).tolist() not in utils.check_surround(agent, targets, [], fov_radius):
-                            indices_to_remove = np.where(np.all(team.targets == agent.target, axis=1))
-                            team.targets = np.delete(team.targets, indices_to_remove, axis=0)
+                    if utils.check_surround(
+                        agent, 
+                        [agent_target], 
+                        [], 
+                        fov_radius
+                    ) != []:
+                        if np.append(
+                            agent.target, 
+                            1
+                        ).tolist() not in utils.check_surround(
+                            agent, 
+                            targets, 
+                            [], 
+                            fov_radius
+                        ):
+                            indices_to_remove = np.where(
+                                np.all(
+                                    team.targets == agent.target, 
+                                    axis=1
+                                )
+                            )
+                            team.targets = np.delete(
+                                team.targets, 
+                                indices_to_remove, 
+                                axis=0
+                            )
                 agent.tick(dt, np.array(fov_list[x]))
 
-        utils.hit_detection_agents(agents_all)
         dead_agents = []
 
         for team in teams:
@@ -122,9 +148,9 @@ for _ in range(settings.BATCH_SIZE):
                     )
                 )
                 
-                if utils.hit_collision_agents(targets, agent) or \
-                        agent.rot_rect.bottom >= floor.coll_elevation:
-                    team.agents.remove(agent)
+                # if utils.hit_collision_agents(targets, agent) or \
+                #         agent.rot_rect.bottom >= floor.coll_elevation:
+                #     team.agents.remove(agent)
 
         if settings.USE_GUI:
             screen.blit(background, (0, 0))
@@ -164,11 +190,13 @@ for _ in range(settings.BATCH_SIZE):
 
         explosion = pygame.transform.scale(
             pygame.image.load(settings.END_SCREEN["EXPLOSION"]),
-            (64, 64)
+            settings.END_SCREEN["EXPLOSION_SIZE"]
         )
         explosion_rect = explosion.get_rect()
-        explosion_rect.centerx = agents_all[0].rot_rect.centerx # NOTE: THIS SHOULDNT BE THE FIRST AGENT BUT THE ONE EXPLODING.
-        explosion_rect.bottom = agents_all[0].rot_rect.bottom
+
+        explosion_rect.centerx = settings.SCREEN_RESOLUTION[0] / 2
+        explosion_rect.centery = settings.SCREEN_RESOLUTION[1] / 2
+
         screen.blit(explosion, explosion_rect)
         screen.blit(source=floor.sprite, dest=[0, floor.elevation])
 

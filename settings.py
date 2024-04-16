@@ -90,5 +90,6 @@ GROUND = {
 
 END_SCREEN= {
     "EXPLOSION": "assets/explosion2.png",
-    "GAMEOVER": "assets/gameover.png"
+    "GAMEOVER": "assets/gameover.png",
+    "EXPLOSION_SIZE": (300,300)  
 }
