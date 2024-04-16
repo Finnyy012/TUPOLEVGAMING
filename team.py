@@ -14,7 +14,7 @@ class Team:
     """
     def __init__(
         self, 
-        targets: list[tuple[float, float]],
+        targets: np.ndarray,
         n_agents: int,
         agent_description: dict,
         team_number: int
@@ -22,7 +22,7 @@ class Team:
         """
         Constructor for Team.
 
-        :param targets: (list[tuple[float, float]]) 
+        :param targets: (np.ndarray)
         all targets xy coords
         :param n_agents: (int) number of agents to construct
         :param agent_description: (dict) a dict used for creating agents
@@ -125,3 +125,16 @@ class Team:
           based on the bidding results
         """
         pass
+
+    def __str__(self)-> str:
+        """
+        Print out class data using this method in the format of:
+
+        Team:
+            Contains `n` agents.
+            Currently thinks there are `n` targets.
+            Score: `n`.
+        """
+        return f"Team:\n\tContains {len(self.agents)} agents.\
+        \n\tCurrently thinks there are {len(self.targets)} targets.\
+        \n\tScore: {self.score}."

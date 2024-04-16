@@ -4,6 +4,7 @@ import numpy as np
 import settings
 
 from absolute_distance_team import AbsoluteDistanceTeam
+from energy_bidding_team import EnergyBiddingTeam
 from two_targets_distance_team import TwoTargetsTeam
 from target import Target
 import ground
@@ -59,17 +60,17 @@ for _ in range(settings.BATCH_SIZE):
     targets = utils.create_targets(targets, floor.coll_elevation)
     targetscoords = np.array([target.coords for target in targets])
 
-    team1 = TwoTargetsTeam(
+    team1 = EnergyBiddingTeam(
         copy.deepcopy(targetscoords),
         2, 
-        settings.PLANE_I_16_REPUBLICAN, 
+        settings.PLANE_I_16_REPUBLICAN,
         0
     )
 
-    team2 = TwoTargetsTeam(
+    team2 = EnergyBiddingTeam(
         copy.deepcopy(targetscoords),
-        2, 
-        settings.PLANE_I_16_FALANGIST, 
+        2,
+        settings.PLANE_I_16_FALANGIST,
         1
     )
 
@@ -97,7 +98,7 @@ for _ in range(settings.BATCH_SIZE):
             ]
 
             team.assign_targets()
-            team.calculate_team_score()
+            team.calculate_score()
             for x, agent in enumerate(team.agents):
                 agent_target = Target(floor.coll_elevation, settings.TARGET["SPRITE"])
                 agent_target.coords = np.array(agent.target)
@@ -108,14 +109,17 @@ for _ in range(settings.BATCH_SIZE):
                             team.targets = np.delete(team.targets, indices_to_remove, axis=0)
                 agent.tick(dt, np.array(fov_list[x]))
 
-            utils.hit_detection_agents(agents_all)
-           
+        utils.hit_detection_agents(agents_all)
+        dead_agents = []
+
+        for team in teams:
             for agent in team.agents:
-                utils.hit_detection_and_move_projectiles(
-                    targets,
-                    agents_all,
-                    agent,
-                    dt
+                dead_agents.append(utils.hit_detection_and_move_projectiles(
+                        targets,
+                        agents_all,
+                        agent,
+                        dt
+                    )
                 )
                 
                 if utils.hit_collision_agents(targets, agent) or \
@@ -132,8 +136,19 @@ for _ in range(settings.BATCH_SIZE):
 
             utils.display_targets(targets, screen)
             for team in teams:
+                utils.display_projectiles(team.agents, screen)
+                for agent in team.agents:
+                    screen.blit(agent.rot_sprite, agent.rot_rect)
+            screen.blit(floor.sprite, [0, floor.elevation])
+
+            utils.display_targets(targets, screen)
+            for team in teams:
                 utils.display_projectiles(team.agents, screen)    
-            # Update display with current information
+            for team in teams:
+                team.agents = [
+                    agent for agent in team.agents if agent not in dead_agents
+                ]
+                # Update display with current information
             pygame.display.flip()
 
         dt = clock.tick(settings.FPS) / 1000
@@ -163,10 +178,7 @@ for _ in range(settings.BATCH_SIZE):
         # Let the user enjoy the gameover screen for a second
         pygame.time.wait(2000)
     else:
-        print("run finished")
-        for x, team in enumerate(teams):
-            print(f"Team {x} has hit {team.team_score} targets.")
-            for agent in team.agents:
-                print(f"Agent has hit {agent.score} targets.")
+        for team in teams:
+            print(team)
 pygame.quit()
 

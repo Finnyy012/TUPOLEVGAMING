@@ -26,11 +26,11 @@ class Target:
             random.randint(
                 size, settings.SCREEN_WIDTH - size
             ), random.randint(
-                0, ground_height - size
+                10, ground_height - size
             )
         ))
         self.rect = pygame.Rect(self.coords[0], self.coords[1], size, size)
-        self.rect.center = self.coords
+        self.rect.center = self.coords + (np.array([size, size]) / 2)
 
 
         if settings.USE_GUI:
