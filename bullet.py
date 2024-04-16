@@ -10,7 +10,7 @@ class Bullet:
 
     + sprite: (pygame.surface) optional sprite with contents of bullet
     + size: (int) bullet 2r
-    + current_time: (float) accumulator for dt TODO: max dit kan beter
+    + current_time: (float) accumulator for dt 
     + pitch: (float) pitch of bullet
     + speed: (float) bullet speed (m/s)
     + ground_height: (int) ground_height (pixels)
@@ -30,7 +30,8 @@ class Bullet:
         :param coords: initial position of the bullet (tuple[int, int])
         :param pitch: angle of the bullet (float)
         :param ground_height: height of the ground (int)
-        :param sprite: path of the image used for the sprite of the bullet
+        :param sprite: path of the image used for the sprite of the 
+         bullet
         :return: None
         """
         self.size = settings.BULLET["SIZE"]

@@ -23,26 +23,30 @@ def hit_detection_and_move_projectiles(
     :param dt: time step (float)
     :return: None
     """
-
+    dead_agents = []
 
     for projectile in current_agent.bullets:
         if projectile.move_bullet(dt):
             current_agent.bullets.remove(projectile)
             continue
-        for agent in agents:
-            if np.linalg.norm(np.array(agent.rot_rect.center) - \
-               np.array(projectile.rect.center)) <= 5 and \
-               agent != current_agent:
+        if settings.COLLISION:
+            for agent in agents:
+                if np.linalg.norm(np.array(agent.rot_rect.center) - \
+                   np.array(projectile.rect.center)) <= 5 and \
+                   agent != current_agent:
+                    current_agent.bullets.remove(projectile)
+                    dead_agents.append(agent)
+                    agents.remove(agent)
+                    continue
+        for target in targets:
+            if projectile.rect.colliderect(target.rect):
                 current_agent.bullets.remove(projectile)
-                agents.remove(agent)
+                targets.remove(target)
+                current_agent.score += 1
                 continue
+    return dead_agents
 
-        for orb in targets:
-            if projectile.rect.colliderect(orb.rect):
-                current_agent.bullets.remove(projectile)
-                targets.remove(orb)
-                continue
-    
+
 def hit_detection_agents(
         agents: list[agent.Agent],
     ) -> None:
@@ -164,8 +168,46 @@ def check_surround(
     """
     fov = []
     for target in targets:
-        if(np.linalg.norm(target.coords - current_agent.pos_virtual) < fov_radius):
+        if(
+            np.linalg.norm(target.coords - current_agent.pos_virtual) < 
+            fov_radius
+        ):
             fov.append([target.coords[0], target.coords[1], 1])
+        # check if fov_radius circle moves 
+        #  out of frame on the right side of the screen
+        elif(
+            current_agent.pos_virtual[0] + fov_radius > 
+            settings.SCREEN_WIDTH
+        ):
+            # place circle outside of the screen on the left
+            if(
+                np.linalg.norm(
+                    target.coords - (
+                        settings.SCREEN_WIDTH - (
+                            current_agent.pos_virtual[0] + 
+                            fov_radius
+                        ), 
+                        current_agent.pos_virtual[1]
+                    )
+                ) < 
+                fov_radius
+            ):
+                fov.append([target.coords[0], target.coords[1], 1])
+        # check if fov_radius circle moves 
+        #  out of frame on the left side of the screen
+        elif(current_agent.pos_virtual[0] - fov_radius < 0):
+            # place circle outside of the screen on the right
+            if(
+                np.linalg.norm(
+                    target.coords - (
+                        settings.SCREEN_WIDTH + 
+                        current_agent.pos_virtual[0],
+                        current_agent.pos_virtual[1]
+                    )
+                ) < 
+                fov_radius
+            ):
+                fov.append([target.coords[0], target.coords[1], 1])
     for agent in agents:
         if(np.linalg.norm(agent.pos_virtual - current_agent.pos_virtual) < fov_radius) \
             and agent != current_agent:
