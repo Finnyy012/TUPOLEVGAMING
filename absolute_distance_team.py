@@ -85,7 +85,7 @@ class AbsoluteDistanceTeam(Team):
         if there are no targets, the function returns.
         """
         distances = np.zeros((len(self.agents), len(self.targets)))
-        if len(self.targets) == 0:
+        if len(self.targets) == 0 or len(self.agents) == 0:
             return
         # calculate distances for bidding for agents.
         for i, agent in enumerate(self.agents):

@@ -53,7 +53,8 @@ def load_single_type_targets(
     :param target_count: number of target to be loaded (int)
     :return: list of target (list[Target])
     """
-    return [
+
+    targets = [
         Target(
             ground_height,
             settings.TARGET["SPRITE"]
@@ -62,22 +63,15 @@ def load_single_type_targets(
         )
     ]
 
-
-def load_multiple_types_targets() -> list[Target]:
-    """
-    This function loads a list of target with different sprites.
-
-    :return: list of target (list[Target])
-    """
-    # @NOTE:
-    # This function can be expanded further once multiple
-    #  types of TARGETs are implemented.
-    return [
-        Target(
-            random.choice(
-                settings.TARGET["SPRITES"]
-            )
-        ) for _ in range(
-            settings.TARGET["TARGET_COUNT"]
-        )
-    ]
+    for target1 in targets:
+        for target2 in targets:
+            if target1 != target2:
+                if target1.rect.colliderect(target2.rect):
+                    targets.remove(target2)
+                    targets.append(
+                        Target(
+                            settings.GROUND["HEIGHT"],
+                            settings.TARGET["SPRITE"]
+                        )
+                    )
+    return targets

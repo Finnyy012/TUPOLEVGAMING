@@ -8,7 +8,7 @@ USE_GUI = False
 COLLISION = False
 PLANE_POS_SCALE = 2
 BATCH_SIZE = 10
-
+FIRE_RATE = 0.08 #fire per x seconds
 PLANE_I_16_REPUBLICAN = {
     "SPRITE" : "assets/facing_right.png",
     "SPRITE_TOP" : "assets/top_view.png",
@@ -25,7 +25,7 @@ PLANE_I_16_REPUBLICAN = {
     "INIT_PITCH" : 0, 
     "INIT_V" : (100.0, 0.0),
     "INIT_POS" : (SCREEN_WIDTH / 2, 200),
-    "SIZE" : (24, 13)  # 6.13 : 3.25 irl
+    "SIZE" : (24, 13),  # 6.13 : 3.25 irl
 }
 
 PLANE_I_16_FALANGIST = {
@@ -44,7 +44,7 @@ PLANE_I_16_FALANGIST = {
     "INIT_PITCH" : 0,
     "INIT_V" : (100.0, 0.0),
     "INIT_POS" : (SCREEN_WIDTH / 2, 200),
-    "SIZE" : (24, 12)  # 6.13 : 3.25 irl
+    "SIZE" : (24, 12),  # 6.13 : 3.25 irl
 }
 
 PLANE_MESSERSCHMIDT_109E = {
@@ -91,5 +91,6 @@ GROUND = {
 
 END_SCREEN= {
     "EXPLOSION": "assets/explosion2.png",
-    "GAMEOVER": "assets/gameover.png"
+    "GAMEOVER": "assets/gameover.png",
+    "EXPLOSION_SIZE": (300,300)  
 }
