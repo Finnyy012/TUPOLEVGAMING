@@ -34,7 +34,6 @@ class EnergyBiddingTeam(AbsoluteDistanceTeam):
         """
         E_min = float("inf")
         offset = np.array([settings.SCREEN_WIDTH, 0])
-        i_min = 0
 
         for i in [-1, 0, 1]:
             target_relative = target - agent.rot_rect.center + i * offset
@@ -60,6 +59,16 @@ class EnergyBiddingTeam(AbsoluteDistanceTeam):
 
             if Eh + Er + Ed < E_min:
                 E_min = (Eh + Er + Ed)
-                i_min = i
 
         return E_min
+    
+    def __str__(self) -> str:
+        """
+        Print out class data using this method in the format of:
+
+        Absolute Distance Team:
+            Contains `n` agents.
+            Currently thinks there are `n` targets.
+            Score: `n`.
+        """
+        return f"Energy Bidding {super().__str__()}"

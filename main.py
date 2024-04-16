@@ -74,6 +74,9 @@ team2 = EnergyBiddingTeam(
 )
 
 teams = [team1, team2]
+for team in teams:
+    print(team)
+    
 agents_all = list(chain(*[team.agents for team in teams]))
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
