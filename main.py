@@ -1,3 +1,4 @@
+import time
 from itertools import chain
 import pygame
 import numpy as np
@@ -11,6 +12,8 @@ import ground
 import utils
 import copy
 
+start = time.time()
+
 screen, font = None, None
 if settings.USE_GUI:
     pygame.init()
@@ -23,9 +26,12 @@ if settings.USE_GUI:
 total_scores = [0, 0]
 
 for _ in range(settings.BATCH_SIZE):
-    clock = pygame.time.Clock()
+    if settings.USE_GUI:
+        clock = pygame.time.Clock()
+        dt = 0
+    else:
+        dt = 1 / 60
     running = True
-    dt = 0
     total_time = 0
     fov_radius = 150
 
@@ -112,7 +118,8 @@ for _ in range(settings.BATCH_SIZE):
                             team.targets = np.delete(team.targets, indices_to_remove, axis=0)
                 agent.tick(dt, np.array(fov_list[x]))
 
-        utils.hit_detection_agents(agents_all)
+        if settings.COLLISION:
+            utils.hit_detection_agents(agents_all)
         dead_agents = []
 
         for team in teams:
@@ -124,10 +131,11 @@ for _ in range(settings.BATCH_SIZE):
                         dt
                     )
                 )
-                
-                if utils.hit_collision_agents(targets, agent) or \
-                        agent.rot_rect.bottom >= floor.coll_elevation:
-                    team.agents.remove(agent)
+
+                if settings.COLLISION:
+                    if agent.rot_rect.bottom >= floor.coll_elevation or \
+                            utils.hit_collision_agents(targets, agent):
+                        team.agents.remove(agent)
 
         if settings.USE_GUI:
             screen.blit(background, (0, 0))
@@ -154,7 +162,9 @@ for _ in range(settings.BATCH_SIZE):
                 # Update display with current information
             pygame.display.flip()
 
-        dt = clock.tick(settings.FPS) / 1000
+        if settings.USE_GUI:
+            dt = clock.tick(settings.FPS) / 1000
+
         total_time += dt
 
     if settings.USE_GUI:
@@ -201,3 +211,4 @@ print(f"{total_scores[0] / settings.BATCH_SIZE}/\
 )
 pygame.quit()
 
+print(f"The program took {round(time.time()-start, 2)} seconds to run.")
