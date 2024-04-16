@@ -5,6 +5,7 @@ import settings
 
 from absolute_distance_team import AbsoluteDistanceTeam
 from energy_bidding_team import EnergyBiddingTeam
+from two_targets_distance_team import TwoTargetsTeam
 from target import Target
 import ground
 import utils
@@ -42,8 +43,8 @@ if settings.USE_GUI:
         resolution=settings.SCREEN_RESOLUTION
     )
 
-    # pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
-    # pygame.mixer.music.play(-1)
+    pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
+    pygame.mixer.music.play(-1)
     flip = pygame.mixer.Sound(
         "assets/Flip de beer intro-[AudioTrimmer.com].mp3"
     )
@@ -61,7 +62,7 @@ targetscoords = np.array([target.coords for target in targets])
 team1 = EnergyBiddingTeam(
     copy.deepcopy(targetscoords),
     2, 
-    settings.PLANE_POLIKARPOV_I_16, 
+    settings.PLANE_I_16_REPUBLICAN,
     0
 )
 
@@ -72,7 +73,7 @@ team2 = EnergyBiddingTeam(
     1
 )
 
-teams = [team1]
+teams = [team1, team2]
 agents_all = list(chain(*[team.agents for team in teams]))
 
 while running and total_time <= settings.SIMULATION_RUNTIME:
@@ -85,7 +86,14 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         screen.fill("white")
     
     for team in teams:
-        fov_list = [utils.check_surround(agent, targets, agents_all, fov_radius) for agent in team.agents]
+        fov_list = [
+            utils.check_surround(
+                agent,
+                targets,
+                agents_all,
+                fov_radius
+            ) for agent in team.agents
+        ]
 
         team.assign_targets()
         for x, agent in enumerate(team.agents):
@@ -101,8 +109,6 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         utils.hit_detection_agents(agents_all)
 
     if settings.USE_GUI:
-        # Draw (blit) background, agent1, ground,
-        #  baloons, lines, and tekst
         screen.blit(background, (0, 0))
         
         for team in teams:
