@@ -117,3 +117,16 @@ class Team:
           based on the bidding results
         """
         pass
+
+    def __str__(self)-> str:
+        """
+        Print out class data using this method in the format of:
+
+        Team:
+            Contains `n` agents.
+            Currently thinks there are `n` targets.
+            Score: `n`.
+        """
+        return f"Team:\n\tContains {len(self.agents)} agents.\n \
+        \tCurrently thinks there are {len(self.targets)} targets.\n \
+        \tScore: TO_BE_IMPLEMENTED."

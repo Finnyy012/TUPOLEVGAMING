@@ -97,3 +97,14 @@ class AbsoluteDistanceTeam(Team):
         # assign targets
         for i, j in assigned_info:
             self.agents[i].target = self.targets[j]
+
+    def __str__(self) -> str:
+        """
+        Print out class data using this method in the format of:
+
+        Absolute Distance Team:
+            Contains `n` agents.
+            Currently thinks there are `n` targets.
+            Score: `n`.
+        """
+        return f"Absolute Distance {super().__str__()}"
