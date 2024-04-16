@@ -190,6 +190,7 @@ class Agent(Aircraft):
         self.circle_coords = np.concatenate([-circle_coords, circle_coords], 0)
 
         self.score = 0
+        self.timer = -1
 
     def dangerzone(self, fov):
         rotation_matrix = np.array([[
@@ -432,9 +433,16 @@ class Agent(Aircraft):
                 self.testv2 = abs(self.rot_rect.center[0]-self.target[0])+turn_circle
                 self.action = 'rotate pass'
 
-                if abs(self.rot_rect.center[0]-target_projected[0]) > abs(self.rot_rect.center[0]-self.target[0])+turn_circle:
-                    # TODO: deze conditie moet iets anders: in een zeldzaam geval doet die zo heen en weer like een dolfijn
-                    if self.rot_rect.center[1] < (settings.GROUND["COLL_ELEVATION"]/2):
+                if abs(
+                    self.rot_rect.center[0]-target_projected[0]
+                    ) > abs(
+                        self.rot_rect.center[0]-self.target[0]
+                    ) + turn_circle:
+                    # TODO: deze conditie moet iets anders: in een 
+                    #  zeldzaam geval doet die zo heen en weer like een dolfijn
+                    if self.rot_rect.center[1] < (
+                        settings.GROUND["COLL_ELEVATION"] / 2
+                        ):
                         direction = -1
                         self.action = 'rotate right'
                     else:
@@ -444,7 +452,10 @@ class Agent(Aircraft):
                         direction *= -1
                         self.action += ' mirror'
                 else:
-                    d2 = np.matmul((target_projected-self.rot_rect.center), rotation_matrix)
+                    d2 = np.matmul(
+                        (target_projected - self.rot_rect.center), 
+                        rotation_matrix
+                    )
                     if (abs(d2[0]) < 150) and (abs(d2[1]) < 10):
                         self.shoot()
                     if (d2[0] > 0) and (d2[1] > 0):
@@ -494,6 +505,10 @@ class Agent(Aircraft):
         ).astype(int)
 
     def shoot(self):
+        current_time = time.time()
+        if abs(current_time - self.timer) < settings.FIRE_RATE:
+            return
+        self.timer = current_time
         self.bullets.append(
             bullet.Bullet(
                 self.pos_virtual,

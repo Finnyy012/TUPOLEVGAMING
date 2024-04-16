@@ -44,8 +44,8 @@ for _ in range(settings.BATCH_SIZE):
             resolution=settings.SCREEN_RESOLUTION
         )
 
-        pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
-        pygame.mixer.music.play(-1)
+        # pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
+        # pygame.mixer.music.play(-1)
         flip = pygame.mixer.Sound(
             "assets/Flip de beer intro-[AudioTrimmer.com].mp3"
         )
