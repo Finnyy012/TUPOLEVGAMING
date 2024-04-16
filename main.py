@@ -4,6 +4,7 @@ import numpy as np
 import settings
 
 from absolute_distance_team import AbsoluteDistanceTeam
+from energy_bidding_team import EnergyBiddingTeam
 from two_targets_distance_team import TwoTargetsTeam
 from target import Target
 import ground
@@ -58,17 +59,17 @@ targets = []
 targets = utils.create_targets(targets, floor.coll_elevation)
 targetscoords = np.array([target.coords for target in targets])
 
-team1 = TwoTargetsTeam(
+team1 = EnergyBiddingTeam(
     copy.deepcopy(targetscoords),
     2, 
-    settings.PLANE_I_16_REPUBLICAN, 
+    settings.PLANE_I_16_REPUBLICAN,
     0
 )
 
-team2 = TwoTargetsTeam(
+team2 = EnergyBiddingTeam(
     copy.deepcopy(targetscoords),
-    2, 
-    settings.PLANE_I_16_FALANGIST, 
+    2,
+    settings.PLANE_POLIKARPOV_I_16, 
     1
 )
 
@@ -87,9 +88,9 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
     for team in teams:
         fov_list = [
             utils.check_surround(
-                agent, 
-                targets, 
-                agents_all, 
+                agent,
+                targets,
+                agents_all,
                 fov_radius
             ) for agent in team.agents
         ]
