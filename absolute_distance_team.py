@@ -15,7 +15,7 @@ class AbsoluteDistanceTeam(Team):
     """
     def __init__(
         self, 
-        targets: list[tuple[float, float]],
+        targets: np.ndarray,
         n_agents: int,
         agent_description: dict,
         team_number: int
@@ -25,7 +25,7 @@ class AbsoluteDistanceTeam(Team):
         Creates member variables using super Team class.
         Assigns starting targets to agents
 
-        :param targets: (list[tuple[float, float]]) 
+        :param targets: (np.array)
         all targets xy coords
         :param n_agents: (int) number of agents to construct
         :param agent_description: (dict) a dict used for creating agents
@@ -58,19 +58,19 @@ class AbsoluteDistanceTeam(Team):
     def _calculate_distance(
         self, 
         agent: Agent, 
-        target: tuple[float, float]
+        target: np.array
     )-> float:
         """
         Calculate absolute distance between agent and target.
         It also wraps around the doughnut that is our world.
 
         :param agent: (Agent) current agent to analyse.
-        :param target: (tuple[float, float]) current target to measure.
+        :param target: (np.array) current target to measure.
 
         :return: (float) absolute distance to `target` from `agent`.
         """
         dx = min(
-            abs(agent.rot_rect.center[0] - target[0]), 
+            abs(agent.rot_rect.center[0] - target[0]),
             settings.SCREEN_WIDTH - abs(agent.rot_rect.center[0] - target[0])
         )
         dy = abs(agent.rot_rect.center[1] - target[1])
