@@ -61,14 +61,14 @@ targetscoords = np.array([target.coords for target in targets])
 team1 = TwoTargetsTeam(
     copy.deepcopy(targetscoords),
     2, 
-    settings.PLANE_POLIKARPOV_I_16, 
+    settings.PLANE_I_16_REPUBLICAN, 
     0
 )
 
 team2 = TwoTargetsTeam(
     copy.deepcopy(targetscoords),
     2, 
-    settings.PLANE_POLIKARPOV_I_16, 
+    settings.PLANE_I_16_FALANGIST, 
     1
 )
 
@@ -108,8 +108,6 @@ while running and total_time <= settings.SIMULATION_RUNTIME:
         utils.hit_detection_agents(agents_all)
 
     if settings.USE_GUI:
-        # Draw (blit) background, agent1, ground,
-        #  baloons, lines, and tekst
         screen.blit(background, (0, 0))
         
         for team in teams:
