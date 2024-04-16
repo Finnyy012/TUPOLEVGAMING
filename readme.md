@@ -2,22 +2,32 @@
 By *Bas de Blok, Finn de Graaf, Max Visscher* & *Joris Heemskerk*
 
 Created for the [Autonomy By Design (ADB)](https://canvas.hu.nl/courses/39869/pages/kennisroute-ai) cursus.
-
- <!-- <img src="assets/dogfight.png" alt="[Retro image of dogfight" width="400" height="400"> -->
  
  # Demo video of branch
 
 Watch the demo video by clicking on the image below:
 
- [![demo video](assets/dogfight_demo_screenshot.png)](https://www.youtube.com/watch_popup?v=ac95xo9TWpM)
+## Theory
+This simulation uses the multi agent theory from **MULTIAGENT SYSTEMS Algorithmic, Game-Theoretic, and Logical Foundations**, written by Yoav Shoham and Kevin Leyton-Brown. The theory from Chapter Two, Distributed Optimization has been implemented with the use of the Munkres library.
+
+ During the simulations the teams try to shoot as many targets as possible. The teams assign a target to every agent on the team based on the *value* of the targets. The different strategies to calculate the value of a target are: 
+ - Absolute distance (absolute_distance.py)
+    - The shortest absolute distance between the target and the agent wins.
+ - Absolute distance for two targets (two_targets_distance_team.py)
+    - The shortest absolute distance between the target and two targets wins.
+ - Energy required to reach the target (energy_bidding_team.py)
+    - The least amount of adjusting required to reach the target wins. 
+
 
 ## Structure code base
 
 The simulation can be used by running main.py. 
 
-The program uses multiple objects to create the simulation. These are **Aircraft**, **Target**, **Ground** and **Bullet**(Bullet is not used in the current version of the simulation).
+The program uses multiple objects to create the simulation. These are **Team**, **Aircraft**, **Target**, **Ground** and **Bullet**.
 
-The classes **Target**, **Bullet** and **Ground** are used to create the environment. **Aircraft** is the superclass of the agent. **Aircraft** contains all physic related code allowing the plane to fly realistically. The subclass of **Aircraft**, **Agent** contains the algorithms allowing the agent to function as an individual entity. 
+The classes **Target**, **Bullet** and **Ground** are used to create the environment. **Aircraft** is the superclass of the agent. **Aircraft** contains all physic related code allowing the plane to fly realistically. The subclass of **Aircraft**; **Agent**, contains the algorithms allowing the agent to function as an individual entity. 
+
+The simulation can be run with or without a GUI. By setting the batch size in settings, the simulation can be ran *X* number of times. 
 
 All global variables, such as plane size, are defined in settings.py. 
 
