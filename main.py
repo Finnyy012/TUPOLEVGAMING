@@ -117,7 +117,7 @@ for _ in range(settings.BATCH_SIZE):
 
         if settings.COLLISION:
             utils.hit_detection_agents(agents_all)
-            dead_agents = []
+        dead_agents = []
 
         for team in teams:
             for agent in team.agents:
