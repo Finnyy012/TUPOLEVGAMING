@@ -228,7 +228,8 @@ class Agent(Aircraft):
          - as much area as possible is discovered
 
         :param dt: (float) time since last frame in s
-        :param fov_evade: (np.ndarray) targets within fov (passed from main)
+        :param fov_evade: (np.ndarray) targets within fov 
+         (passed from main)
         :return: None
         """
         d_nearest_target = sys.maxsize
@@ -352,7 +353,7 @@ class Agent(Aircraft):
                     best_circle[1] = -best_circle[1]
                 else:
                     best_circle = best_circle[0]
-                    pass  # TODO: gelijk aantal vakkies in de buut
+                    pass 
 
                 diff_head = (
                     math.atan2(best_circle[0], best_circle[1]) -
@@ -430,7 +431,9 @@ class Agent(Aircraft):
                     sign = -1
                 target_projected = self.target + sign * np.array([1280,0])
                 self.testv3 = abs(self.rot_rect.center[0]-target_projected[0])
-                self.testv2 = abs(self.rot_rect.center[0]-self.target[0])+turn_circle
+                self.testv2 = abs(
+                    self.rot_rect.center[0]-self.target[0]
+                ) + turn_circle
                 self.action = 'rotate pass'
 
                 if abs(
@@ -438,8 +441,6 @@ class Agent(Aircraft):
                     ) > abs(
                         self.rot_rect.center[0]-self.target[0]
                     ) + turn_circle:
-                    # TODO: deze conditie moet iets anders: in een 
-                    #  zeldzaam geval doet die zo heen en weer like een dolfijn
                     if self.rot_rect.center[1] < (
                         settings.GROUND["COLL_ELEVATION"] / 2
                         ):

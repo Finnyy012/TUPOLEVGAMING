@@ -9,6 +9,7 @@ COLLISION = False
 PLANE_POS_SCALE = 2
 BATCH_SIZE = 10
 FIRE_RATE = 0.08 #fire per x seconds
+
 PLANE_I_16_REPUBLICAN = {
     "SPRITE" : "assets/facing_right.png",
     "SPRITE_TOP" : "assets/top_view.png",
