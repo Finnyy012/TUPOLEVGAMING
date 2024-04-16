@@ -69,7 +69,7 @@ team1 = EnergyBiddingTeam(
 team2 = EnergyBiddingTeam(
     copy.deepcopy(targetscoords),
     2,
-    settings.PLANE_POLIKARPOV_I_16, 
+    settings.PLANE_I_16_FALANGIST,
     1
 )
 
