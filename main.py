@@ -21,9 +21,9 @@ if settings.USE_GUI:
     font = pygame.font.SysFont(None, 24)
 
 for _ in range(settings.BATCH_SIZE):
-    clock = pygame.time.Clock()
+    # clock = pygame.time.Clock()
     running = True
-    dt = 0
+    dt = 1/60
     total_time = 0
     fov_radius = 150
 
@@ -151,7 +151,7 @@ for _ in range(settings.BATCH_SIZE):
                 # Update display with current information
             pygame.display.flip()
 
-        dt = clock.tick(settings.FPS) / 1000
+        # dt = clock.tick(settings.FPS) / 1000
         total_time += dt
 
     if settings.USE_GUI:
