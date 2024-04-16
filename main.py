@@ -4,6 +4,7 @@ import numpy as np
 import settings
 
 from absolute_distance_team import AbsoluteDistanceTeam
+from energy_bidding_team import EnergyBiddingTeam
 from target import Target
 import ground
 import utils
@@ -41,8 +42,8 @@ if settings.USE_GUI:
         resolution=settings.SCREEN_RESOLUTION
     )
 
-    pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
-    pygame.mixer.music.play(-1)
+    # pygame.mixer.music.load("assets/Arise, Great Country!.mp3")
+    # pygame.mixer.music.play(-1)
     flip = pygame.mixer.Sound(
         "assets/Flip de beer intro-[AudioTrimmer.com].mp3"
     )
@@ -57,16 +58,16 @@ targets = []
 targets = utils.create_targets(targets, floor.coll_elevation)
 targetscoords = np.array([target.coords for target in targets])
 
-team1 = AbsoluteDistanceTeam(
+team1 = EnergyBiddingTeam(
     copy.deepcopy(targetscoords),
     2, 
     settings.PLANE_POLIKARPOV_I_16, 
     0
 )
 
-team2 = AbsoluteDistanceTeam(
+team2 = EnergyBiddingTeam(
     copy.deepcopy(targetscoords),
-    4, 
+    2,
     settings.PLANE_POLIKARPOV_I_16, 
     1
 )

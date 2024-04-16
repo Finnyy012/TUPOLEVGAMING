@@ -15,7 +15,7 @@ class AbsoluteDistanceTeam(Team):
     """
     def __init__(
         self, 
-        targets: list[tuple[float, float]],
+        targets: np.ndarray,
         n_agents: int,
         agent_description: dict,
         team_number: int
@@ -58,7 +58,7 @@ class AbsoluteDistanceTeam(Team):
     def _calculate_distance(
         self, 
         agent: Agent, 
-        target: tuple[float, float]
+        target: np.array
     )-> float:
         """
         Calculate absolute distance between agent and target.
@@ -70,7 +70,7 @@ class AbsoluteDistanceTeam(Team):
         :return: (float) absolute distance to `target` from `agent`.
         """
         dx = min(
-            abs(agent.rot_rect.center[0] - target[0]), 
+            abs(agent.rot_rect.center[0] - target[0]),
             settings.SCREEN_WIDTH - abs(agent.rot_rect.center[0] - target[0])
         )
         dy = abs(agent.rot_rect.center[1] - target[1])
