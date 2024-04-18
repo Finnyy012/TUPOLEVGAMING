@@ -75,9 +75,9 @@ for _ in range(settings.BATCH_SIZE):
         0
     )
 
-    team2 = AbsoluteDistanceTeam(
+    team2 = EnergyBiddingTeam(
         copy.deepcopy(targetscoords),
-        1,
+        2,
         settings.PLANE_I_16_FALANGIST,
         1
     )
