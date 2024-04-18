@@ -68,7 +68,7 @@ for _ in range(settings.BATCH_SIZE):
     targets = utils.create_targets(targets, floor.coll_elevation)
     targetscoords = np.array([target.coords for target in targets])
 
-    team1 = AbsoluteDistanceTeam(
+    team1 = TwoTargetsTeam(
         copy.deepcopy(targetscoords),
         2, 
         settings.PLANE_I_16_REPUBLICAN,
